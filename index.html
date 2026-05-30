@@ -1169,5 +1169,268 @@ footer p { font-size: 0.72rem; color: var(--muted); letter-spacing: 1px; }
   reveals.forEach(el => observer.observe(el));
 </script>
 <script src="//code.tidio.co/klvwo76ujoxjv906k2w3rkff2agkhpr.js" async></script>
+<!-- ================================================
+     APEX STANDARD CHATBOT — PASTE BEFORE </body>
+     ================================================ -->
+
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style id="apex-chat-styles">
+#apex-chat-root * { box-sizing: border-box; font-family: 'DM Sans', sans-serif; }
+
+#apex-chat-launcher {
+  position: fixed; bottom: 28px; right: 28px;
+  width: 58px; height: 58px;
+  background: #1a1a1a; border: 1px solid #333; border-radius: 50%;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  z-index: 9998;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+}
+#apex-chat-launcher:hover { transform: scale(1.08); border-color: #555; }
+#apex-chat-launcher .launcher-icon { font-size: 22px; transition: transform 0.3s ease, opacity 0.2s ease; }
+#apex-chat-launcher .launcher-close { position: absolute; font-size: 18px; color: #aaa; opacity: 0; transform: rotate(-90deg) scale(0.5); transition: all 0.3s ease; }
+#apex-chat-launcher.open .launcher-icon { opacity: 0; transform: scale(0.5); }
+#apex-chat-launcher.open .launcher-close { opacity: 1; transform: rotate(0deg) scale(1); }
+#apex-chat-launcher .notif-dot { position: absolute; top: 2px; right: 2px; width: 12px; height: 12px; background: #e05555; border-radius: 50%; border: 2px solid #0d0d0d; animation: ac-notif 2s infinite; }
+@keyframes ac-notif { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+
+#apex-chat-window {
+  position: fixed; bottom: 100px; right: 28px;
+  width: 370px; height: 560px;
+  background: #131313; border: 1px solid #2a2a2a; border-radius: 4px;
+  display: flex; flex-direction: column;
+  z-index: 9999; overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.03);
+  transform: translateY(16px) scale(0.97); opacity: 0; pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+#apex-chat-window.open { transform: translateY(0) scale(1); opacity: 1; pointer-events: all; }
+
+.ac-header { background: #0f0f0f; border-bottom: 1px solid #222; padding: 14px 16px; display: flex; align-items: center; gap: 11px; flex-shrink: 0; position: relative; }
+.ac-header::after { content: ''; position: absolute; bottom: 0; left: 16px; right: 16px; height: 1px; background: linear-gradient(90deg, #3a3a3a, transparent); }
+.ac-avatar { width: 34px; height: 34px; background: #1e1e1e; border: 1px solid #333; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; color: #aaa; }
+.ac-header-info { flex: 1; }
+.ac-header-name { font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 2px; color: #e8e8e8; line-height: 1.2; }
+.ac-header-status { font-size: 10px; color: #666; font-family: 'DM Mono', monospace; display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+.ac-status-dot { width: 5px; height: 5px; background: #5a9e6f; border-radius: 50%; animation: ac-pulse 2.5s infinite; }
+@keyframes ac-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.ac-header-badge { font-family: 'DM Mono', monospace; font-size: 8px; color: #444; letter-spacing: 1px; text-align: right; line-height: 1.5; text-transform: uppercase; }
+
+.ac-progress { background: #0f0f0f; border-bottom: 1px solid #1e1e1e; padding: 8px 16px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.ac-progress-label { font-size: 9px; font-family: 'DM Mono', monospace; color: #555; letter-spacing: 1px; white-space: nowrap; }
+.ac-progress-bar { flex: 1; height: 2px; background: #222; border-radius: 1px; overflow: hidden; }
+.ac-progress-fill { height: 100%; background: #666; border-radius: 1px; transition: width 0.4s ease; }
+
+.ac-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
+.ac-messages::-webkit-scrollbar { width: 3px; }
+.ac-messages::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
+
+.ac-msg { display: flex; gap: 8px; animation: ac-in 0.28s ease; }
+@keyframes ac-in { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+.ac-msg.user { flex-direction: row-reverse; }
+.ac-msg-av { width: 26px; height: 26px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; margin-top: 2px; background: #1e1e1e; border: 1px solid #2e2e2e; color: #888; }
+.ac-msg-body { max-width: 82%; }
+.ac-bubble { padding: 9px 12px; border-radius: 3px; font-size: 13px; line-height: 1.65; }
+.ac-msg.bot .ac-bubble { background: #1a1a1a; border: 1px solid #272727; border-top-left-radius: 0; color: #c8c8c8; }
+.ac-msg.user .ac-bubble { background: #252525; border: 1px solid #333; border-top-right-radius: 0; color: #ddd; }
+.ac-msg-time { font-size: 9px; color: #444; font-family: 'DM Mono', monospace; margin-top: 4px; }
+.ac-msg.user .ac-msg-time { text-align: right; }
+
+.ac-options { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.ac-opt-btn { background: #1a1a1a; border: 1px solid #303030; color: #aaa; font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 8px 12px; border-radius: 3px; cursor: pointer; text-align: left; transition: all 0.18s ease; line-height: 1.4; }
+.ac-opt-btn:hover { background: #222; border-color: #444; color: #e0e0e0; }
+
+.ac-typing { display: flex; gap: 8px; align-items: center; animation: ac-in 0.28s ease; }
+.ac-typing-dots { background: #1a1a1a; border: 1px solid #272727; padding: 9px 13px; border-radius: 3px; border-top-left-radius: 0; display: flex; gap: 4px; align-items: center; }
+.ac-typing-dots span { width: 5px; height: 5px; background: #444; border-radius: 50%; animation: ac-dot 1.2s infinite; }
+.ac-typing-dots span:nth-child(2){animation-delay:0.2s} .ac-typing-dots span:nth-child(3){animation-delay:0.4s}
+@keyframes ac-dot { 0%,80%,100%{transform:translateY(0);opacity:0.3} 40%{transform:translateY(-5px);opacity:1} }
+
+.ac-input-area { border-top: 1px solid #1e1e1e; padding: 10px 12px; display: flex; gap: 8px; align-items: flex-end; background: #0f0f0f; flex-shrink: 0; }
+.ac-input { flex: 1; background: #1a1a1a; border: 1px solid #2a2a2a; color: #ccc; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 8px 11px; border-radius: 3px; outline: none; resize: none; max-height: 90px; line-height: 1.5; transition: border-color 0.2s; }
+.ac-input:focus { border-color: #3a3a3a; }
+.ac-input::placeholder { color: #3a3a3a; }
+.ac-send { width: 36px; height: 36px; background: #242424; border: 1px solid #333; border-radius: 3px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.18s ease; flex-shrink: 0; color: #888; font-size: 14px; }
+.ac-send:hover:not(:disabled) { background: #2e2e2e; border-color: #444; color: #ccc; }
+.ac-send:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.ac-footer { background: #0d0d0d; border-top: 1px solid #1a1a1a; padding: 6px 16px; text-align: center; flex-shrink: 0; }
+.ac-footer span { font-size: 9px; color: #333; font-family: 'DM Mono', monospace; letter-spacing: 1px; text-transform: uppercase; }
+
+@media (max-width: 420px) {
+  #apex-chat-window { width: calc(100vw - 20px); right: 10px; bottom: 90px; height: 500px; }
+  #apex-chat-launcher { right: 16px; bottom: 20px; }
+}
+</style>
+
+<div id="apex-chat-root">
+  <div id="apex-chat-launcher" onclick="apexChatToggle()">
+    <span class="launcher-icon">💬</span>
+    <span class="launcher-close">✕</span>
+    <span class="notif-dot" id="apexNotifDot"></span>
+  </div>
+  <div id="apex-chat-window">
+    <div class="ac-header">
+      <div class="ac-avatar">⬡</div>
+      <div class="ac-header-info">
+        <div class="ac-header-name">Apex Standard</div>
+        <div class="ac-header-status"><span class="ac-status-dot"></span> AI Assistant · Online</div>
+      </div>
+      <div class="ac-header-badge">AI<br>POWERED</div>
+    </div>
+    <div class="ac-progress" id="acProgress">
+      <span class="ac-progress-label" id="acProgressLabel">STEP 1 OF 3</span>
+      <div class="ac-progress-bar"><div class="ac-progress-fill" id="acProgressFill" style="width:33%"></div></div>
+    </div>
+    <div class="ac-messages" id="acMessages"></div>
+    <div class="ac-input-area">
+      <textarea class="ac-input" id="acInput" placeholder="Type a message..." rows="1" onkeydown="acHandleKey(event)" oninput="acResize(this)" disabled></textarea>
+      <button class="ac-send" id="acSend" onclick="acSend()" disabled>➤</button>
+    </div>
+    <div class="ac-footer"><span>Powered by Apex Standard · apexstandard.biz</span></div>
+  </div>
+</div>
+
+<script>
+const APEX_SITE_CONTEXT = `You are the AI assistant for Apex Standard (apexstandard.biz), an AI-powered growth agency run by Silven.
+
+About Apex Standard:
+- We help businesses 2X their leads in 10 days — guaranteed, or they don't pay
+- Services: Lead Generation, Sales Conversion, Customer Retention, Relationship Building, AI Automation, Marketing Systems
+- We serve both B2B and B2C businesses across all industries
+- Process: Free Strategy Call → Custom Growth Plan → We Build & Launch → Scale & Optimize
+- Guarantee: If we don't 2X qualified leads in 10 days, client pays nothing and we keep working for free until we do
+- Contact: itz.silven@apexstandard.biz | Response within 24 hours
+- Free 14-day bootcamp available at apexstandard.biz/bootcamp.html
+
+Tone: Confident, sharp, zero fluff. You represent a premium results-driven agency. Keep replies 2-3 sentences unless listing services. Never make things up. If unsure, direct them to email itz.silven@apexstandard.biz.`;
+
+let acHistory = [], acOnboardData = {}, acOnboardStep = 0, acTyping = false;
+
+const AC_STEPS = [
+  { step:1, label:'STEP 1 OF 3', progress:33, msg:"Hey — welcome to Apex Standard.\n\nBefore I point you in the right direction, I have a quick question:\n\n**What brought you to the site today?**", options:["I need more leads for my business","I want to improve my sales conversion","I'm trying to retain more customers","I want to automate my marketing","Just exploring what's possible"] },
+  { step:2, label:'STEP 2 OF 3', progress:66, msg:"Got it. What's the main thing you need help with right now?", options:["Lead generation & outreach","Sales process & closing","Customer retention & loyalty","Full AI automation & systems","I need all of it — complete overhaul"] },
+  { step:3, label:'STEP 3 OF 3', progress:90, msg:"Last one — what's the outcome you're hoping Apex Standard can help you achieve?", options:["A consistent, predictable flow of leads","A higher close rate on my existing pipeline","Customers that stay longer and refer others","A fully automated growth machine","I want to talk to someone and figure it out"] }
+];
+
+function apexChatToggle() {
+  const win = document.getElementById('apex-chat-window');
+  const btn = document.getElementById('apex-chat-launcher');
+  const dot = document.getElementById('apexNotifDot');
+  const isOpen = win.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
+  if (dot) dot.style.display = 'none';
+  if (isOpen && acHistory.length === 0) setTimeout(() => acShowStep(0), 350);
+}
+
+function acShowStep(idx) {
+  if (idx >= AC_STEPS.length) { acFinishOnboard(); return; }
+  const s = AC_STEPS[idx];
+  document.getElementById('acProgressLabel').textContent = s.label;
+  document.getElementById('acProgressFill').style.width = s.progress + '%';
+  acShowTyping(600, () => acAddBotMsg(s.msg, s.options, (val) => {
+    acOnboardData['s'+(idx+1)] = val;
+    acAddUserMsg(val);
+    setTimeout(() => acShowStep(idx + 1), 400);
+  }));
+}
+
+function acFinishOnboard() {
+  document.getElementById('acProgressLabel').textContent = 'READY';
+  document.getElementById('acProgressFill').style.width = '100%';
+  const summary = `[VISITOR INFO] Why here: "${acOnboardData.s1}" | Needs: "${acOnboardData.s2}" | Goal: "${acOnboardData.s3}"`;
+  acHistory.push({ role:'user', content: summary });
+  acShowTyping(900, () => {
+    acAddBotFree("Perfect — that tells me exactly what I need to know.\n\nBased on what you shared, Apex Standard is built for exactly this. We back everything with a results-or-you-don't-pay guarantee.\n\nAsk me anything about our services, process, or pricing — or I can get you set up for a free strategy call right now.");
+    document.getElementById('acInput').disabled = false;
+    document.getElementById('acSend').disabled = false;
+    document.getElementById('acInput').focus();
+    setTimeout(() => { document.getElementById('acProgress').style.display = 'none'; }, 500);
+  });
+}
+
+function acAddBotMsg(text, options, onSelect) {
+  const msgs = document.getElementById('acMessages');
+  const wrap = document.createElement('div');
+  wrap.className = 'ac-msg bot';
+  const fmt = text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  let optsHtml = options ? `<div class="ac-options">${options.map(o=>`<button class="ac-opt-btn" data-val="${o}">${o}</button>`).join('')}</div>` : '';
+  wrap.innerHTML = `<div class="ac-msg-av">⬡</div><div class="ac-msg-body"><div class="ac-bubble">${fmt}</div>${optsHtml}<div class="ac-msg-time">${acTime()}</div></div>`;
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+  if (options && onSelect) {
+    wrap.querySelectorAll('.ac-opt-btn').forEach(btn => btn.addEventListener('click', function() {
+      wrap.querySelectorAll('.ac-opt-btn').forEach(b => { b.disabled=true; b.style.opacity='0.4'; b.style.cursor='default'; });
+      this.style.opacity='1'; this.style.borderColor='#555'; this.style.color='#e0e0e0';
+      onSelect(this.dataset.val);
+    }));
+  }
+}
+
+function acAddBotFree(text) {
+  const msgs = document.getElementById('acMessages');
+  const wrap = document.createElement('div');
+  wrap.className = 'ac-msg bot';
+  const fmt = text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  wrap.innerHTML = `<div class="ac-msg-av">⬡</div><div class="ac-msg-body"><div class="ac-bubble">${fmt}</div><div class="ac-msg-time">${acTime()}</div></div>`;
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+  acHistory.push({ role:'assistant', content: text });
+}
+
+function acAddUserMsg(text) {
+  const msgs = document.getElementById('acMessages');
+  const wrap = document.createElement('div');
+  wrap.className = 'ac-msg user';
+  wrap.innerHTML = `<div class="ac-msg-av">↑</div><div class="ac-msg-body"><div class="ac-bubble">${text}</div><div class="ac-msg-time">${acTime()}</div></div>`;
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function acShowTyping(delay, cb) {
+  const msgs = document.getElementById('acMessages');
+  const t = document.createElement('div');
+  t.className = 'ac-typing'; t.id = 'acTyping';
+  t.innerHTML = `<div class="ac-msg-av">⬡</div><div class="ac-typing-dots"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(t); msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(() => { const el=document.getElementById('acTyping'); if(el) el.remove(); cb(); }, delay);
+}
+
+async function acSend() {
+  const input = document.getElementById('acInput');
+  const text = input.value.trim();
+  if (!text || acTyping) return;
+  acAddUserMsg(text);
+  acHistory.push({ role:'user', content: text });
+  input.value = ''; acResize(input);
+  acTyping = true;
+  document.getElementById('acSend').disabled = true;
+  input.disabled = true;
+  acShowTyping(800, async () => {
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, system:APEX_SITE_CONTEXT, messages:acHistory })
+      });
+      const data = await res.json();
+      const reply = data.error ? "Something went wrong — email us at itz.silven@apexstandard.biz and we'll get back to you within 24 hours." : data.content.map(b=>b.text||'').join('');
+      acAddBotFree(reply);
+    } catch(e) {
+      acAddBotFree("Couldn't connect right now. Reach us directly at itz.silven@apexstandard.biz — we reply within 24 hours.");
+    }
+    acTyping = false;
+    document.getElementById('acSend').disabled = false;
+    input.disabled = false; input.focus();
+  });
+}
+
+function acHandleKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();acSend();} }
+function acResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,90)+'px'; }
+function acTime() { return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
+</script>
+<!-- ================================================
+     END APEX STANDARD CHATBOT
+     ================================================ -->
 </body>
 </html>
