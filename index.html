@@ -1409,12 +1409,12 @@ async function acSend() {
   input.disabled = true;
   acShowTyping(800, async () => {
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
+  const res = await fetch('https://apex-chat.itz-silven-985.workers.dev', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, system:APEX_SITE_CONTEXT, messages:acHistory })
+        body: JSON.stringify({ body: JSON.stringify({ messages: [{role:'system', content: APEX_SITE_CONTEXT}, ...acHistory] }), max_tokens:1000, system:APEX_SITE_CONTEXT, messages:acHistory })
       });
       const data = await res.json();
-      const reply = data.error ? "Something went wrong — email us at itz.silven@apexstandard.biz and we'll get back to you within 24 hours." : data.content.map(b=>b.text||'').join('');
+      const reply = data.reply || "Something went wrong — email us at itz.silven@apexstandard.biz and we'll get back to you within 24 hours.";
       acAddBotFree(reply);
     } catch(e) {
       acAddBotFree("Couldn't connect right now. Reach us directly at itz.silven@apexstandard.biz — we reply within 24 hours.");
