@@ -541,7 +541,7 @@ footer p { font-size: 0.72rem; color: var(--muted); letter-spacing: 1px; }
     <a href="#pricing">Pricing</a>
     <a href="#process">Process</a>
     <a href="#contact">Contact</a>
-    <a href="#" class="nav-btn" onclick="openModal(event)">Get Started</a>
+    <a href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" class="nav-btn">Get Started</a>
   </div>
 </nav>
 
@@ -559,7 +559,7 @@ footer p { font-size: 0.72rem; color: var(--muted); letter-spacing: 1px; }
     </h1>
     <p class="hero-sub" id="heroSub">We build AI systems that capture leads 24/7, collect Google reviews automatically, and keep your business active on social media — all on autopilot. Results in 30 days or you don't pay.</p>
     <div class="hero-actions" id="heroActions">
-      <a href="#" class="btn-primary" onclick="openModal(event)">Book Free Strategy Call</a>
+      <a href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" class="btn-primary">Book Free Strategy Call</a>
       <a href="#services" class="btn-ghost">See What We Do →</a>
     </div>
     <div class="hero-stats" id="heroStats">
@@ -678,7 +678,7 @@ footer p { font-size: 0.72rem; color: var(--muted); letter-spacing: 1px; }
       <div class="bundle-item">Review Management ($350 value)</div>
       <div class="bundle-item">Social Automation ($500 value)</div>
     </div>
-    <a href="#" class="btn-primary" onclick="openModal(event)" style="font-size:0.88rem;">Get the Full Stack for $1,000/mo ▲</a>
+    <a href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" class="btn-primary" style="font-size:0.88rem;">Get the Full Stack for $1,000/mo ▲</a>
     <p style="margin-top:1.2rem;font-size:0.75rem;color:var(--muted);letter-spacing:1px;">30-day results guarantee. Cancel anytime. No long-term contracts.</p>
   </div>
 </section>
@@ -769,8 +769,8 @@ footer p { font-size: 0.72rem; color: var(--muted); letter-spacing: 1px; }
       </select>
     </div>
     <div class="field"><label>Tell Us About Your Business</label><textarea placeholder="What type of business do you run, where are you located, and what results are you hoping for?"></textarea></div>
-    <button class="btn-primary" style="border:none;width:100%;font-size:0.9rem;padding:1.1rem;cursor:none;" onclick="alert('Thanks! We\'ll be in touch at itz.silven@apexstandard.biz within 24 hours.')">
-      Send My Free Strategy Request ▲
+    <button class="btn-primary" style="border:none;width:100%;font-size:0.9rem;padding:1.1rem;cursor:none;" onclick="window.open('https://calendly.com/itz-silven-apexstandard/30min','_blank')">
+      Book My Free Strategy Call ▲
     </button>
   </div>
 </section>
@@ -781,7 +781,7 @@ footer p { font-size: 0.72rem; color: var(--muted); letter-spacing: 1px; }
     <div class="section-tag anim-fade" style="justify-content:center;">Ready to Grow?</div>
     <h2 class="section-title anim-slide">Every Day Without This System Is <span class="highlight">Revenue Lost</span></h2>
     <p class="anim-fade">While you're reading this, someone just visited your website and left without booking. Let's fix that — starting today.</p>
-    <a href="#" class="btn-primary" onclick="openModal(event)" style="font-size:0.95rem;padding:1.2rem 3.5rem;">Book Free Strategy Call ▲</a>
+    <a href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" class="btn-primary" style="font-size:0.95rem;padding:1.2rem 3.5rem;">Book Free Strategy Call ▲</a>
   </div>
 </section>
 
@@ -864,6 +864,7 @@ function submitModal() {
   if(!n||!em||!p){alert('Please fill in all fields.');return;}
   document.getElementById('modalForm').style.display='none';
   document.getElementById('modalSuccess').style.display='block';
+  setTimeout(() => { window.open('https://calendly.com/itz-silven-apexstandard/30min','_blank'); }, 1000);
 }
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
 </script>
