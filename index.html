@@ -6,7 +6,6 @@
 <title>Apex Standard — Never Miss A Booking Again</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,200;0,300;0,400;0,600;1,200&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -506,9 +505,6 @@ footer p { font-size: 0.72rem; color: var(--muted); letter-spacing: 1px; }
 </head>
 <body>
 
-<!-- LIQUID MARBLE BACKGROUND -->
-<canvas id="marbleCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.18;"></canvas>
-
 <div class="scroll-progress" id="scrollProgress"></div>
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
@@ -803,207 +799,32 @@ footer p { font-size: 0.72rem; color: var(--muted); letter-spacing: 1px; }
 // PAGE TRANSITION
 window.addEventListener('load', () => {
   gsap.to('#pageTransition', { scaleY: 0, duration: 0.8, ease: 'power3.inOut', transformOrigin: 'bottom', delay: 0.1 });
-  initHeroAnims();
+  // Fade in nav
+  gsap.to('#navLogo', { opacity: 1, y: 0, duration: 0.6, delay: 0.7, ease: 'power2.out' });
+  gsap.to('#navLinks a', { opacity: 1, y: 0, duration: 0.4, stagger: 0.07, delay: 0.8, ease: 'power2.out' });
+  // Fade in hero content
+  gsap.to(['#heroBadge','#heroSub','#heroActions','#heroStats'], { opacity: 1, y: 0, duration: 0.7, stagger: 0.1, delay: 0.9, ease: 'power2.out' });
 });
 
-gsap.registerPlugin(ScrollTrigger);
-
-// ===================== HERO ANIMATIONS =====================
-function initHeroAnims() {
-  const tl = gsap.timeline({ delay: 0.5 });
-  tl.to('#heroBadge', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' });
-  tl.to(['#heroSub', '#heroActions', '#heroStats'], { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, ease: 'power2.out' }, '-=0.2');
-  tl.to('#navLogo', { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.6');
-  tl.to('#navLinks a', { opacity: 1, y: 0, duration: 0.4, stagger: 0.07, ease: 'power2.out' }, '-=0.4');
-}
-
-// ===================== WORD-BY-WORD TEXT REVEAL =====================
-function splitWords(el) {
-  const text = el.innerHTML;
-  const words = text.split(' ');
-  el.innerHTML = words.map(w => `<span class="word-wrap" style="display:inline-block;overflow:hidden;vertical-align:bottom;"><span class="word-inner" style="display:inline-block;">${w}</span></span>`).join(' ');
-  return el.querySelectorAll('.word-inner');
-}
-
-document.querySelectorAll('.section-title').forEach(el => {
-  const words = splitWords(el);
-  gsap.from(words, {
-    scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
-    y: '100%', opacity: 0, duration: 0.7, stagger: 0.06, ease: 'power3.out'
-  });
-});
-
-// ===================== FADE UP =====================
-gsap.utils.toArray('.anim-fade').forEach(el => {
-  gsap.from(el, {
-    scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
-    opacity: 0, y: 40, duration: 0.8, ease: 'power2.out'
-  });
-});
-
-// ===================== SLIDE IN FROM SIDES =====================
-gsap.utils.toArray('.services-intro > div:first-child').forEach(el => {
-  gsap.from(el, {
-    scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
-    opacity: 0, x: -60, duration: 1, ease: 'power3.out'
-  });
-});
-gsap.utils.toArray('.services-intro > p').forEach(el => {
-  gsap.from(el, {
-    scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
-    opacity: 0, x: 60, duration: 1, ease: 'power3.out'
-  });
-});
-gsap.utils.toArray('.guarantee-visual').forEach(el => {
-  gsap.from(el, {
-    scrollTrigger: { trigger: el, start: 'top 80%', toggleActions: 'play none none none' },
-    opacity: 0, x: -80, scale: 0.85, duration: 1.1, ease: 'back.out(1.4)'
-  });
-});
-gsap.utils.toArray('.guarantee-text').forEach(el => {
-  gsap.from(el, {
-    scrollTrigger: { trigger: el, start: 'top 80%', toggleActions: 'play none none none' },
-    opacity: 0, x: 80, duration: 1.1, ease: 'power3.out'
-  });
-});
-
-// ===================== SERVICE CARDS STAGGER =====================
-gsap.utils.toArray('.anim-card').forEach((el, i) => {
-  gsap.from(el, {
-    scrollTrigger: { trigger: el, start: 'top 92%', toggleActions: 'play none none none' },
-    opacity: 0, y: 60, duration: 0.8, delay: (i % 3) * 0.15, ease: 'power3.out'
-  });
-});
-
-// ===================== COUNT-UP NUMBERS =====================
-function countUp(el, target, duration, suffix) {
-  let start = 0;
-  const step = target / (duration * 60);
-  function tick() {
-    start += step;
-    if (start >= target) { el.textContent = target + suffix; return; }
-    el.textContent = Math.floor(start) + suffix;
-    requestAnimationFrame(tick);
-  }
-  tick();
-}
-
-ScrollTrigger.create({
-  trigger: '#heroStats',
-  start: 'top 90%',
-  once: true,
-  onEnter: () => {
-    document.querySelectorAll('.stat-num[data-count]').forEach(el => {
-      countUp(el, parseInt(el.dataset.count), 1.5, el.dataset.suffix || '');
-    });
-  }
-});
-
-// Stat numbers in hero
-document.querySelectorAll('#heroStats .stat-num').forEach(el => {
-  const text = el.textContent.trim();
-  if (text === '30') { el.dataset.count = '30'; el.dataset.suffix = ''; }
-  if (text === '3')  { el.dataset.count = '3';  el.dataset.suffix = ''; }
-});
-
-// ===================== PROCESS STEPS STAGGER =====================
-gsap.utils.toArray('.anim-step').forEach((el, i) => {
-  gsap.from(el, {
-    scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
-    opacity: 0, y: 50, duration: 0.7, delay: i * 0.15, ease: 'power2.out'
-  });
-});
-
-ScrollTrigger.create({
-  trigger: '.process-steps',
-  start: 'top 70%',
-  onEnter: () => document.getElementById('processLineFill').classList.add('active')
-});
-
-// ===================== PARALLAX LAYERS =====================
-gsap.to('.hero-glow', {
-  scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true },
-  y: -120, ease: 'none'
-});
-gsap.to('.hero-shape-1', {
-  scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1.2 },
-  y: -80, rotate: 25, ease: 'none'
-});
-gsap.to('.hero-shape-2', {
-  scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1.8 },
-  y: -50, ease: 'none'
-});
-gsap.to('.hero-grid', {
-  scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 0.5 },
-  y: 60, ease: 'none'
-});
-
-// Section background parallax
-gsap.utils.toArray('section').forEach(sec => {
-  gsap.to(sec, {
-    scrollTrigger: { trigger: sec, start: 'top bottom', end: 'bottom top', scrub: 0.8 },
-    backgroundPositionY: '30%',
-    ease: 'none'
-  });
-});
-
-// ===================== LIQUID SECTION DIVIDER REVEAL =====================
-gsap.utils.toArray('.section-divider').forEach(el => {
-  gsap.from(el, {
-    scrollTrigger: { trigger: el, start: 'top 90%', toggleActions: 'play none none none' },
-    scaleX: 0, transformOrigin: 'left center', duration: 1.2, ease: 'power3.out'
-  });
-});
-
-// ===================== BUNDLE BOX ENTRANCE =====================
-gsap.from('.bundle-box', {
-  scrollTrigger: { trigger: '.bundle-box', start: 'top 85%', toggleActions: 'play none none none' },
-  opacity: 0, y: 50, scale: 0.96, duration: 1, ease: 'back.out(1.3)'
-});
-
-// ===================== GUARANTEE BADGE SPIN-IN =====================
-gsap.from('.guarantee-badge-wrap', {
-  scrollTrigger: { trigger: '.guarantee-badge-wrap', start: 'top 80%', toggleActions: 'play none none none' },
-  opacity: 0, scale: 0.6, rotate: -15, duration: 1.2, ease: 'back.out(1.7)'
-});
-
-// ===================== CONTACT FORM SLIDE UP =====================
-gsap.from('.contact-form', {
-  scrollTrigger: { trigger: '.contact-form', start: 'top 85%', toggleActions: 'play none none none' },
-  opacity: 0, y: 60, duration: 1, ease: 'power3.out'
-});
-gsap.from('.contact-info', {
-  scrollTrigger: { trigger: '.contact-info', start: 'top 85%', toggleActions: 'play none none none' },
-  opacity: 0, x: -50, duration: 1, ease: 'power3.out'
-});
-
-// ===================== CTA SECTION =====================
-gsap.from('.cta-section .section-tag, .cta-section p, .cta-section .btn-primary', {
-  scrollTrigger: { trigger: '.cta-section', start: 'top 80%', toggleActions: 'play none none none' },
-  opacity: 0, y: 40, duration: 0.8, stagger: 0.15, ease: 'power2.out'
-});
-
-// ===================== FOOTER SLIDE UP =====================
-gsap.from('footer > *', {
-  scrollTrigger: { trigger: 'footer', start: 'top 95%', toggleActions: 'play none none none' },
-  opacity: 0, y: 20, duration: 0.6, stagger: 0.1, ease: 'power2.out'
-});
-
-// ===================== TICKER SPEED ON SCROLL =====================
-let tickerSpeed = 25;
-window.addEventListener('scroll', () => {
-  const speed = Math.max(8, 25 - window.scrollY * 0.02);
-  document.querySelector('.ticker-track').style.animationDuration = speed + 's';
-});
-
-// ===================== SCROLL EVENTS =====================
+// SCROLL PROGRESS + NAV
 window.addEventListener('scroll', () => {
   const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
   document.getElementById('scrollProgress').style.width = pct + '%';
   document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 60);
 });
 
-// ===================== CURSOR =====================
+// PROCESS LINE
+window.addEventListener('scroll', () => {
+  const el = document.querySelector('.process-steps');
+  if (el) {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.7) {
+      document.getElementById('processLineFill').classList.add('active');
+    }
+  }
+});
+
+// CURSOR
 const cursor = document.getElementById('cursor');
 const ring = document.getElementById('cursorRing');
 let mx = 0, my = 0, rx = 0, ry = 0;
@@ -1022,7 +843,7 @@ document.querySelectorAll('a, button, input, select, textarea, .service-card').f
   el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); ring.classList.remove('hover'); });
 });
 
-// ===================== CARD SPOTLIGHT =====================
+// CARD SPOTLIGHT
 document.querySelectorAll('.service-card').forEach(card => {
   card.addEventListener('mousemove', e => {
     const r = card.getBoundingClientRect();
@@ -1031,7 +852,7 @@ document.querySelectorAll('.service-card').forEach(card => {
   });
 });
 
-// ===================== MODAL =====================
+// MODAL
 function openModal(e) { if(e) e.preventDefault(); document.getElementById('modalOverlay').classList.add('open'); document.body.style.overflow='hidden'; }
 function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); document.body.style.overflow=''; }
 function handleOverlayClick(e) { if(e.target===document.getElementById('modalOverlay')) closeModal(); }
@@ -1044,57 +865,6 @@ function submitModal() {
   document.getElementById('modalSuccess').style.display='block';
 }
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
-
-// ===================== LIQUID MARBLE BACKGROUND =====================
-(function() {
-  const canvas = document.getElementById('marbleCanvas');
-  const ctx = canvas.getContext('2d');
-  let W, H, scrollY = 0, time = 0;
-
-  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-  resize();
-  window.addEventListener('resize', resize);
-  window.addEventListener('scroll', () => { scrollY = window.scrollY; });
-
-  function noise(x, y, t) {
-    return (
-      Math.sin(x * 1.2 + t * 0.4 + Math.cos(y * 0.8 + t * 0.3)) * 0.4 +
-      Math.sin(y * 0.9 - t * 0.35 + Math.sin(x * 0.7 + t * 0.2)) * 0.3 +
-      Math.cos((x + y) * 0.6 + t * 0.25 + Math.sin(x * 0.5 - y * 0.4)) * 0.3
-    );
-  }
-
-  function drawMarble() {
-    ctx.clearRect(0, 0, W, H);
-    const t = time + scrollY * 0.0012 * 2;
-    const step = 6;
-    for (let x = 0; x < W; x += step) {
-      for (let y = 0; y < H; y += step) {
-        const nx = x / W * 3.5, ny = y / H * 3.5;
-        const n1 = noise(nx, ny, t);
-        const n2 = noise(nx * 2.1 + 1.3, ny * 1.8 - 0.7, t * 1.4);
-        const n3 = noise(nx * 0.5 - 0.4, ny * 2.4 + 1.1, t * 0.7);
-        const marble = Math.sin((nx + ny) * 2.5 + n1 * 2.2 + n2 * 1.4 + n3 * 0.8 + t * 0.15) * 0.5 + 0.5;
-        let r, g, b, a;
-        if (marble < 0.3) {
-          const v = marble / 0.3;
-          r = Math.floor(8 + v * 20); g = Math.floor(8 + v * 22); b = Math.floor(8 + v * 25); a = 0.85;
-        } else if (marble < 0.6) {
-          const v = (marble - 0.3) / 0.3;
-          r = Math.floor(28 + v * 90); g = Math.floor(30 + v * 95); b = Math.floor(32 + v * 100); a = 0.6;
-        } else {
-          const v = (marble - 0.6) / 0.4;
-          r = Math.floor(118 + v * 100); g = Math.floor(122 + v * 105); b = Math.floor(130 + v * 110); a = 0.5 + v * 0.3;
-        }
-        ctx.fillStyle = `rgba(${r},${g},${b},${a})`;
-        ctx.fillRect(x, y, step, step);
-      }
-    }
-    time += 0.004;
-    requestAnimationFrame(drawMarble);
-  }
-  drawMarble();
-})();
 </script>
 </body>
 </html>
