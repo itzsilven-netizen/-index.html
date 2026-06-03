@@ -166,13 +166,13 @@ nav.scrolled {
 }
 .hero-badge::before { content: '▲'; font-size: 0.5rem; color: var(--silver); }
 
-.split-line { overflow: hidden; }
+.split-line { overflow: visible; }
 .split-line-inner { display: block; }
 
 .hero h1 {
   font-family: 'Rajdhani', sans-serif;
-  font-size: clamp(3.5rem, 9vw, 8.5rem);
-  font-weight: 700; line-height: 0.9;
+  font-size: clamp(2.8rem, 6.5vw, 6.5rem);
+  font-weight: 700; line-height: 0.95;
   letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2rem;
 }
 .hero h1 .chrome-text {
@@ -376,6 +376,116 @@ footer p { font-size: 0.72rem; color: var(--muted); letter-spacing: 1px; }
 .modal-redirect { display: inline-block; padding: 0.9rem 2.2rem; background: linear-gradient(135deg, var(--silver-light), var(--chrome)); color: var(--black); font-family: 'Rajdhani', sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: opacity 0.2s; }
 .modal-redirect:hover { opacity: 0.85; }
 
+/* WATER SCROLL INDICATOR */
+.scroll-indicator {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  opacity: 0;
+  z-index: 10;
+  animation: fadeInScroll 1s ease 2.5s forwards;
+}
+@keyframes fadeInScroll { to { opacity: 1; } }
+
+.scroll-wheel-wrap {
+  position: relative;
+  width: 28px;
+  height: 46px;
+}
+
+/* Outer mouse shell */
+.scroll-wheel-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1.5px solid rgba(200,205,212,0.25);
+  border-radius: 14px;
+}
+
+/* Water fill rising from bottom */
+.water-fill {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 0%;
+  border-radius: 0 0 12px 12px;
+  background: linear-gradient(180deg, rgba(126,184,212,0.15) 0%, rgba(126,184,212,0.35) 100%);
+  animation: waterRise 2.2s ease-in-out infinite;
+  overflow: hidden;
+}
+/* ripple surface on top of water */
+.water-fill::after {
+  content: '';
+  position: absolute;
+  top: -3px; left: -20%; right: -20%;
+  height: 6px;
+  background: radial-gradient(ellipse at 50% 100%, rgba(126,184,212,0.5) 0%, transparent 70%);
+  animation: waterWave 1.1s ease-in-out infinite alternate;
+}
+@keyframes waterRise {
+  0%   { height: 0%;   border-radius: 0 0 12px 12px; opacity: 0; }
+  15%  { opacity: 1; }
+  50%  { height: 65%;  border-radius: 2px 2px 12px 12px; }
+  85%  { opacity: 1; }
+  100% { height: 0%;   border-radius: 0 0 12px 12px; opacity: 0; }
+}
+@keyframes waterWave {
+  from { transform: translateX(-8%) scaleY(1); }
+  to   { transform: translateX(8%)  scaleY(1.4); }
+}
+
+/* Dot inside wheel that sinks with water */
+.scroll-dot {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(200,205,212,0.7);
+  animation: dotSink 2.2s ease-in-out infinite;
+}
+@keyframes dotSink {
+  0%   { top: 6px;  opacity: 1; }
+  60%  { top: 28px; opacity: 0.3; }
+  100% { top: 36px; opacity: 0; }
+}
+
+/* Ripple rings below wheel */
+.ripple-rings {
+  position: relative;
+  width: 28px;
+  height: 12px;
+}
+.ripple-ring {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  border: 1px solid rgba(126,184,212,0.4);
+  animation: rippleOut 2.2s ease-out infinite;
+}
+.ripple-ring:nth-child(2) { animation-delay: 0.3s; }
+.ripple-ring:nth-child(3) { animation-delay: 0.6s; }
+@keyframes rippleOut {
+  0%   { width: 4px;  height: 4px;  opacity: 0.6; border-color: rgba(126,184,212,0.5); }
+  100% { width: 28px; height: 10px; opacity: 0;   border-color: rgba(126,184,212,0); transform: translateX(-50%) scaleY(0.4); }
+}
+
+.scroll-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(160,168,176,0.4);
+}
+
 @media (max-width: 1024px) {
   nav { padding: 1.2rem 2rem; }
   .nav-links { display: none; }
@@ -395,6 +505,9 @@ footer p { font-size: 0.72rem; color: var(--muted); letter-spacing: 1px; }
 </style>
 </head>
 <body>
+
+<!-- LIQUID MARBLE BACKGROUND -->
+<canvas id="marbleCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.18;"></canvas>
 
 <div class="scroll-progress" id="scrollProgress"></div>
 <div class="cursor" id="cursor"></div>
@@ -445,8 +558,8 @@ footer p { font-size: 0.72rem; color: var(--muted); letter-spacing: 1px; }
   <div class="hero-content">
     <div class="hero-badge" id="heroBadge">AI Systems for Local Businesses</div>
     <h1 id="heroTitle">
-      <span class="chrome-text split-line"><span class="split-line-inner">Never Miss</span></span>
-      <span class="outline-text split-line"><span class="split-line-inner">A Booking Again</span></span>
+      <span class="chrome-text">Never Miss A</span><br>
+      <span class="chrome-text">Booking Again</span>
     </h1>
     <p class="hero-sub" id="heroSub">We build AI systems that capture leads 24/7, collect Google reviews automatically, and keep your business active on social media — all on autopilot. Results in 30 days or you don't pay.</p>
     <div class="hero-actions" id="heroActions">
@@ -460,6 +573,21 @@ footer p { font-size: 0.72rem; color: var(--muted); letter-spacing: 1px; }
       <div class="stat"><div class="stat-num">$0</div><div class="stat-label">If No Results</div></div>
     </div>
   </div>
+
+  <!-- WATER SCROLL INDICATOR -->
+  <div class="scroll-indicator">
+    <div class="scroll-wheel-wrap">
+      <div class="water-fill"></div>
+      <div class="scroll-dot"></div>
+    </div>
+    <div class="ripple-rings">
+      <div class="ripple-ring"></div>
+      <div class="ripple-ring"></div>
+      <div class="ripple-ring"></div>
+    </div>
+    <div class="scroll-label">Scroll</div>
+  </div>
+
 </section>
 
 <!-- TICKER -->
@@ -680,41 +808,202 @@ window.addEventListener('load', () => {
 
 gsap.registerPlugin(ScrollTrigger);
 
+// ===================== HERO ANIMATIONS =====================
 function initHeroAnims() {
   const tl = gsap.timeline({ delay: 0.5 });
   tl.to('#heroBadge', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' });
-  tl.from('.split-line-inner', { y: '110%', duration: 0.9, stagger: 0.12, ease: 'power4.out' }, '-=0.3');
-  tl.to(['#heroSub', '#heroActions', '#heroStats'], { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, ease: 'power2.out' }, '-=0.4');
+  tl.to(['#heroSub', '#heroActions', '#heroStats'], { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, ease: 'power2.out' }, '-=0.2');
   tl.to('#navLogo', { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.6');
   tl.to('#navLinks a', { opacity: 1, y: 0, duration: 0.4, stagger: 0.07, ease: 'power2.out' }, '-=0.4');
 }
 
+// ===================== WORD-BY-WORD TEXT REVEAL =====================
+function splitWords(el) {
+  const text = el.innerHTML;
+  const words = text.split(' ');
+  el.innerHTML = words.map(w => `<span class="word-wrap" style="display:inline-block;overflow:hidden;vertical-align:bottom;"><span class="word-inner" style="display:inline-block;">${w}</span></span>`).join(' ');
+  return el.querySelectorAll('.word-inner');
+}
+
+document.querySelectorAll('.section-title').forEach(el => {
+  const words = splitWords(el);
+  gsap.from(words, {
+    scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
+    y: '100%', opacity: 0, duration: 0.7, stagger: 0.06, ease: 'power3.out'
+  });
+});
+
+// ===================== FADE UP =====================
 gsap.utils.toArray('.anim-fade').forEach(el => {
-  gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }, opacity: 0, y: 30, duration: 0.7, ease: 'power2.out' });
+  gsap.from(el, {
+    scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
+    opacity: 0, y: 40, duration: 0.8, ease: 'power2.out'
+  });
 });
-gsap.utils.toArray('.anim-slide').forEach(el => {
-  gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }, opacity: 0, y: 50, duration: 0.9, ease: 'power3.out' });
+
+// ===================== SLIDE IN FROM SIDES =====================
+gsap.utils.toArray('.services-intro > div:first-child').forEach(el => {
+  gsap.from(el, {
+    scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
+    opacity: 0, x: -60, duration: 1, ease: 'power3.out'
+  });
 });
+gsap.utils.toArray('.services-intro > p').forEach(el => {
+  gsap.from(el, {
+    scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
+    opacity: 0, x: 60, duration: 1, ease: 'power3.out'
+  });
+});
+gsap.utils.toArray('.guarantee-visual').forEach(el => {
+  gsap.from(el, {
+    scrollTrigger: { trigger: el, start: 'top 80%', toggleActions: 'play none none none' },
+    opacity: 0, x: -80, scale: 0.85, duration: 1.1, ease: 'back.out(1.4)'
+  });
+});
+gsap.utils.toArray('.guarantee-text').forEach(el => {
+  gsap.from(el, {
+    scrollTrigger: { trigger: el, start: 'top 80%', toggleActions: 'play none none none' },
+    opacity: 0, x: 80, duration: 1.1, ease: 'power3.out'
+  });
+});
+
+// ===================== SERVICE CARDS STAGGER =====================
 gsap.utils.toArray('.anim-card').forEach((el, i) => {
-  gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 90%', toggleActions: 'play none none none' }, opacity: 0, y: 40, duration: 0.7, delay: (i % 3) * 0.1, ease: 'power2.out' });
+  gsap.from(el, {
+    scrollTrigger: { trigger: el, start: 'top 92%', toggleActions: 'play none none none' },
+    opacity: 0, y: 60, duration: 0.8, delay: (i % 3) * 0.15, ease: 'power3.out'
+  });
 });
-gsap.utils.toArray('.anim-scale').forEach(el => {
-  gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 80%', toggleActions: 'play none none none' }, opacity: 0, scale: 0.85, duration: 0.9, ease: 'back.out(1.4)' });
+
+// ===================== COUNT-UP NUMBERS =====================
+function countUp(el, target, duration, suffix) {
+  let start = 0;
+  const step = target / (duration * 60);
+  function tick() {
+    start += step;
+    if (start >= target) { el.textContent = target + suffix; return; }
+    el.textContent = Math.floor(start) + suffix;
+    requestAnimationFrame(tick);
+  }
+  tick();
+}
+
+ScrollTrigger.create({
+  trigger: '#heroStats',
+  start: 'top 90%',
+  once: true,
+  onEnter: () => {
+    document.querySelectorAll('.stat-num[data-count]').forEach(el => {
+      countUp(el, parseInt(el.dataset.count), 1.5, el.dataset.suffix || '');
+    });
+  }
 });
+
+// Stat numbers in hero
+document.querySelectorAll('#heroStats .stat-num').forEach(el => {
+  const text = el.textContent.trim();
+  if (text === '30') { el.dataset.count = '30'; el.dataset.suffix = ''; }
+  if (text === '3')  { el.dataset.count = '3';  el.dataset.suffix = ''; }
+});
+
+// ===================== PROCESS STEPS STAGGER =====================
 gsap.utils.toArray('.anim-step').forEach((el, i) => {
-  gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }, opacity: 0, y: 30, duration: 0.6, delay: i * 0.12, ease: 'power2.out' });
+  gsap.from(el, {
+    scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
+    opacity: 0, y: 50, duration: 0.7, delay: i * 0.15, ease: 'power2.out'
+  });
 });
 
-ScrollTrigger.create({ trigger: '.process-steps', start: 'top 70%', onEnter: () => document.getElementById('processLineFill').classList.add('active') });
+ScrollTrigger.create({
+  trigger: '.process-steps',
+  start: 'top 70%',
+  onEnter: () => document.getElementById('processLineFill').classList.add('active')
+});
 
-// SCROLL EVENTS
+// ===================== PARALLAX LAYERS =====================
+gsap.to('.hero-glow', {
+  scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true },
+  y: -120, ease: 'none'
+});
+gsap.to('.hero-shape-1', {
+  scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1.2 },
+  y: -80, rotate: 25, ease: 'none'
+});
+gsap.to('.hero-shape-2', {
+  scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1.8 },
+  y: -50, ease: 'none'
+});
+gsap.to('.hero-grid', {
+  scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 0.5 },
+  y: 60, ease: 'none'
+});
+
+// Section background parallax
+gsap.utils.toArray('section').forEach(sec => {
+  gsap.to(sec, {
+    scrollTrigger: { trigger: sec, start: 'top bottom', end: 'bottom top', scrub: 0.8 },
+    backgroundPositionY: '30%',
+    ease: 'none'
+  });
+});
+
+// ===================== LIQUID SECTION DIVIDER REVEAL =====================
+gsap.utils.toArray('.section-divider').forEach(el => {
+  gsap.from(el, {
+    scrollTrigger: { trigger: el, start: 'top 90%', toggleActions: 'play none none none' },
+    scaleX: 0, transformOrigin: 'left center', duration: 1.2, ease: 'power3.out'
+  });
+});
+
+// ===================== BUNDLE BOX ENTRANCE =====================
+gsap.from('.bundle-box', {
+  scrollTrigger: { trigger: '.bundle-box', start: 'top 85%', toggleActions: 'play none none none' },
+  opacity: 0, y: 50, scale: 0.96, duration: 1, ease: 'back.out(1.3)'
+});
+
+// ===================== GUARANTEE BADGE SPIN-IN =====================
+gsap.from('.guarantee-badge-wrap', {
+  scrollTrigger: { trigger: '.guarantee-badge-wrap', start: 'top 80%', toggleActions: 'play none none none' },
+  opacity: 0, scale: 0.6, rotate: -15, duration: 1.2, ease: 'back.out(1.7)'
+});
+
+// ===================== CONTACT FORM SLIDE UP =====================
+gsap.from('.contact-form', {
+  scrollTrigger: { trigger: '.contact-form', start: 'top 85%', toggleActions: 'play none none none' },
+  opacity: 0, y: 60, duration: 1, ease: 'power3.out'
+});
+gsap.from('.contact-info', {
+  scrollTrigger: { trigger: '.contact-info', start: 'top 85%', toggleActions: 'play none none none' },
+  opacity: 0, x: -50, duration: 1, ease: 'power3.out'
+});
+
+// ===================== CTA SECTION =====================
+gsap.from('.cta-section .section-tag, .cta-section p, .cta-section .btn-primary', {
+  scrollTrigger: { trigger: '.cta-section', start: 'top 80%', toggleActions: 'play none none none' },
+  opacity: 0, y: 40, duration: 0.8, stagger: 0.15, ease: 'power2.out'
+});
+
+// ===================== FOOTER SLIDE UP =====================
+gsap.from('footer > *', {
+  scrollTrigger: { trigger: 'footer', start: 'top 95%', toggleActions: 'play none none none' },
+  opacity: 0, y: 20, duration: 0.6, stagger: 0.1, ease: 'power2.out'
+});
+
+// ===================== TICKER SPEED ON SCROLL =====================
+let tickerSpeed = 25;
+window.addEventListener('scroll', () => {
+  const speed = Math.max(8, 25 - window.scrollY * 0.02);
+  document.querySelector('.ticker-track').style.animationDuration = speed + 's';
+});
+
+// ===================== SCROLL EVENTS =====================
 window.addEventListener('scroll', () => {
   const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
   document.getElementById('scrollProgress').style.width = pct + '%';
   document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 60);
 });
 
-// CURSOR
+// ===================== CURSOR =====================
 const cursor = document.getElementById('cursor');
 const ring = document.getElementById('cursorRing');
 let mx = 0, my = 0, rx = 0, ry = 0;
@@ -733,7 +1022,7 @@ document.querySelectorAll('a, button, input, select, textarea, .service-card').f
   el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); ring.classList.remove('hover'); });
 });
 
-// CARD SPOTLIGHT
+// ===================== CARD SPOTLIGHT =====================
 document.querySelectorAll('.service-card').forEach(card => {
   card.addEventListener('mousemove', e => {
     const r = card.getBoundingClientRect();
@@ -742,7 +1031,7 @@ document.querySelectorAll('.service-card').forEach(card => {
   });
 });
 
-// MODAL
+// ===================== MODAL =====================
 function openModal(e) { if(e) e.preventDefault(); document.getElementById('modalOverlay').classList.add('open'); document.body.style.overflow='hidden'; }
 function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); document.body.style.overflow=''; }
 function handleOverlayClick(e) { if(e.target===document.getElementById('modalOverlay')) closeModal(); }
@@ -755,6 +1044,57 @@ function submitModal() {
   document.getElementById('modalSuccess').style.display='block';
 }
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+// ===================== LIQUID MARBLE BACKGROUND =====================
+(function() {
+  const canvas = document.getElementById('marbleCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, scrollY = 0, time = 0;
+
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+  window.addEventListener('scroll', () => { scrollY = window.scrollY; });
+
+  function noise(x, y, t) {
+    return (
+      Math.sin(x * 1.2 + t * 0.4 + Math.cos(y * 0.8 + t * 0.3)) * 0.4 +
+      Math.sin(y * 0.9 - t * 0.35 + Math.sin(x * 0.7 + t * 0.2)) * 0.3 +
+      Math.cos((x + y) * 0.6 + t * 0.25 + Math.sin(x * 0.5 - y * 0.4)) * 0.3
+    );
+  }
+
+  function drawMarble() {
+    ctx.clearRect(0, 0, W, H);
+    const t = time + scrollY * 0.0012 * 2;
+    const step = 6;
+    for (let x = 0; x < W; x += step) {
+      for (let y = 0; y < H; y += step) {
+        const nx = x / W * 3.5, ny = y / H * 3.5;
+        const n1 = noise(nx, ny, t);
+        const n2 = noise(nx * 2.1 + 1.3, ny * 1.8 - 0.7, t * 1.4);
+        const n3 = noise(nx * 0.5 - 0.4, ny * 2.4 + 1.1, t * 0.7);
+        const marble = Math.sin((nx + ny) * 2.5 + n1 * 2.2 + n2 * 1.4 + n3 * 0.8 + t * 0.15) * 0.5 + 0.5;
+        let r, g, b, a;
+        if (marble < 0.3) {
+          const v = marble / 0.3;
+          r = Math.floor(8 + v * 20); g = Math.floor(8 + v * 22); b = Math.floor(8 + v * 25); a = 0.85;
+        } else if (marble < 0.6) {
+          const v = (marble - 0.3) / 0.3;
+          r = Math.floor(28 + v * 90); g = Math.floor(30 + v * 95); b = Math.floor(32 + v * 100); a = 0.6;
+        } else {
+          const v = (marble - 0.6) / 0.4;
+          r = Math.floor(118 + v * 100); g = Math.floor(122 + v * 105); b = Math.floor(130 + v * 110); a = 0.5 + v * 0.3;
+        }
+        ctx.fillStyle = `rgba(${r},${g},${b},${a})`;
+        ctx.fillRect(x, y, step, step);
+      }
+    }
+    time += 0.004;
+    requestAnimationFrame(drawMarble);
+  }
+  drawMarble();
+})();
 </script>
 </body>
 </html>
