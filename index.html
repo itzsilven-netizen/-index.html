@@ -137,198 +137,253 @@ body {
 }
 
 /* ===================== SIDEBAR ===================== */
+:root { --sb-collapsed: 64px; --sb-expanded: 230px; }
+
 .sidebar {
   position: fixed;
   left: 0; top: 0; bottom: 0;
-  width: 220px;
-  background: rgba(3,5,16,0.97);
-  border-right: 1px solid rgba(0,200,220,0.15);
+  width: var(--sb-collapsed);
+  background: rgba(3,8,14,0.97);
+  border-right: 1px solid rgba(0,200,220,0.12);
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  backdrop-filter: blur(20px);
-  box-shadow: 2px 0 30px rgba(0,180,200,0.1);
+  backdrop-filter: blur(24px);
+  box-shadow: 2px 0 24px rgba(0,180,200,0.1);
+  overflow: hidden;
+  transition: width 0.32s cubic-bezier(0.4,0,0.2,1);
 }
+.sidebar:hover { width: var(--sb-expanded); }
 
+/* Push content when sidebar expands */
+body { margin-left: var(--sb-collapsed); transition: margin-left 0.32s cubic-bezier(0.4,0,0.2,1); }
+.sidebar:hover ~ * { margin-left: var(--sb-expanded); }
+
+/* LOGO AREA */
 .sidebar-header {
-  padding: 22px 18px 16px;
-  border-bottom: 1px solid var(--border);
+  padding: 20px 0 16px;
+  border-bottom: 1px solid rgba(0,200,220,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  overflow: hidden;
+  min-height: 72px;
 }
-
-.sidebar-logo {
+.sidebar-logo-icon {
+  width: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.3rem;
+  line-height: 1;
+}
+.sidebar-logo-text {
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 0;
+  opacity: 0;
+  transition: max-width 0.32s ease, opacity 0.25s ease;
+  padding: 0 16px 0 0;
+}
+.sidebar:hover .sidebar-logo-text {
+  max-width: 180px;
+  opacity: 1;
+}
+.sidebar-logo-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0;
+}
+.sidebar-logo-name {
   font-family: 'Rajdhani', sans-serif;
   font-size: 1.1rem; font-weight: 700;
-  letter-spacing: 3px; text-transform: uppercase;
-  background: linear-gradient(135deg, var(--blue-bright), var(--purple-bright), var(--cyan));
+  letter-spacing: 2px; text-transform: uppercase;
+  background: linear-gradient(135deg, #00d4f5, #a0c4ff, #00f5e5);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  display: block; margin-bottom: 4px;
+  display: block; line-height: 1.2;
+  white-space: nowrap;
 }
-
 .sidebar-tagline {
-  font-size: 0.58rem; letter-spacing: 1.5px;
-  color: rgba(0,200,220,0.5); font-family: 'Rajdhani', sans-serif;
-  text-transform: uppercase;
+  font-size: 0.55rem; letter-spacing: 1.5px;
+  color: rgba(0,200,220,0.45); font-family: 'Rajdhani', sans-serif;
+  text-transform: uppercase; white-space: nowrap; display: block;
+  margin-top: 2px;
 }
 
-.sidebar-label { display: none; }
-
+/* NAV */
 .sidebar-nav {
-  flex: 1; padding: 10px 10px;
-  display: flex; flex-direction: column; gap: 2px;
-  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+  gap: 2px;
+  overflow: hidden;
 }
-.sidebar-nav::-webkit-scrollbar { width: 2px; }
-.sidebar-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
+/* NAV SECTION LABEL */
+.sidebar-section-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.52rem; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(0,200,220,0.25);
+  padding: 10px 0 4px 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 0;
+  opacity: 0;
+  transition: max-width 0.32s ease, opacity 0.25s ease;
+}
+.sidebar:hover .sidebar-section-label {
+  max-width: 200px;
+  opacity: 1;
+}
+
+/* NAV ITEMS */
 .sidebar-item {
-  display: flex; align-items: center;
-  padding: 9px 14px; border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0;
+  height: 44px;
   text-decoration: none;
   font-family: 'Rajdhani', sans-serif;
-  font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase;
-  transition: all 0.2s; cursor: none;
+  font-size: 0.82rem; letter-spacing: 1px; text-transform: uppercase;
+  font-weight: 600;
+  transition: background 0.2s, border-color 0.2s;
+  cursor: none;
   border: 1px solid transparent;
-  background: none; width: 100%; text-align: left;
+  border-radius: 0;
+  background: none;
+  width: 100%;
   position: relative;
-  font-weight: 700;
-  white-space: normal;
-  word-break: keep-all;
-  background: linear-gradient(135deg, var(--blue-bright), var(--purple-bright), var(--cyan));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 .sidebar-item::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-  width: 2px; background: linear-gradient(180deg, var(--blue-bright), var(--cyan));
-  opacity: 0; transition: opacity 0.2s; border-radius: 2px;
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, #00d4f5, #00f5e5);
+  opacity: 0;
+  transition: opacity 0.2s;
 }
-.sidebar-item:hover { background: rgba(0,200,220,0.06); border-color: rgba(0,200,220,0.2); -webkit-text-fill-color: transparent; }
+.sidebar-item:hover { background: rgba(0,200,220,0.07); border-color: transparent; }
 .sidebar-item:hover::before { opacity: 1; }
-.sidebar-item.active { background: rgba(0,200,220,0.1); border-color: rgba(0,200,220,0.25); -webkit-text-fill-color: transparent; }
+.sidebar-item.active { background: rgba(0,200,220,0.1); }
 .sidebar-item.active::before { opacity: 1; }
-.sidebar-icon { display: none; }
-.sidebar-item-text { font-size: 0.8rem; letter-spacing: 1px; line-height: 1.3; }
 
-.sidebar-divider { height: 1px; background: var(--border); margin: 6px 10px; }
-
-.sidebar-bottom { padding: 10px; }
-
-.sidebar-cta {
-  display: block; padding: 10px;
-  background: linear-gradient(135deg, var(--blue-bright), var(--cyan));
-  color: #000; text-decoration: none; text-align: center;
-  font-family: 'Rajdhani', sans-serif; font-size: 0.72rem;
-  font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-  border-radius: 6px; transition: all 0.2s;
-  box-shadow: 0 0 16px rgba(0,200,220,0.35);
+.sidebar-item-icon {
+  width: 64px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: #4a5568;
+  transition: color 0.2s;
+  font-style: normal;
 }
-.sidebar-cta:hover { box-shadow: 0 0 28px rgba(0,200,220,0.55); transform: translateY(-1px); }
+.sidebar-item:hover .sidebar-item-icon,
+.sidebar-item.active .sidebar-item-icon { color: #6b7280; }
 
-.sidebar-status {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 10px; margin-top: 6px;
-  background: rgba(0,200,180,0.06); border-radius: 6px;
-  border: 1px solid rgba(0,200,180,0.15);
+.sidebar-item-text {
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 0;
+  opacity: 0;
+  transition: max-width 0.28s ease, opacity 0.22s ease;
+  color: #4a5568;
+  -webkit-text-fill-color: #4a5568;
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  font-size: 0.82rem; letter-spacing: 1px;
 }
-.status-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--green); box-shadow: 0 0 6px var(--green);
-  animation: statusPulse 2s infinite; flex-shrink: 0;
+.sidebar:hover .sidebar-item-text {
+  max-width: 160px;
+  opacity: 1;
 }
-@keyframes statusPulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-.status-text { font-size: 0.62rem; letter-spacing: 1px; color: var(--green); font-family: 'Rajdhani', sans-serif; text-transform: uppercase; font-weight: 600; }
+.sidebar-item:hover .sidebar-item-text {
+  color: #6b7280;
+  -webkit-text-fill-color: #6b7280;
+}
 
-.sidebar-nav {
-  flex: 1; padding: 16px 12px;
-  display: flex; flex-direction: column; gap: 3px;
-  overflow-y: auto;
+.sidebar-cta-icon {
+  width: 64px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  color: #4a5568;
 }
-.sidebar-nav::-webkit-scrollbar { width: 3px; }
-.sidebar-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-  flex: 1; padding: 16px 12px;
-  display: flex; flex-direction: column; gap: 3px;
-  overflow-y: auto;
-}
-.sidebar-nav::-webkit-scrollbar { width: 3px; }
-.sidebar-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-.sidebar-label {
+.sidebar-cta-text {
+  white-space: nowrap; overflow: hidden;
+  max-width: 0; opacity: 0;
+  transition: max-width 0.28s ease, opacity 0.22s ease;
   font-family: 'Rajdhani', sans-serif;
-  font-size: 0.58rem; letter-spacing: 2px;
-  text-transform: uppercase; color: #8ab8c8;
-  padding: 12px 12px 6px;
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: #4a5568;
+  -webkit-text-fill-color: #4a5568;
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
 }
+.sidebar:hover .sidebar-cta-text { max-width: 160px; opacity: 1; }
+.sidebar-cta:hover .sidebar-cta-text { color: #6b7280; -webkit-text-fill-color: #6b7280; }
 
-.sidebar-item {
-  display: flex; align-items: center;
-  padding: 10px 14px; border-radius: 6px;
-  text-decoration: none;
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 0.78rem; letter-spacing: 1.5px; text-transform: uppercase;
-  transition: all 0.2s; cursor: none;
-  border: 1px solid transparent;
-  background: none; width: 100%; text-align: left;
-  position: relative; overflow: hidden;
-  font-weight: 700; white-space: nowrap;
-  /* Same gradient as logo — always on */
-  background: linear-gradient(135deg, var(--blue-bright), var(--purple-bright), var(--cyan));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
-.sidebar-item::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-  width: 2px; background: linear-gradient(180deg, var(--blue-bright), var(--cyan));
-  opacity: 0; transition: opacity 0.2s;
-}
-.sidebar-item:hover {
-  background: rgba(0,200,220,0.06);
-  border-color: rgba(0,200,220,0.15);
-  -webkit-text-fill-color: transparent;
-}
-.sidebar-item:hover::before { opacity: 1; }
-.sidebar-item.active {
-  background: rgba(0,200,220,0.08);
-  border-color: rgba(0,200,220,0.2);
-  -webkit-text-fill-color: transparent;
-}
-.sidebar-item.active::before { opacity: 1; }
-.sidebar-item:hover .sidebar-item-text,
-.sidebar-item.active .sidebar-item-text { opacity: 1; }
-
-.sidebar-icon { display: none; }
-.sidebar-item-text { font-size: 0.78rem; letter-spacing: 1.5px; }
-
-.sidebar-divider { height: 1px; background: var(--border); margin: 8px 12px; }
-
-.sidebar-bottom { padding: 12px; }
-
-.sidebar-cta {
-  display: block; padding: 12px;
-  background: linear-gradient(135deg, var(--purple), var(--blue));
-  color: #fff; text-decoration: none; text-align: center;
-  font-family: 'Rajdhani', sans-serif; font-size: 0.78rem;
-  font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-  border-radius: 8px; transition: all 0.2s;
-  box-shadow: 0 0 20px rgba(100,80,255,0.3);
-}
-.sidebar-cta:hover {
-  box-shadow: 0 0 35px rgba(100,80,255,0.5);
-  transform: translateY(-1px);
-}
-
-.sidebar-status {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 12px; margin-top: 8px;
-  background: rgba(0,230,118,0.06); border-radius: 8px;
-  border: 1px solid rgba(0,230,118,0.12);
-}
-.status-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--green);
-  box-shadow: 0 0 6px var(--green);
-  animation: statusPulse 2s infinite;
+/* DIVIDER */
+.sidebar-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.05);
+  margin: 6px 10px;
   flex-shrink: 0;
 }
-@keyframes statusPulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-.status-text { font-size: 0.65rem; letter-spacing: 1px; color: var(--green-dim); font-family: 'Rajdhani', sans-serif; text-transform: uppercase; }
+
+/* BOTTOM */
+.sidebar-bottom {
+  padding: 8px 0 12px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* CTA */
+.sidebar-cta {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 40px;
+  text-decoration: none;
+  cursor: none;
+  transition: background 0.2s;
+}
+.sidebar-cta:hover { background: rgba(255,255,255,0.04); }
+
+/* STATUS */
+.sidebar-status {
+  display: flex; align-items: center; gap: 0;
+  height: 36px; cursor: default;
+}
+.status-dot {
+  width: 64px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.status-dot-inner {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #00e5c8; box-shadow: 0 0 7px #00e5c8;
+  animation: statusPulse 2s infinite;
+}
+@keyframes statusPulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+.status-text {
+  white-space: nowrap; overflow: hidden;
+  max-width: 0; opacity: 0;
+  transition: max-width 0.28s ease, opacity 0.22s ease;
+  font-size: 0.6rem; letter-spacing: 1.5px; color: #00e5c8;
+  font-family: 'Rajdhani', sans-serif; text-transform: uppercase; font-weight: 600;
+}
+.sidebar:hover .status-text { max-width: 160px; opacity: 1; }
+
+/* Update scroll progress and nav to match collapsed sidebar */
+.scroll-progress { left: var(--sb-collapsed); }
+nav { left: var(--sb-collapsed); }
 
 /* ===================== TOP NAV ===================== */
 nav {
@@ -765,25 +820,76 @@ footer p { font-size: 0.7rem; color: #8ab8c8; letter-spacing: 1px; }
 
 <!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
+
+  <!-- LOGO -->
   <div class="sidebar-header">
-    <span class="sidebar-logo">Apex Standard</span>
-    <span class="sidebar-tagline">AI Growth Systems</span>
+    <div class="sidebar-logo-row">
+      <div class="sidebar-logo-icon">◈</div>
+      <div class="sidebar-logo-text">
+        <span class="sidebar-logo-name">Apex Standard</span>
+        <span class="sidebar-tagline">AI Growth Systems</span>
+      </div>
+    </div>
   </div>
+
+  <!-- NAV -->
   <nav class="sidebar-nav">
-    <a href="#hero-section" class="sidebar-item active" onclick="smoothScroll('hero-section')"><span class="sidebar-item-text">Home</span></a>
-    <a href="#services" class="sidebar-item" onclick="smoothScroll('services')"><span class="sidebar-item-text">Services</span></a>
-    <a href="#pricing" class="sidebar-item" onclick="smoothScroll('pricing')"><span class="sidebar-item-text">Pricing</span></a>
-    <a href="#promise" class="sidebar-item" onclick="smoothScroll('promise')"><span class="sidebar-item-text">Our Promise</span></a>
-    <a href="#process" class="sidebar-item" onclick="smoothScroll('process')"><span class="sidebar-item-text">Process</span></a>
-    <a href="#contact" class="sidebar-item" onclick="smoothScroll('contact')"><span class="sidebar-item-text">Contact</span></a>
+    <div class="sidebar-section-label">Menu</div>
+
+    <a href="#hero-section" class="sidebar-item active" onclick="smoothScroll('hero-section')">
+      <span class="sidebar-item-icon">⌂</span>
+      <span class="sidebar-item-text">Home</span>
+    </a>
+    <a href="#services" class="sidebar-item" onclick="smoothScroll('services')">
+      <span class="sidebar-item-icon">◈</span>
+      <span class="sidebar-item-text">Services</span>
+    </a>
+    <a href="#pricing" class="sidebar-item" onclick="smoothScroll('pricing')">
+      <span class="sidebar-item-icon">◇</span>
+      <span class="sidebar-item-text">Pricing</span>
+    </a>
+    <a href="#process" class="sidebar-item" onclick="smoothScroll('process')">
+      <span class="sidebar-item-icon">◎</span>
+      <span class="sidebar-item-text">Process</span>
+    </a>
+    <a href="#contact" class="sidebar-item" onclick="smoothScroll('contact')">
+      <span class="sidebar-item-icon">✉</span>
+      <span class="sidebar-item-text">Contact</span>
+    </a>
   </nav>
+
+  <!-- BOTTOM -->
   <div class="sidebar-bottom">
-    <a href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" class="sidebar-cta">Book Free Call ▲</a>
+    <div class="sidebar-divider"></div>
+
+    <a href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" class="sidebar-cta">
+      <span class="sidebar-cta-icon">▲</span>
+      <span class="sidebar-cta-text">Book Free Call</span>
+    </a>
+
+    <div class="sidebar-divider"></div>
+
+    <a href="#" class="sidebar-item" onclick="return false;">
+      <span class="sidebar-item-icon">◉</span>
+      <span class="sidebar-item-text">My Account</span>
+    </a>
+    <a href="#" class="sidebar-item" onclick="return false;">
+      <span class="sidebar-item-icon">⊙</span>
+      <span class="sidebar-item-text">Settings</span>
+    </a>
+    <a href="mailto:itz.silven@apexstandard.biz" class="sidebar-item">
+      <span class="sidebar-item-icon">?</span>
+      <span class="sidebar-item-text">Help</span>
+    </a>
+
+    <div class="sidebar-divider"></div>
+
     <div class="sidebar-status">
-      <div class="status-dot"></div>
+      <div class="status-dot"><div class="status-dot-inner"></div></div>
       <span class="status-text">AI Systems Online</span>
     </div>
   </div>
+
 </div>
 
 <!-- MODAL -->
