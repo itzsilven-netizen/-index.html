@@ -9,50 +9,65 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 
-/* CUSTOM CURSOR */
+/* CUSTOM CURSOR — dot only, static ring */
 body { cursor: none; }
 a, button, input, select, textarea, [onclick] { cursor: none; }
 
 .cursor-dot {
   position: fixed;
-  width: 8px; height: 8px;
+  width: 7px; height: 7px;
   background: #ffffff;
   border-radius: 50%;
   pointer-events: none;
   z-index: 999999;
   transform: translate(-50%, -50%);
-  transition: width 0.15s, height 0.15s, background 0.15s;
-  mix-blend-mode: difference;
 }
 .cursor-ring {
   position: fixed;
-  width: 36px; height: 36px;
-  border: 1.5px solid rgba(255,255,255,0.7);
+  width: 32px; height: 32px;
+  border: 1.5px solid rgba(255,255,255,0.6);
   border-radius: 50%;
   pointer-events: none;
   z-index: 999998;
   transform: translate(-50%, -50%);
-  transition: width 0.25s cubic-bezier(0.34,1.56,0.64,1),
-              height 0.25s cubic-bezier(0.34,1.56,0.64,1),
-              border-color 0.2s,
-              background 0.2s;
-}
-.cursor-dot.hovered {
-  width: 6px; height: 6px;
-  background: #ffffff;
+  /* Ring moves INSTANTLY with cursor — no lag */
+  transition: width 0.18s ease, height 0.18s ease, border-color 0.18s ease;
 }
 .cursor-ring.hovered {
-  width: 52px; height: 52px;
-  border-color: rgba(255,255,255,0.9);
-  background: rgba(255,255,255,0.04);
+  width: 44px; height: 44px;
+  border-color: rgba(0,220,210,0.9);
 }
 .cursor-ring.clicked {
-  width: 28px; height: 28px;
-  background: rgba(255,255,255,0.08);
+  width: 22px; height: 22px;
+}
+
+/* HOVER UNDERLINE on all clickable text */
+a:not(.btn-primary):not(.btn-ghost):not(.sidebar-cta):not(.nav-btn):not(.modal-redirect) {
+  text-decoration: none;
+  position: relative;
+}
+a:not(.btn-primary):not(.btn-ghost):not(.sidebar-cta):not(.nav-btn):not(.modal-redirect)::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0;
+  width: 0; height: 1px;
+  background: linear-gradient(90deg, var(--blue-bright), var(--cyan));
+  transition: width 0.25s ease;
+}
+a:not(.btn-primary):not(.btn-ghost):not(.sidebar-cta):not(.nav-btn):not(.modal-redirect):hover::after {
+  width: 100%;
+}
+button:hover, .sidebar-item:hover .sidebar-item-text {
+  text-decoration: underline;
+  text-decoration-color: rgba(0,220,210,0.5);
+  text-underline-offset: 3px;
+}
+.sidebar-cta:hover, .btn-primary:hover, .btn-ghost:hover, .nav-btn:hover {
+  text-decoration: none;
 }
 
 :root {
-  --sidebar-w: 220px;
+  --sidebar-w: 200px;
   --bg: #010a0f;
   --card-bg: rgba(2,15,22,0.88);
   --border: rgba(0,200,220,0.12);
@@ -171,15 +186,15 @@ body {
 
 .sidebar-item {
   display: flex; align-items: center;
-  padding: 11px 14px; border-radius: 8px;
+  padding: 10px 14px; border-radius: 6px;
   color: var(--muted); text-decoration: none;
   font-family: 'Rajdhani', sans-serif;
-  font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase;
+  font-size: 0.78rem; letter-spacing: 1.5px; text-transform: uppercase;
   transition: all 0.2s; cursor: none;
   border: 1px solid transparent;
   background: none; width: 100%; text-align: left;
   position: relative; overflow: hidden;
-  font-weight: 600;
+  font-weight: 600; white-space: nowrap;
 }
 .sidebar-item::before {
   content: ''; position: absolute; left: 0; top: 0; bottom: 0;
@@ -376,7 +391,6 @@ nav.scrolled {
   display: flex; align-items: center; justify-content: center;
   opacity: 0;
 }
-
 .hero-visual {
   position: relative; width: 420px; height: 420px;
 }
@@ -455,7 +469,35 @@ nav.scrolled {
   animation: ringRotate 30s linear infinite reverse;
 }
 
-/* TICKER */
+/* HERO STAT CARDS */
+.hero-stat-card {
+  position: absolute;
+  background: rgba(2,15,20,0.7);
+  border: 1px solid rgba(0,210,210,0.2);
+  border-radius: 10px;
+  padding: 12px 18px;
+  backdrop-filter: blur(12px);
+  animation: cardFloat 5s ease-in-out infinite;
+  box-shadow: 0 4px 20px rgba(0,200,220,0.1);
+}
+.hero-stat-card:nth-child(2) { animation-delay: -1.5s; }
+.hero-stat-card:nth-child(3) { animation-delay: -3s; }
+@keyframes cardFloat {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.hsc-num {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.3rem; font-weight: 700;
+  background: linear-gradient(135deg, var(--blue-bright), var(--cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  line-height: 1; margin-bottom: 3px;
+}
+.hsc-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.6rem; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--muted);
+}
 .ticker { padding: 0.8rem 0; overflow: hidden; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: rgba(2,8,14,0.7); position: relative; z-index: 2; }
 .ticker-track { display: flex; gap: 0; white-space: nowrap; animation: ticker 28s linear infinite; }
 .ticker-item { display: inline-flex; align-items: center; gap: 2rem; padding: 0 2rem; font-family: 'Rajdhani', sans-serif; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
@@ -740,23 +782,42 @@ footer p { font-size: 0.7rem; color: var(--muted); letter-spacing: 1px; }
 
   <div class="hero-right" id="heroRight">
     <div class="hero-visual">
+      <!-- Outer rings -->
       <div class="visual-ring"></div>
       <div class="visual-ring"></div>
       <div class="visual-ring"></div>
+      <!-- SVG connecting lines -->
       <svg class="visual-lines" viewBox="0 0 420 420" fill="none">
-        <line x1="210" y1="40" x2="380" y2="210" stroke="rgba(80,160,255,0.15)" stroke-width="1"/>
-        <line x1="380" y1="210" x2="210" y2="380" stroke="rgba(155,109,255,0.15)" stroke-width="1"/>
-        <line x1="210" y1="380" x2="40" y2="210" stroke="rgba(0,229,255,0.15)" stroke-width="1"/>
-        <line x1="40" y1="210" x2="210" y2="40" stroke="rgba(0,230,118,0.15)" stroke-width="1"/>
+        <line x1="210" y1="30" x2="390" y2="210" stroke="rgba(0,200,220,0.12)" stroke-width="1"/>
+        <line x1="390" y1="210" x2="210" y2="390" stroke="rgba(0,230,200,0.1)" stroke-width="1"/>
+        <line x1="210" y1="390" x2="30" y2="210" stroke="rgba(0,200,220,0.12)" stroke-width="1"/>
+        <line x1="30" y1="210" x2="210" y2="30" stroke="rgba(0,230,200,0.1)" stroke-width="1"/>
+        <circle cx="210" cy="210" r="60" stroke="rgba(0,210,210,0.08)" stroke-width="1" stroke-dasharray="4 6"/>
       </svg>
+      <!-- Center -->
       <div class="visual-center">
         <span class="visual-icon">🤖</span>
         <span class="visual-label">AI Powered</span>
       </div>
+      <!-- Orbital nodes -->
       <div class="visual-orb">⚡</div>
       <div class="visual-orb">⭐</div>
       <div class="visual-orb">📱</div>
       <div class="visual-orb">💰</div>
+    </div>
+
+    <!-- Stats floating cards -->
+    <div class="hero-stat-card" style="top:8%;right:-10px;">
+      <div class="hsc-num">+127%</div>
+      <div class="hsc-label">Lead Increase</div>
+    </div>
+    <div class="hero-stat-card" style="bottom:15%;left:-10px;">
+      <div class="hsc-num">24/7</div>
+      <div class="hsc-label">AI Active</div>
+    </div>
+    <div class="hero-stat-card" style="bottom:38%;right:-5px;">
+      <div class="hsc-num">30 Day</div>
+      <div class="hsc-label">Guarantee</div>
     </div>
   </div>
 
@@ -1041,45 +1102,24 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); }
 (function(){
   const dot = document.getElementById('cursorDot');
   const ring = document.getElementById('cursorRing');
-  let mx = 0, my = 0, rx = 0, ry = 0;
-  let hovering = false;
 
-  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  // Both dot and ring move instantly — no lag
+  document.addEventListener('mousemove', e => {
+    dot.style.left = e.clientX + 'px';
+    dot.style.top = e.clientY + 'px';
+    ring.style.left = e.clientX + 'px';
+    ring.style.top = e.clientY + 'px';
+  });
+
   document.addEventListener('mousedown', () => ring.classList.add('clicked'));
   document.addEventListener('mouseup', () => ring.classList.remove('clicked'));
 
-  // Detect hoverable elements
-  const hoverTargets = 'a, button, input, select, textarea, .sidebar-item, .service-card, .step, [onclick]';
-  document.querySelectorAll(hoverTargets).forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      hovering = true;
-      dot.classList.add('hovered');
-      ring.classList.add('hovered');
-    });
-    el.addEventListener('mouseleave', () => {
-      hovering = false;
-      dot.classList.remove('hovered');
-      ring.classList.remove('hovered');
-    });
+  // Expand ring on hover
+  document.querySelectorAll('a, button, input, select, textarea, .sidebar-item, .service-card, [onclick]').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('hovered'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('hovered'));
   });
-
-  // Dot follows cursor exactly
-  // Ring lags behind for that smooth trail effect
-  function animateCursor() {
-    dot.style.left = mx + 'px';
-    dot.style.top = my + 'px';
-    // Smooth lag for ring
-    rx += (mx - rx) * 0.1;
-    ry += (my - ry) * 0.1;
-    ring.style.left = rx + 'px';
-    ring.style.top = ry + 'px';
-    requestAnimationFrame(animateCursor);
-  }
-  animateCursor();
 })();
-
-
-// ===================== FLOWING NEBULA BACKGROUND =====================
 (function(){
   const canvas = document.getElementById('galaxyCanvas');
   const ctx = canvas.getContext('2d');
