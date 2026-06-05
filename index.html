@@ -142,7 +142,7 @@ body {
 .sidebar {
   position: fixed;
   left: 0; top: 0; bottom: 0;
-  width: var(--sb-collapsed);
+  width: var(--sb-expanded);
   background: rgba(3,8,14,0.97);
   border-right: 1px solid rgba(0,200,220,0.12);
   z-index: 1000;
@@ -151,13 +151,63 @@ body {
   backdrop-filter: blur(24px);
   box-shadow: 2px 0 24px rgba(0,180,200,0.1);
   overflow: hidden;
-  transition: width 0.32s cubic-bezier(0.4,0,0.2,1);
 }
-.sidebar:hover { width: var(--sb-expanded); }
 
-/* Push content when sidebar expands */
-body { margin-left: var(--sb-collapsed); transition: margin-left 0.32s cubic-bezier(0.4,0,0.2,1); }
-.sidebar:hover ~ * { margin-left: var(--sb-expanded); }
+/* Push content — always expanded */
+body { margin-left: var(--sb-expanded); }
+
+.sidebar-logo-text {
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 180px;
+  opacity: 1;
+  padding: 0 16px 0 0;
+}
+
+.sidebar-item-text {
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 160px;
+  opacity: 1;
+  color: #4a5568;
+  -webkit-text-fill-color: #4a5568;
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  font-size: 0.82rem; letter-spacing: 1px;
+}
+.sidebar-item:hover .sidebar-item-text { color: #9ca3af; -webkit-text-fill-color: #9ca3af; }
+.sidebar-item.active .sidebar-item-text { color: #00d4f5; -webkit-text-fill-color: #00d4f5; }
+
+.sidebar-cta-text {
+  white-space: nowrap; overflow: hidden;
+  max-width: 160px; opacity: 1;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: #4a5568; -webkit-text-fill-color: #4a5568;
+  background: none; -webkit-background-clip: unset; background-clip: unset;
+}
+.sidebar-cta:hover .sidebar-cta-text { color: #9ca3af; -webkit-text-fill-color: #9ca3af; }
+
+.sidebar-section-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.52rem; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(0,200,220,0.25);
+  padding: 10px 0 4px 20px;
+  white-space: nowrap;
+  max-width: 200px;
+  opacity: 1;
+}
+
+.status-text {
+  white-space: nowrap; overflow: hidden;
+  max-width: 160px; opacity: 1;
+  font-size: 0.6rem; letter-spacing: 1.5px; color: #00e5c8;
+  font-family: 'Rajdhani', sans-serif; text-transform: uppercase; font-weight: 600;
+}
+
+.scroll-progress { left: var(--sb-expanded); }
+nav { left: var(--sb-expanded); }
 
 /* LOGO AREA */
 .sidebar-header {
@@ -869,15 +919,15 @@ footer p { font-size: 0.7rem; color: #8ab8c8; letter-spacing: 1px; }
 
     <div class="sidebar-divider"></div>
 
-    <a href="#" class="sidebar-item" onclick="return false;">
+    <a href="#" class="sidebar-item" onclick="openAccount(); return false;">
       <span class="sidebar-item-icon">◉</span>
       <span class="sidebar-item-text">My Account</span>
     </a>
-    <a href="#" class="sidebar-item" onclick="return false;">
+    <a href="#" class="sidebar-item" onclick="openSettings(); return false;">
       <span class="sidebar-item-icon">⊙</span>
       <span class="sidebar-item-text">Settings</span>
     </a>
-    <a href="mailto:itz.silven@apexstandard.biz" class="sidebar-item">
+    <a href="#" onclick="openHelp(); return false;" class="sidebar-item">
       <span class="sidebar-item-icon">?</span>
       <span class="sidebar-item-text">Help</span>
     </a>
@@ -1288,7 +1338,53 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); }
   });
 })();
 
-// ===================== GSAP SCROLL ANIMATIONS =====================
+// ===================== SIDEBAR BUTTONS =====================
+function smoothScroll(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+// My Account modal
+function openAccount() {
+  document.getElementById('accountModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeAccount() {
+  document.getElementById('accountModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Settings modal
+function openSettings() {
+  document.getElementById('settingsModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeSettings() {
+  document.getElementById('settingsModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Help modal
+function openHelp() {
+  document.getElementById('helpModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeHelp() {
+  document.getElementById('helpModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Submit account form
+function submitAccount() {
+  const name = document.getElementById('acc-name').value.trim();
+  const email = document.getElementById('acc-email').value.trim();
+  const phone = document.getElementById('acc-phone').value.trim();
+  if (!name || !email || !phone) { alert('Please fill in all fields.'); return; }
+  document.getElementById('accForm').style.display = 'none';
+  document.getElementById('accSuccess').style.display = 'block';
+  // Store locally
+  localStorage.setItem('apexUser', JSON.stringify({ name, email, phone }));
+}
 gsap.registerPlugin(ScrollTrigger);
 
 gsap.utils.toArray('.section-title').forEach(el => {
@@ -1646,6 +1742,86 @@ gsap.utils.toArray('.hero-stat-card').forEach((el, i) => {
   animate();
 })();
 </script>
+
+<!-- MY ACCOUNT MODAL -->
+<div class="modal-overlay" id="accountModal" onclick="if(event.target===this)closeAccount()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeAccount()">✕</button>
+    <div class="modal-badge">Create Account</div>
+    <h3>My <span>Account</span></h3>
+    <p>Enter your details to create your Apex Standard account.</p>
+    <div class="modal-form" id="accForm">
+      <input type="text" class="modal-input" id="acc-name" placeholder="Full name">
+      <input type="email" class="modal-input" id="acc-email" placeholder="Email address">
+      <input type="tel" class="modal-input" id="acc-phone" placeholder="Phone number">
+      <button class="modal-submit" onclick="submitAccount()">Create Account ▲</button>
+      <p class="modal-note">Your info is stored locally and never shared.</p>
+    </div>
+    <div class="modal-success" id="accSuccess" style="display:none;text-align:center;padding:1rem 0;">
+      <div style="font-size:2rem;margin-bottom:0.8rem">◆</div>
+      <h4 style="font-family:'Rajdhani',sans-serif;font-size:1.6rem;font-weight:700;color:var(--cyan);margin-bottom:0.8rem;">Account Created</h4>
+      <p style="font-size:0.85rem;color:var(--text);">Welcome to Apex Standard. Your account is ready.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settingsModal" onclick="if(event.target===this)closeSettings()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeSettings()">✕</button>
+    <div class="modal-badge">Settings</div>
+    <h3>Site <span>Settings</span></h3>
+    <div style="display:flex;flex-direction:column;gap:1rem;margin-top:1rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;background:rgba(0,200,220,0.04);border:1px solid var(--border);border-radius:8px;">
+        <div>
+          <div style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;color:var(--white);">Particle Effects</div>
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">Background animation</div>
+        </div>
+        <label style="position:relative;display:inline-block;width:44px;height:24px;">
+          <input type="checkbox" checked id="particleToggle" onchange="document.getElementById('galaxyCanvas').style.display=this.checked?'block':'none'" style="opacity:0;width:0;height:0;">
+          <span onclick="this.previousElementSibling.click()" style="position:absolute;cursor:pointer;inset:0;background:rgba(0,200,220,0.3);border-radius:24px;transition:0.3s;"></span>
+        </label>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;background:rgba(0,200,220,0.04);border:1px solid var(--border);border-radius:8px;">
+        <div>
+          <div style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;color:var(--white);">Contact Email</div>
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">itz.silven@apexstandard.biz</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;background:rgba(0,200,220,0.04);border:1px solid var(--border);border-radius:8px;">
+        <div>
+          <div style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;color:var(--white);">Book a Call</div>
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">calendly.com/itz-silven-apexstandard</div>
+        </div>
+        <a href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;letter-spacing:1px;color:var(--cyan);text-transform:uppercase;text-decoration:none;">Open ▲</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HELP MODAL -->
+<div class="modal-overlay" id="helpModal" onclick="if(event.target===this)closeHelp()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeHelp()">✕</button>
+    <div class="modal-badge">Help Center</div>
+    <h3>How Can We <span>Help?</span></h3>
+    <div style="display:flex;flex-direction:column;gap:0.8rem;margin-top:1rem;">
+      <div style="padding:1rem;background:rgba(0,200,220,0.04);border:1px solid var(--border);border-radius:8px;">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;color:var(--white);margin-bottom:4px;">What do you offer?</div>
+        <div style="font-size:0.8rem;color:#8ab8c8;line-height:1.6;">AI Lead Capture Chatbot ($250/mo), Review Management ($350/mo), and Social Media Automation ($500/mo). Bundle all three for $1,000/mo.</div>
+      </div>
+      <div style="padding:1rem;background:rgba(0,200,220,0.04);border:1px solid var(--border);border-radius:8px;">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;color:var(--white);margin-bottom:4px;">How fast is setup?</div>
+        <div style="font-size:0.8rem;color:#8ab8c8;line-height:1.6;">Your AI systems are live within 3 days of signing up. No technical knowledge needed from you.</div>
+      </div>
+      <div style="padding:1rem;background:rgba(0,200,220,0.04);border:1px solid var(--border);border-radius:8px;">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;color:var(--white);margin-bottom:4px;">What's the guarantee?</div>
+        <div style="font-size:0.8rem;color:#8ab8c8;line-height:1.6;">Results in 30 days or you don't pay. We keep working for free until we deliver.</div>
+      </div>
+      <a href="mailto:itz.silven@apexstandard.biz" class="modal-submit" style="text-align:center;text-decoration:none;display:block;margin-top:0.5rem;">Email Us Directly ▲</a>
+    </div>
+  </div>
+</div>
 
 <!-- Start of HubSpot Embed Code -->
 <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/246155394.js"></script>
