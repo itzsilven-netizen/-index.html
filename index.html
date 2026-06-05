@@ -10,37 +10,14 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 
-/* NORMAL CURSOR */
-body { cursor: default; }
-a, button, input, select, textarea, [onclick] { cursor: pointer; }
+/* CURSOR — always visible */
+* { cursor: default !important; }
+a, button, [onclick], .sidebar-item, .sidebar-cta { cursor: pointer !important; }
 
-.cursor-dot {
-  position: fixed;
-  width: 7px; height: 7px;
-  background: #ffffff;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 999999;
-  transform: translate(-50%, -50%);
-}
-.cursor-ring {
-  position: fixed;
-  width: 32px; height: 32px;
-  border: 1.5px solid rgba(255,255,255,0.6);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 999998;
-  transform: translate(-50%, -50%);
-  /* Ring moves INSTANTLY with cursor — no lag */
-  transition: width 0.18s ease, height 0.18s ease, border-color 0.18s ease;
-}
-.cursor-ring.hovered {
-  width: 44px; height: 44px;
-  border-color: rgba(0,220,210,0.9);
-}
-.cursor-ring.clicked {
-  width: 22px; height: 22px;
-}
+
+
+
+
 
 /* HOVER UNDERLINE on all clickable text */
 a:not(.btn-primary):not(.btn-ghost):not(.sidebar-cta):not(.nav-btn):not(.modal-redirect) {
@@ -58,11 +35,7 @@ a:not(.btn-primary):not(.btn-ghost):not(.sidebar-cta):not(.nav-btn):not(.modal-r
 a:not(.btn-primary):not(.btn-ghost):not(.sidebar-cta):not(.nav-btn):not(.modal-redirect):hover::after {
   width: 100%;
 }
-button:hover, .sidebar-item:hover .sidebar-item-text {
-  text-decoration: underline;
-  text-decoration-color: rgba(0,220,210,0.5);
-  text-underline-offset: 3px;
-}
+button:hover, .sidebar-item:hover .sidebar-item-text { white-space:nowrap; overflow:hidden; max-width:160px; opacity:1 !important; color:#5a6a7a; font-size:0.82rem; letter-spacing:1px; }
 .sidebar-cta:hover, .btn-primary:hover, .btn-ghost:hover, .nav-btn:hover {
   text-decoration: none;
 }
@@ -142,7 +115,7 @@ body {
 .sidebar {
   position: fixed;
   left: 0; top: 0; bottom: 0;
-  width: var(--sb-expanded);
+  width: 230px;
   background: rgba(3,8,14,0.97);
   border-right: 1px solid rgba(0,200,220,0.12);
   z-index: 1000;
@@ -156,58 +129,21 @@ body {
 /* Push content — always expanded */
 body { margin-left: var(--sb-expanded); }
 
-.sidebar-logo-text {
-  white-space: nowrap;
-  overflow: hidden;
-  max-width: 180px;
-  opacity: 1;
-  padding: 0 16px 0 0;
-}
+.sidebar-logo-text { white-space:nowrap; overflow:hidden; max-width:180px; opacity:1; padding:0 16px 0 0; }
 
-.sidebar-item-text {
-  white-space: nowrap;
-  overflow: hidden;
-  max-width: 160px;
-  opacity: 1;
-  color: #4a5568;
-  -webkit-text-fill-color: #4a5568;
-  background: none;
-  -webkit-background-clip: unset;
-  background-clip: unset;
-  font-size: 0.82rem; letter-spacing: 1px;
-}
-.sidebar-item:hover .sidebar-item-text { color: #9ca3af; -webkit-text-fill-color: #9ca3af; }
-.sidebar-item.active .sidebar-item-text { color: #00d4f5; -webkit-text-fill-color: #00d4f5; }
+.sidebar-item-text { white-space:nowrap; overflow:hidden; max-width:160px; opacity:1 !important; color:#5a6a7a; font-size:0.82rem; letter-spacing:1px; }
+.sidebar-item:hover .sidebar-item-text { white-space:nowrap; overflow:hidden; max-width:160px; opacity:1 !important; color:#5a6a7a; font-size:0.82rem; letter-spacing:1px; }
+.sidebar-item.active .sidebar-item-text { white-space:nowrap; overflow:hidden; max-width:160px; opacity:1 !important; color:#5a6a7a; font-size:0.82rem; letter-spacing:1px; }
 
-.sidebar-cta-text {
-  white-space: nowrap; overflow: hidden;
-  max-width: 160px; opacity: 1;
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-  color: #4a5568; -webkit-text-fill-color: #4a5568;
-  background: none; -webkit-background-clip: unset; background-clip: unset;
-}
-.sidebar-cta:hover .sidebar-cta-text { color: #9ca3af; -webkit-text-fill-color: #9ca3af; }
+.sidebar-cta-text { white-space:nowrap; overflow:hidden; max-width:160px; opacity:1 !important; font-family:"Rajdhani",sans-serif; font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#5a6a7a; }
+.sidebar-cta:hover .sidebar-cta-text { white-space:nowrap; overflow:hidden; max-width:160px; opacity:1 !important; font-family:"Rajdhani",sans-serif; font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#5a6a7a; }
 
-.sidebar-section-label {
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 0.52rem; letter-spacing: 2px; text-transform: uppercase;
-  color: rgba(0,200,220,0.25);
-  padding: 10px 0 4px 20px;
-  white-space: nowrap;
-  max-width: 200px;
-  opacity: 1;
-}
+.sidebar-section-label { font-family:"Rajdhani",sans-serif; font-size:0.52rem; letter-spacing:2px; text-transform:uppercase; color:rgba(0,200,220,0.3); padding:10px 0 4px 20px; white-space:nowrap; max-width:200px; opacity:1; }
 
-.status-text {
-  white-space: nowrap; overflow: hidden;
-  max-width: 160px; opacity: 1;
-  font-size: 0.6rem; letter-spacing: 1.5px; color: #00e5c8;
-  font-family: 'Rajdhani', sans-serif; text-transform: uppercase; font-weight: 600;
-}
+.status-text { white-space:nowrap; overflow:hidden; max-width:160px; opacity:1 !important; font-size:0.6rem; letter-spacing:1.5px; color:#00e5c8; font-family:"Rajdhani",sans-serif; text-transform:uppercase; font-weight:600; }
 
-.scroll-progress { left: var(--sb-expanded); }
-nav { left: var(--sb-expanded); }
+.scroll-progress { left: 230px; }
+nav { left: 230px; }
 
 /* LOGO AREA */
 .sidebar-header {
@@ -228,18 +164,8 @@ nav { left: var(--sb-expanded); }
   font-size: 1.3rem;
   line-height: 1;
 }
-.sidebar-logo-text {
-  white-space: nowrap;
-  overflow: hidden;
-  max-width: 0;
-  opacity: 0;
-  transition: max-width 0.32s ease, opacity 0.25s ease;
-  padding: 0 16px 0 0;
-}
-.sidebar:hover .sidebar-logo-text {
-  max-width: 180px;
-  opacity: 1;
-}
+.sidebar-logo-text { white-space:nowrap; overflow:hidden; max-width:180px; opacity:1; padding:0 16px 0 0; }
+
 .sidebar-logo-row {
   display: flex;
   align-items: center;
@@ -273,21 +199,8 @@ nav { left: var(--sb-expanded); }
 }
 
 /* NAV SECTION LABEL */
-.sidebar-section-label {
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 0.52rem; letter-spacing: 2px; text-transform: uppercase;
-  color: rgba(0,200,220,0.25);
-  padding: 10px 0 4px 20px;
-  white-space: nowrap;
-  overflow: hidden;
-  max-width: 0;
-  opacity: 0;
-  transition: max-width 0.32s ease, opacity 0.25s ease;
-}
-.sidebar:hover .sidebar-section-label {
-  max-width: 200px;
-  opacity: 1;
-}
+.sidebar-section-label { font-family:"Rajdhani",sans-serif; font-size:0.52rem; letter-spacing:2px; text-transform:uppercase; color:rgba(0,200,220,0.3); padding:10px 0 4px 20px; white-space:nowrap; max-width:200px; opacity:1; }
+
 
 /* NAV ITEMS */
 .sidebar-item {
@@ -335,27 +248,9 @@ nav { left: var(--sb-expanded); }
 .sidebar-item:hover .sidebar-item-icon,
 .sidebar-item.active .sidebar-item-icon { color: #6b7280; }
 
-.sidebar-item-text {
-  white-space: nowrap;
-  overflow: hidden;
-  max-width: 0;
-  opacity: 0;
-  transition: max-width 0.28s ease, opacity 0.22s ease;
-  color: #4a5568;
-  -webkit-text-fill-color: #4a5568;
-  background: none;
-  -webkit-background-clip: unset;
-  background-clip: unset;
-  font-size: 0.82rem; letter-spacing: 1px;
-}
-.sidebar:hover .sidebar-item-text {
-  max-width: 160px;
-  opacity: 1;
-}
-.sidebar-item:hover .sidebar-item-text {
-  color: #6b7280;
-  -webkit-text-fill-color: #6b7280;
-}
+.sidebar-item-text { white-space:nowrap; overflow:hidden; max-width:160px; opacity:1 !important; color:#5a6a7a; font-size:0.82rem; letter-spacing:1px; }
+
+.sidebar-item:hover .sidebar-item-text { white-space:nowrap; overflow:hidden; max-width:160px; opacity:1 !important; color:#5a6a7a; font-size:0.82rem; letter-spacing:1px; }
 
 .sidebar-cta-icon {
   width: 64px; flex-shrink: 0;
@@ -363,20 +258,9 @@ nav { left: var(--sb-expanded); }
   font-size: 1rem;
   color: #4a5568;
 }
-.sidebar-cta-text {
-  white-space: nowrap; overflow: hidden;
-  max-width: 0; opacity: 0;
-  transition: max-width 0.28s ease, opacity 0.22s ease;
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-  color: #4a5568;
-  -webkit-text-fill-color: #4a5568;
-  background: none;
-  -webkit-background-clip: unset;
-  background-clip: unset;
-}
-.sidebar:hover .sidebar-cta-text { max-width: 160px; opacity: 1; }
-.sidebar-cta:hover .sidebar-cta-text { color: #6b7280; -webkit-text-fill-color: #6b7280; }
+.sidebar-cta-text { white-space:nowrap; overflow:hidden; max-width:160px; opacity:1 !important; font-family:"Rajdhani",sans-serif; font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#5a6a7a; }
+
+.sidebar-cta:hover .sidebar-cta-text { white-space:nowrap; overflow:hidden; max-width:160px; opacity:1 !important; font-family:"Rajdhani",sans-serif; font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#5a6a7a; }
 
 /* DIVIDER */
 .sidebar-divider {
@@ -422,17 +306,11 @@ nav { left: var(--sb-expanded); }
   animation: statusPulse 2s infinite;
 }
 @keyframes statusPulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
-.status-text {
-  white-space: nowrap; overflow: hidden;
-  max-width: 0; opacity: 0;
-  transition: max-width 0.28s ease, opacity 0.22s ease;
-  font-size: 0.6rem; letter-spacing: 1.5px; color: #00e5c8;
-  font-family: 'Rajdhani', sans-serif; text-transform: uppercase; font-weight: 600;
-}
-.sidebar:hover .status-text { max-width: 160px; opacity: 1; }
+.status-text { white-space:nowrap; overflow:hidden; max-width:160px; opacity:1 !important; font-size:0.6rem; letter-spacing:1.5px; color:#00e5c8; font-family:"Rajdhani",sans-serif; text-transform:uppercase; font-weight:600; }
+
 
 /* Update scroll progress and nav to match collapsed sidebar */
-.scroll-progress { left: var(--sb-collapsed); }
+
 nav { left: var(--sb-collapsed); }
 
 /* ===================== TOP NAV ===================== */
@@ -1962,12 +1840,15 @@ gsap.utils.toArray('.hero-stat-card').forEach((el, i) => {
     }
   }
 
+  let frame=0;
   function animate(){
-    t++;
-    ctx.clearRect(0,0,W,H);
-    drawStars();
-    drawNodes();
-    drawShooters();
+    t++; frame++;
+    if(frame%2===0){
+      ctx.clearRect(0,0,W,H);
+      drawStars();
+      drawNodes();
+      if(frame%4===0) drawShooters();
+    }
     requestAnimationFrame(animate);
   }
   animate();
