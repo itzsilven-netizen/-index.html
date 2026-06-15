@@ -3,1421 +3,691 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Apex Standard — AI Automation for Local Business</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300&display=swap" rel="stylesheet">
+<title>Apex Standard – Hero Animation</title>
 <style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-:root{
-  --bg:#05080d;
-  --bg1:#080d14;
-  --bg2:#0b121b;
-  --bg3:#0f1822;
-  --bg4:#14202d;
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  --b0:#38bdf8; --b1:#7dd3fc; --b2:#0ea5e9; --b3:#0284c7; --b4:#06b6d4; --b5:#bae6fd;
-  --grad:linear-gradient(135deg,#0ea5e9,#06b6d4 50%,#38bdf8);
-  --grad2:linear-gradient(90deg,#0369a1,#0ea5e9,#06b6d4);
-  --gtext:linear-gradient(100deg,#7dd3fc 0%,#38bdf8 40%,#bae6fd 80%);
+  body {
+    background: #050a12;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
 
-  /* IMPROVED VISIBILITY — brighter text */
-  --white:#f5fbff;
-  --muted:#9fc5da;      /* was #4a7a94 — much brighter */
-  --muted2:#6e9db5;
-  --dim:#41607a;        /* was #243040 — brighter */
-  --bdr:rgba(56,189,248,0.14);
-  --bdrb:rgba(56,189,248,0.32);
-  --glow:rgba(14,165,233,0.45);
-  --glowsm:rgba(14,165,233,0.18);
+  #canvas-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+  }
 
-  --sb:248px; --nav:58px;
-}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+  canvas {
+    display: block;
+  }
 
-/* ═══ ADVANCED BACKGROUND — pure CSS, GPU-cheap ═══ */
-.bg-stage{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+  /* HUD overlay */
+  #hud {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 
-/* aurora blobs — animated with transform only (smooth) */
-.aurora{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;will-change:transform;}
-.aur1{width:55vw;height:55vw;background:radial-gradient(circle,rgba(2,132,199,.25),transparent 65%);top:-20vw;left:-10vw;animation:drift1 26s ease-in-out infinite;}
-.aur2{width:45vw;height:45vw;background:radial-gradient(circle,rgba(6,182,212,.18),transparent 65%);top:30vh;right:-15vw;animation:drift2 32s ease-in-out infinite;}
-.aur3{width:38vw;height:38vw;background:radial-gradient(circle,rgba(56,189,248,.13),transparent 65%);bottom:-10vh;left:25vw;animation:drift3 38s ease-in-out infinite;}
-@keyframes drift1{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(8vw,6vh) scale(1.15);}}
-@keyframes drift2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-10vw,-8vh) scale(1.1);}}
-@keyframes drift3{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(6vw,-10vh) scale(1.2);}}
+  #state-label {
+    position: absolute;
+    bottom: 48px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
 
-/* fine dot grid */
-.dotgrid{position:absolute;inset:0;background-image:radial-gradient(rgba(56,189,248,.08) 1px,transparent 1px);background-size:30px 30px;mask-image:radial-gradient(ellipse 90% 80% at 50% 30%,black 30%,transparent 80%);}
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    transition: background 0.4s, transform 0.4s;
+  }
 
-/* slow rotating conic sheen */
-.sheen{
-  position:absolute;width:140vmax;height:140vmax;
-  top:50%;left:50%;
-  background:conic-gradient(from 0deg,transparent 0deg,rgba(14,165,233,.04) 60deg,transparent 120deg,rgba(6,182,212,.03) 200deg,transparent 280deg,rgba(56,189,248,.04) 330deg,transparent 360deg);
-  animation:spin 80s linear infinite;
-  will-change:transform;
-}
-@keyframes spin{from{transform:translate(-50%,-50%) rotate(0);}to{transform:translate(-50%,-50%) rotate(360deg);}}
+  .dot.active {
+    background: #f97316;
+    transform: scale(1.5);
+    box-shadow: 0 0 12px #f97316;
+  }
 
-/* shooting line accents */
-.streak{position:absolute;height:1px;width:220px;background:linear-gradient(90deg,transparent,rgba(125,211,252,.6),transparent);opacity:0;animation:streak 7s ease-in-out infinite;}
-.st1{top:18%;left:8%;animation-delay:0s;}
-.st2{top:60%;left:60%;animation-delay:2.4s;}
-.st3{top:38%;left:35%;animation-delay:4.8s;}
-@keyframes streak{0%,100%{opacity:0;transform:translateX(-60px);}8%{opacity:1;}18%{opacity:0;transform:translateX(120px);}19%,99%{opacity:0;}}
+  #service-name {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    transition: opacity 0.5s;
+    white-space: nowrap;
+  }
 
-/* ═══ NAV ═══ */
-nav{
-  position:fixed;top:0;left:0;right:0;height:var(--nav);
-  background:rgba(5,8,13,.82);backdrop-filter:blur(22px);
-  border-bottom:1px solid var(--bdr);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 24px;z-index:400;
-}
-nav::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:var(--grad2);opacity:.4;}
+  #top-label {
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.2);
+  }
 
-/* ═══ LOGO — custom drawn SVG version of the triangle mark ═══ */
-.logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none;}
-.logo-svg{width:34px;height:34px;filter:drop-shadow(0 0 10px rgba(56,189,248,.7));}
-.logo-name{font-size:15px;font-weight:800;letter-spacing:-.3px;color:var(--white);line-height:1.1;}
-.logo-name small{display:block;font-size:8px;font-weight:600;letter-spacing:3.5px;text-transform:uppercase;background:var(--gtext);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-
-.nav-links{display:flex;gap:2px;list-style:none;}
-.nav-links a{color:var(--muted);font-size:13px;font-weight:500;text-decoration:none;padding:5px 12px;border-radius:4px;transition:all .15s;}
-.nav-links a:hover{color:var(--white);background:rgba(56,189,248,.08);}
-
-.nav-r{display:flex;align-items:center;gap:8px;}
-.btn{display:inline-flex;align-items:center;gap:6px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .18s;text-decoration:none;border:none;border-radius:4px;padding:7px 16px;white-space:nowrap;}
-.btn-ghost{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,.14);}
-.btn-ghost:hover{border-color:var(--bdrb);background:rgba(56,189,248,.07);}
-.btn-primary{background:var(--grad);color:#fff;box-shadow:0 0 16px var(--glowsm);}
-.btn-primary:hover{filter:brightness(1.12);box-shadow:0 0 30px var(--glow);transform:translateY(-1px);}
-.btn-outline{background:transparent;color:var(--b1);border:1px solid var(--bdrb);}
-.btn-outline:hover{background:rgba(56,189,248,.08);}
-.btn-sm{padding:5px 13px;font-size:12px;}
-.btn-lg{padding:11px 24px;font-size:14px;font-weight:700;border-radius:5px;}
-.btn-xl{padding:14px 30px;font-size:15px;font-weight:700;border-radius:5px;}
-
-/* ═══ LAYOUT ═══ */
-.layout{display:flex;padding-top:var(--nav);min-height:100vh;position:relative;z-index:1;}
-
-/* ═══ SIDEBAR — cleaned up ═══ */
-aside{
-  width:var(--sb);flex-shrink:0;
-  position:fixed;top:var(--nav);left:0;bottom:0;
-  background:rgba(5,8,13,.96);
-  border-right:1px solid var(--bdr);
-  display:flex;flex-direction:column;overflow-y:auto;
-  z-index:300;scrollbar-width:thin;scrollbar-color:var(--dim) transparent;
-}
-aside::after{content:'';position:absolute;top:0;right:0;bottom:0;width:1px;background:linear-gradient(180deg,transparent,rgba(56,189,248,.35) 45%,rgba(6,182,212,.3) 65%,transparent);pointer-events:none;}
-
-.sb-top{padding:16px 14px 10px;}
-.sb-search{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--bdr);border-radius:4px;padding:7px 10px;cursor:text;transition:border-color .15s;}
-.sb-search:hover{border-color:var(--bdrb);}
-.sb-search svg{width:13px;height:13px;stroke:var(--muted2);stroke-width:2;fill:none;flex-shrink:0;}
-.sb-search span{font-size:11px;color:var(--muted2);}
-
-.sb-sect{padding:10px 14px 4px;}
-.sb-sect-lbl{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--dim);margin-bottom:6px;}
-
-.sb-item{
-  display:flex;align-items:center;gap:9px;
-  padding:8px 10px;margin:1px 0;border-radius:4px;
-  font-size:12.5px;font-weight:500;color:var(--muted);
-  cursor:pointer;transition:all .15s;text-decoration:none;
-  border:1px solid transparent;position:relative;
-}
-.sb-item:hover{color:var(--white);background:rgba(56,189,248,.07);}
-.sb-item.active{color:var(--white);background:linear-gradient(90deg,rgba(14,165,233,.14),rgba(6,182,212,.05));border-color:rgba(56,189,248,.2);}
-.sb-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--grad);border-radius:2px 0 0 2px;}
-.sb-item.active .sbi svg{stroke:var(--b0);}
-.sbi{width:16px;height:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.sbi svg{width:13.5px;height:13.5px;stroke:var(--muted2);stroke-width:1.8;fill:none;transition:stroke .15s;}
-.sb-item:hover .sbi svg{stroke:var(--b1);}
-.sb-badge{margin-left:auto;font-size:9px;font-weight:700;background:rgba(56,189,248,.16);color:var(--b1);padding:1px 6px;border-radius:2px;letter-spacing:.5px;}
-.sb-badge.new{background:rgba(34,197,94,.15);color:#4ade80;}
-
-.sb-div{height:1px;background:var(--bdr);margin:8px 14px;}
-
-.sb-bottom{margin-top:auto;padding:12px 14px;}
-.sb-help-btn{
-  width:100%;display:flex;align-items:center;justify-content:center;gap:9px;
-  background:var(--grad);
-  border:none;border-radius:4px;
-  padding:11px 14px;cursor:pointer;font-family:'Inter',sans-serif;
-  color:#fff;font-size:12.5px;font-weight:700;
-  transition:all .2s;margin-bottom:10px;
-  box-shadow:0 0 16px var(--glowsm);
-}
-.sb-help-btn:hover{filter:brightness(1.1);box-shadow:0 0 26px var(--glow);}
-.sb-help-btn svg{width:14px;height:14px;stroke:#fff;stroke-width:2;fill:none;flex-shrink:0;}
-
-.sb-user{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:4px;background:var(--bg2);border:1px solid var(--bdr);cursor:pointer;transition:border-color .15s;}
-.sb-user:hover{border-color:var(--bdrb);}
-.sb-user-av{width:26px;height:26px;border-radius:3px;flex-shrink:0;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;}
-.sb-user-name{font-size:11px;font-weight:600;color:var(--white);}
-.sb-user-role{font-size:9px;color:var(--muted2);}
-
-/* ═══ MAIN ═══ */
-main{margin-left:var(--sb);flex:1;min-width:0;}
-
-/* ═══ HERO ═══ */
-#hero{
-  min-height:calc(100vh - var(--nav));
-  padding:0 64px;
-  display:grid;grid-template-columns:1.05fr 1fr;
-  align-items:center;gap:0;
-  position:relative;overflow:hidden;
-  max-width:1220px;
-}
-#hero::before{
-  content:'APEX';
-  position:absolute;right:-50px;bottom:-70px;
-  font-size:330px;font-weight:900;
-  color:rgba(56,189,248,.03);
-  letter-spacing:-20px;line-height:1;
-  pointer-events:none;user-select:none;
-}
-
-.hero-left{position:relative;z-index:2;padding:60px 0;}
-
-.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(14,165,233,.1);border:1px solid var(--bdrb);border-radius:3px;padding:5px 12px;font-size:11px;font-weight:600;color:var(--b1);margin-bottom:26px;}
-.hero-dot{width:5px;height:5px;border-radius:50%;background:var(--b0);box-shadow:0 0 6px var(--b0);animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
-.hero-chip{background:var(--grad);color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:2px;letter-spacing:1px;text-transform:uppercase;}
-
-.hero-h1{font-size:clamp(44px,5.5vw,76px);font-weight:900;line-height:.98;letter-spacing:-3px;color:var(--white);margin-bottom:22px;}
-.hero-h1 em{font-style:normal;background:var(--gtext);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-
-.hero-sub{font-size:15.5px;color:var(--muted);line-height:1.75;max-width:410px;margin-bottom:34px;font-weight:300;}
-
-.hero-btns{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:38px;}
-
-.hero-social{display:flex;align-items:center;gap:6px;}
-.hero-social span{font-size:11px;color:var(--muted2);margin-right:4px;}
-.hs-icon{width:30px;height:30px;border-radius:4px;background:var(--bg3);border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;}
-.hs-icon:hover{border-color:var(--bdrb);background:rgba(56,189,248,.08);}
-.hs-icon svg{width:13px;height:13px;stroke:var(--muted2);stroke-width:2;fill:none;}
-.hs-icon:hover svg{stroke:var(--b1);}
-
-/* HERO RIGHT — liquid 3D */
-.hero-right{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;height:100%;}
-.hero-canvas-wrap{position:relative;width:100%;height:560px;}
-#hero3d{width:100%;height:100%;display:block;}
-
-.svc-label{
-  position:absolute;
-  display:flex;align-items:center;gap:10px;
-  background:rgba(8,13,20,.55);
-  backdrop-filter:blur(20px) saturate(1.4);
-  border:1px solid rgba(125,211,252,.22);
-  border-radius:8px;padding:10px 14px;
-  box-shadow:0 8px 40px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);
-  animation:floaty 6s ease-in-out infinite;
-  opacity:0;
-  will-change:transform;
-}
-.svc-label:nth-of-type(2){animation-delay:-2s;}
-.svc-label:nth-of-type(3){animation-delay:-4s;}
-@keyframes floaty{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
-@keyframes svcIn{to{opacity:1;}}
-.svc-ic{
-  width:30px;height:30px;border-radius:6px;flex-shrink:0;
-  background:linear-gradient(135deg,rgba(56,189,248,.2),rgba(6,182,212,.1));
-  border:1px solid rgba(125,211,252,.25);
-  display:flex;align-items:center;justify-content:center;
-}
-.svc-ic svg{width:15px;height:15px;stroke:var(--b1);stroke-width:1.8;fill:none;}
-.svc-t{font-size:12.5px;font-weight:700;color:var(--white);letter-spacing:-.2px;line-height:1.2;}
-.svc-s{font-size:10px;color:var(--muted2);margin-top:1px;}
-
-/* ═══ SHARED SECTIONS ═══ */
-.gdiv{height:1px;background:linear-gradient(90deg,transparent,var(--b0),var(--b4),transparent);opacity:.3;max-width:1220px;}
-.trust{padding:24px 64px;max-width:1220px;}
-.trust-lbl{font-size:9px;color:var(--dim);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;}
-.trust-row{display:flex;align-items:center;gap:28px;flex-wrap:wrap;}
-.t-logo{font-size:11px;font-weight:700;color:rgba(125,211,252,.4);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:6px;transition:color .2s;}
-.t-logo:hover{color:var(--muted);}
-.t-logo svg{width:11px;height:11px;stroke:currentColor;stroke-width:2;fill:none;}
-
-.sec{padding:80px 64px;max-width:1220px;}
-.tag{font-size:9px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--b0);margin-bottom:12px;}
-.tag::before{content:'// ';}
-h2.sh{font-size:clamp(32px,4vw,52px);font-weight:900;letter-spacing:-2px;line-height:.97;color:var(--white);margin-bottom:14px;}
-h2.sh em{font-style:normal;background:var(--gtext);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.ssub{font-size:15px;color:var(--muted);max-width:490px;line-height:1.75;margin-bottom:50px;font-weight:300;}
-
-/* bento */
-.bento{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:rgba(56,189,248,.08);}
-.bento-card{background:var(--bg1);padding:28px 24px;transition:all .22s;position:relative;overflow:hidden;}
-.bento-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);opacity:0;transition:opacity .25s;}
-.bento-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(14,165,233,.06),transparent);opacity:0;transition:opacity .25s;}
-.bento-card:hover{background:var(--bg2);}
-.bento-card:hover::before,.bento-card:hover::after{opacity:1;}
-.bento-card.wide{grid-column:span 2;}
-.ibox{width:42px;height:42px;border-radius:4px;background:linear-gradient(135deg,rgba(14,165,233,.16),rgba(6,182,212,.08));border:1px solid var(--bdrb);display:flex;align-items:center;justify-content:center;}
-.ibox svg{width:18px;height:18px;stroke:var(--b0);stroke-width:1.7;fill:none;}
-.bc-icon{margin-bottom:16px;}
-.bc-title{font-size:15px;font-weight:700;color:var(--white);margin-bottom:8px;letter-spacing:-.3px;}
-.bc-desc{font-size:12.5px;color:var(--muted);line-height:1.75;}
-.bc-price{display:inline-flex;align-items:center;gap:4px;margin-top:14px;font-size:10px;font-weight:700;color:var(--b1);letter-spacing:.5px;}
-.bc-price svg{width:9px;height:9px;stroke:currentColor;stroke-width:2.5;fill:none;}
-
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:rgba(56,189,248,.08);margin-top:48px;}
-.stat{background:var(--bg1);padding:28px 22px;text-align:center;position:relative;}
-.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--grad2);opacity:.4;}
-.stat-n{font-size:42px;font-weight:900;letter-spacing:-2px;background:var(--gtext);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:6px;}
-.stat-d{font-size:11.5px;color:var(--muted2);}
-
-.proc{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:rgba(56,189,248,.08);}
-.proc-step{background:var(--bg1);padding:30px 24px;transition:all .22s;border-top:2px solid transparent;}
-.proc-step:hover{background:var(--bg2);border-top-color:var(--b0);}
-.ps-n{font-size:9px;font-weight:700;letter-spacing:3px;color:var(--b0);margin-bottom:14px;}
-.ps-icon{margin-bottom:12px;}
-.ps-title{font-size:15px;font-weight:700;color:var(--white);margin-bottom:8px;}
-.ps-desc{font-size:12.5px;color:var(--muted);line-height:1.75;}
-
-.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
-.pc{background:var(--bg2);border:1px solid var(--bdr);border-radius:5px;padding:28px 22px;position:relative;transition:all .22s;}
-.pc:hover{transform:translateY(-3px);box-shadow:0 20px 50px rgba(0,0,0,.4);}
-.pc.hot{background:linear-gradient(160deg,rgba(14,165,233,.1),var(--bg2) 55%);border-color:var(--bdrb);box-shadow:0 0 35px rgba(14,165,233,.12);}
-.pc.hot::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);border-radius:5px 5px 0 0;}
-.pop{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--grad);color:#fff;font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:3px 12px;border-radius:2px;white-space:nowrap;box-shadow:0 0 10px var(--glowsm);}
-.pn{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted2);margin-bottom:12px;}
-.pamt{font-size:46px;font-weight:900;letter-spacing:-2px;color:var(--white);line-height:1;}
-.pamt sup{font-size:18px;vertical-align:super;}
-.pper{font-size:11px;color:var(--muted2);margin-bottom:4px;}
-.pset{font-size:10.5px;color:var(--muted);margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--bdr);}
-.pdesc{font-size:12.5px;color:var(--muted);margin-bottom:16px;line-height:1.65;}
-.pf{list-style:none;margin-bottom:22px;}
-.pf li{display:flex;align-items:flex-start;gap:7px;font-size:11.5px;color:var(--muted);padding:3px 0;}
-.pck svg{width:11px;height:11px;stroke:var(--b0);stroke-width:2.5;fill:none;flex-shrink:0;margin-top:2px;}
-
-.rev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
-.rc{background:var(--bg2);border:1px solid var(--bdr);border-radius:5px;padding:22px;transition:all .22s;position:relative;overflow:hidden;}
-.rc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--b0),transparent);opacity:0;transition:opacity .25s;}
-.rc:hover{border-color:var(--bdrb);transform:translateY(-2px);}
-.rc:hover::before{opacity:1;}
-.rstars{display:flex;gap:2px;margin-bottom:10px;}
-.rstars svg{width:11px;height:11px;fill:#fbbf24;}
-.rtext{font-size:12.5px;color:var(--muted);line-height:1.8;margin-bottom:16px;}
-.rauthor{display:flex;align-items:center;gap:9px;}
-.rav{width:32px;height:32px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;}
-.rname{font-size:12.5px;font-weight:700;color:var(--white);}
-.rbiz{font-size:10.5px;color:var(--muted2);}
-
-.cta-sec{padding:72px 64px 80px;max-width:1220px;}
-.cta-in{background:linear-gradient(135deg,rgba(14,165,233,.12),rgba(6,182,212,.05));border:1px solid var(--bdrb);border-radius:6px;padding:64px 72px;text-align:center;position:relative;overflow:hidden;}
-.cta-in::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:500px;height:300px;background:radial-gradient(ellipse,rgba(14,165,233,.14),transparent 70%);pointer-events:none;}
-.cta-in::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:var(--grad2);opacity:.35;}
-.cta-h{font-size:clamp(28px,4vw,46px);font-weight:900;letter-spacing:-1.5px;color:var(--white);margin-bottom:12px;position:relative;z-index:1;}
-.cta-h em{font-style:normal;background:var(--gtext);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.cta-sub{font-size:14.5px;color:var(--muted);margin-bottom:28px;position:relative;z-index:1;}
-.cta-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1;}
-
-footer{border-top:1px solid var(--bdr);padding:44px 64px 28px;max-width:1220px;position:relative;}
-footer::before{content:'';position:absolute;top:0;left:64px;right:64px;height:1px;background:var(--grad2);opacity:.25;}
-.fg{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;margin-bottom:36px;}
-.fb p{font-size:11.5px;color:var(--muted2);margin-top:10px;line-height:1.7;max-width:185px;}
-.fsoc{display:flex;gap:7px;margin-top:14px;}
-.fsb{width:28px;height:28px;border-radius:3px;background:var(--bg3);border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;text-decoration:none;}
-.fsb svg{width:12px;height:12px;stroke:var(--muted2);stroke-width:2;fill:none;transition:stroke .18s;}
-.fsb:hover{border-color:var(--bdrb);background:rgba(56,189,248,.08);}
-.fsb:hover svg{stroke:var(--b1);}
-footer h4{font-size:10.5px;font-weight:700;color:var(--white);margin-bottom:12px;letter-spacing:.5px;}
-footer ul{list-style:none;}
-footer ul li{margin-bottom:8px;}
-footer ul li a{font-size:11.5px;color:var(--muted2);text-decoration:none;transition:color .18s;}
-footer ul li a:hover{color:var(--muted);}
-.fb-bot{padding-top:18px;border-top:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
-.fb-bot p{font-size:10.5px;color:var(--muted2);}
-
-/* ═══ CHATBOT ═══ */
-.chat-bubble{position:fixed;bottom:24px;right:24px;z-index:600;width:48px;height:48px;border-radius:5px;background:var(--grad);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 0 22px var(--glow);transition:all .2s;}
-.chat-bubble:hover{transform:scale(1.06);box-shadow:0 0 36px rgba(14,165,233,.65);}
-.chat-bubble svg{width:21px;height:21px;stroke:#fff;stroke-width:2;fill:none;}
-.chat-dot{position:absolute;top:-3px;right:-3px;width:11px;height:11px;border-radius:50%;background:#22c55e;border:2px solid var(--bg);animation:pulse 2s infinite;}
-
-.chat-window{position:fixed;bottom:82px;right:24px;z-index:600;width:344px;background:var(--bg2);border:1px solid var(--bdrb);border-radius:6px;box-shadow:0 24px 64px rgba(0,0,0,.65);overflow:hidden;transform:scale(.95) translateY(8px);opacity:0;pointer-events:none;transition:all .25s cubic-bezier(.16,1,.3,1);transform-origin:bottom right;}
-.chat-window.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all;}
-.cw-head{background:linear-gradient(90deg,rgba(14,165,233,.16),rgba(6,182,212,.09));border-bottom:1px solid var(--bdrb);padding:12px 16px;display:flex;align-items:center;gap:10px;}
-.cw-av{width:32px;height:32px;border-radius:3px;background:var(--grad);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.cw-av svg{width:16px;height:16px;stroke:#fff;stroke-width:2;fill:none;}
-.cw-name{font-size:13px;font-weight:700;color:var(--white);}
-.cw-status{font-size:10px;color:var(--b1);display:flex;align-items:center;gap:4px;}
-.cw-status::before{content:'';width:5px;height:5px;border-radius:50%;background:#22c55e;display:inline-block;}
-.cw-close{margin-left:auto;cursor:pointer;background:none;border:none;color:var(--muted2);font-size:16px;line-height:1;transition:color .15s;}
-.cw-close:hover{color:var(--white);}
-.cw-msgs{padding:14px 14px 8px;height:262px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;}
-.msg{max-width:84%;padding:9px 12px;border-radius:4px;font-size:12px;line-height:1.65;}
-.msg-bot{background:var(--bg3);border:1px solid var(--bdr);color:var(--muted);align-self:flex-start;}
-.msg-user{background:linear-gradient(135deg,rgba(14,165,233,.22),rgba(6,182,212,.13));border:1px solid var(--bdrb);color:var(--white);align-self:flex-end;}
-.cw-quick{padding:0 12px 10px;display:flex;gap:6px;flex-wrap:wrap;}
-.cw-q{background:var(--bg3);border:1px solid var(--bdr);border-radius:3px;padding:5px 9px;font-size:10px;color:var(--muted);cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;}
-.cw-q:hover{border-color:var(--bdrb);color:var(--b1);}
-.cw-input-wrap{padding:10px 12px;border-top:1px solid var(--bdr);display:flex;gap:8px;align-items:center;}
-.cw-inp{flex:1;background:var(--bg3);border:1px solid var(--bdr);border-radius:3px;padding:8px 10px;color:var(--white);font-size:12px;font-family:'Inter',sans-serif;outline:none;transition:border-color .18s;}
-.cw-inp:focus{border-color:var(--bdrb);}
-.cw-inp::placeholder{color:var(--dim);}
-.cw-send{width:30px;height:30px;border-radius:3px;background:var(--grad);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .18s;}
-.cw-send:hover{filter:brightness(1.1);}
-.cw-send svg{width:13px;height:13px;stroke:#fff;stroke-width:2;fill:none;}
-
-/* ═══ MODAL ═══ */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.84);backdrop-filter:blur(14px);z-index:700;display:none;align-items:center;justify-content:center;}
-.overlay.open{display:flex;}
-.modal{background:var(--bg2);border:1px solid var(--bdrb);border-radius:6px;width:390px;max-width:calc(100vw - 32px);padding:34px;position:relative;animation:min .28s ease;}
-.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);border-radius:6px 6px 0 0;}
-@keyframes min{from{opacity:0;transform:scale(.96) translateY(8px);}to{opacity:1;transform:scale(1) translateY(0);}}
-.mc{position:absolute;top:12px;right:12px;background:none;border:none;color:var(--dim);font-size:17px;cursor:pointer;width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:3px;transition:all .15s;}
-.mc:hover{background:rgba(255,255,255,.05);color:var(--white);}
-.mlogo{display:flex;align-items:center;gap:9px;margin-bottom:22px;}
-.mtabs{display:grid;grid-template-columns:1fr 1fr;background:var(--bg3);border-radius:4px;padding:3px;margin-bottom:22px;}
-.mtab{padding:7px;text-align:center;border-radius:3px;font-size:12px;font-weight:600;color:var(--muted2);cursor:pointer;transition:all .18s;border:none;background:none;font-family:'Inter',sans-serif;}
-.mtab.on{background:var(--bg4);color:var(--white);}
-.mtitle{font-size:19px;font-weight:800;letter-spacing:-.5px;color:var(--white);margin-bottom:4px;}
-.msub{font-size:11.5px;color:var(--muted2);margin-bottom:18px;}
-.fg2{margin-bottom:12px;}
-.fl{font-size:10.5px;font-weight:600;color:var(--muted);margin-bottom:4px;display:block;}
-.fi{width:100%;background:var(--bg3);border:1px solid var(--bdr);border-radius:3px;padding:9px 11px;color:var(--white);font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:all .18s;}
-.fi:focus{border-color:var(--b0);box-shadow:0 0 0 2px rgba(14,165,233,.12);}
-.fi::placeholder{color:var(--dim);}
-.msub-btn{width:100%;padding:11px;background:var(--grad);color:#fff;border:none;border-radius:4px;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;box-shadow:0 0 16px var(--glowsm);transition:all .18s;margin-top:6px;}
-.msub-btn:hover{filter:brightness(1.12);transform:translateY(-1px);box-shadow:0 0 26px var(--glow);}
-.mnote{font-size:10.5px;color:var(--muted2);text-align:center;margin-top:10px;line-height:1.6;}
-.mnote a{color:var(--b1);text-decoration:none;}
-
-/* ═══ ANIMS ═══ */
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-.hero-left>*{opacity:0;animation:fadeUp .5s ease forwards;}
-.hero-left>*:nth-child(1){animation-delay:.05s;}
-.hero-left>*:nth-child(2){animation-delay:.1s;}
-.hero-left>*:nth-child(3){animation-delay:.16s;}
-.hero-left>*:nth-child(4){animation-delay:.22s;}
-.hero-left>*:nth-child(5){animation-delay:.28s;}
-.hero-right{opacity:0;animation:fadeUp .7s ease .2s forwards;}
-
-/* ═══ RESPONSIVE ═══ */
-@media(max-width:900px){
-  aside{display:none;}main{margin-left:0;}
-  #hero{grid-template-columns:1fr;padding:48px 20px;}
-  .hero-canvas-wrap{height:300px;}
-  .bento,.proc,.stats,.price-grid,.rev-grid{grid-template-columns:1fr;}
-  .bento-card.wide{grid-column:span 1;}
-  .sec,.trust,.cta-sec,footer{padding:52px 20px;}
-  nav{padding:0 16px;}.nav-links{display:none;}
-  .fg{grid-template-columns:1fr 1fr;}
-  .cta-in{padding:40px 22px;}
-  .chat-window{width:calc(100vw - 32px);right:16px;}
-}
-
-/* ═══ AI FLOW DIAGRAM ═══ */
-.flow-sec{padding:80px 64px;max-width:1220px;}
-.flow-wrap{
-  position:relative;margin-top:48px;
-  background:linear-gradient(180deg,rgba(8,17,28,.6),rgba(5,10,16,.3));
-  border:1px solid var(--bdr);border-radius:12px;
-  padding:48px 40px;overflow:hidden;
-}
-.flow-wrap::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 50% 60% at 50% 45%,rgba(14,165,233,.07),transparent 70%);
-  pointer-events:none;
-}
-.flow-grid{
-  position:relative;z-index:2;
-  display:grid;grid-template-columns:1fr 1.2fr 1fr 0.9fr;
-  gap:0;align-items:center;
-}
-.flow-col{display:flex;flex-direction:column;gap:12px;}
-.flow-col-title{
-  font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
-  color:var(--b1);text-align:center;margin-bottom:14px;
-}
-
-/* database node */
-.flow-db{
-  background:rgba(11,22,34,.85);border:1px solid var(--bdrb);border-radius:8px;
-  padding:14px;backdrop-filter:blur(10px);
-}
-.flow-db-head{display:flex;align-items:center;gap:8px;padding-bottom:10px;margin-bottom:8px;border-bottom:1px solid var(--bdr);}
-.flow-db-head svg{width:15px;height:15px;stroke:var(--b0);stroke-width:1.8;fill:none;}
-.flow-db-head span{font-size:11px;font-weight:700;color:var(--white);}
-.flow-contact{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:11px;color:var(--muted);}
-.flow-contact svg{width:12px;height:12px;stroke:var(--muted2);stroke-width:1.8;fill:none;flex-shrink:0;}
-.flow-contact.dim{color:var(--dim);}
-
-/* AI core node */
-.flow-core{
-  position:relative;width:130px;height:130px;margin:0 auto;
-  display:flex;align-items:center;justify-content:center;
-}
-.flow-core-ring{
-  position:absolute;inset:0;border-radius:50%;
-  border:2px solid rgba(56,189,248,.5);
-  box-shadow:0 0 30px rgba(56,189,248,.4),inset 0 0 30px rgba(56,189,248,.2);
-  animation:corePulse 3s ease-in-out infinite;
-}
-.flow-core-ring2{position:absolute;inset:-10px;border-radius:50%;border:1px solid rgba(56,189,248,.2);animation:spin 14s linear infinite;}
-@keyframes corePulse{0%,100%{box-shadow:0 0 30px rgba(56,189,248,.4),inset 0 0 30px rgba(56,189,248,.2);}50%{box-shadow:0 0 50px rgba(56,189,248,.7),inset 0 0 40px rgba(56,189,248,.35);}}
-.flow-core-inner{
-  width:96px;height:96px;border-radius:50%;
-  background:radial-gradient(circle at 40% 35%,rgba(56,189,248,.3),rgba(6,18,28,.95));
-  display:flex;align-items:center;justify-content:center;
-  font-size:30px;font-weight:900;letter-spacing:-1px;
-  background-clip:padding-box;
-}
-.flow-core-inner span{background:var(--gtext);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-
-/* output channels */
-.flow-out{
-  display:flex;align-items:center;gap:10px;
-  background:rgba(11,22,34,.85);border:1px solid var(--bdrb);border-radius:8px;
-  padding:11px 13px;backdrop-filter:blur(10px);
-  transition:all .2s;
-}
-.flow-out:hover{border-color:var(--b0);transform:translateX(3px);box-shadow:0 0 16px var(--glowsm);}
-.flow-out-ic{width:28px;height:28px;border-radius:5px;background:linear-gradient(135deg,rgba(56,189,248,.18),rgba(6,182,212,.08));border:1px solid var(--bdrb);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.flow-out-ic svg{width:14px;height:14px;stroke:var(--b1);stroke-width:1.8;fill:none;}
-.flow-out-t{font-size:11.5px;font-weight:600;color:var(--white);line-height:1.3;}
-
-/* customers node */
-.flow-cust{text-align:center;}
-.flow-cust-circle{
-  width:90px;height:90px;border-radius:50%;margin:0 auto 14px;
-  background:radial-gradient(circle at 40% 35%,rgba(56,189,248,.25),rgba(6,18,28,.9));
-  border:2px solid rgba(56,189,248,.4);
-  display:flex;align-items:center;justify-content:center;position:relative;
-  box-shadow:0 0 24px rgba(56,189,248,.3);
-}
-.flow-cust-circle svg{width:38px;height:38px;stroke:var(--b1);stroke-width:1.5;fill:none;}
-.flow-cust-badge{position:absolute;bottom:-2px;right:-2px;width:26px;height:26px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px var(--glow);}
-.flow-cust-badge svg{width:14px;height:14px;stroke:#fff;stroke-width:2.5;fill:none;}
-.flow-cust-stat{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:5px 0;}
-.flow-cust-stat em{font-style:normal;color:var(--b1);}
-
-/* SVG connector overlay */
-.flow-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;}
-.flow-path{fill:none;stroke:rgba(56,189,248,.25);stroke-width:1.5;}
-.flow-dash{fill:none;stroke:var(--b0);stroke-width:1.8;stroke-dasharray:6 10;stroke-linecap:round;filter:drop-shadow(0 0 3px var(--b0));animation:dashFlow 1s linear infinite;}
-@keyframes dashFlow{to{stroke-dashoffset:-16;}}
-.flow-dash.rev{animation:dashFlowRev 1.2s linear infinite;}
-@keyframes dashFlowRev{to{stroke-dashoffset:16;}}
-
-/* feedback bar */
-.flow-feedback{
-  margin-top:28px;position:relative;z-index:2;
-  background:rgba(11,22,34,.7);border:1px dashed var(--bdrb);border-radius:8px;
-  padding:14px;text-align:center;
-  font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);
-}
-.flow-feedback em{font-style:normal;color:var(--b1);}
-
-/* bottom step icons */
-.flow-steps{
-  display:grid;grid-template-columns:repeat(5,1fr);gap:12px;
-  margin-top:32px;position:relative;z-index:2;
-}
-.flow-step{
-  display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;
-  padding:16px 10px;border:1px solid var(--bdr);border-radius:8px;
-  background:rgba(8,15,24,.5);transition:all .2s;
-}
-.flow-step:hover{border-color:var(--bdrb);background:rgba(14,165,233,.05);transform:translateY(-2px);}
-.flow-step-ic{width:34px;height:34px;border-radius:7px;background:linear-gradient(135deg,rgba(56,189,248,.15),rgba(6,182,212,.07));border:1px solid var(--bdrb);display:flex;align-items:center;justify-content:center;}
-.flow-step-ic svg{width:16px;height:16px;stroke:var(--b0);stroke-width:1.7;fill:none;}
-.flow-step-t{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);line-height:1.4;}
-
-@media(max-width:900px){
-  .flow-grid{grid-template-columns:1fr;gap:32px;}
-  .flow-svg{display:none;}
-  .flow-steps{grid-template-columns:1fr 1fr;}
-  .flow-wrap{padding:28px 18px;}
-}
-
+  /* Progress bar */
+  #progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #f97316, #3b82f6);
+    width: 0%;
+    transition: width linear;
+  }
 </style>
 </head>
 <body>
-
-<!-- ═══ ADVANCED BG ═══ -->
-<div class="bg-stage">
-  <div class="sheen"></div>
-  <div class="aurora aur1"></div>
-  <div class="aurora aur2"></div>
-  <div class="aurora aur3"></div>
-  <div class="dotgrid"></div>
-  <div class="streak st1"></div>
-  <div class="streak st2"></div>
-  <div class="streak st3"></div>
+<div id="canvas-container">
+  <canvas id="c"></canvas>
+  <div id="hud">
+    <span id="top-label">Apex Standard · AI Automation</span>
+    <span id="service-name">Neural Core</span>
+    <div id="state-label">
+      <div class="dot active" id="dot-0"></div>
+      <div class="dot" id="dot-1"></div>
+      <div class="dot" id="dot-2"></div>
+      <div class="dot" id="dot-3"></div>
+    </div>
+  </div>
+  <div id="progress-bar"></div>
 </div>
 
-<!-- ═══ LOGO SVG SYMBOL (used everywhere) ═══ -->
-<svg width="0" height="0" style="position:absolute;">
-  <defs>
-    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#e8f6ff"/>
-      <stop offset="45%" stop-color="#bae6fd"/>
-      <stop offset="100%" stop-color="#38bdf8"/>
-    </linearGradient>
-    <linearGradient id="logoGrad2" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#0ea5e9"/>
-      <stop offset="100%" stop-color="#7dd3fc"/>
-    </linearGradient>
-    <symbol id="apexLogo" viewBox="0 0 100 88">
-      <!-- outer triangle -->
-      <path d="M50 4 L96 84 L4 84 Z" fill="none" stroke="url(#logoGrad)" stroke-width="7" stroke-linejoin="miter"/>
-      <!-- inner A bars -->
-      <path d="M50 26 L68 58" stroke="url(#logoGrad2)" stroke-width="6" stroke-linecap="square"/>
-      <path d="M50 26 L36 52" stroke="url(#logoGrad2)" stroke-width="6" stroke-linecap="square"/>
-      <path d="M40 62 L72 62" stroke="url(#logoGrad)" stroke-width="6" stroke-linecap="square"/>
-      <path d="M58 44 L78 44" stroke="url(#logoGrad)" stroke-width="5" stroke-linecap="square"/>
-      <path d="M62 52 L66 70" stroke="url(#logoGrad2)" stroke-width="5" stroke-linecap="square"/>
-      <path d="M72 50 L76 70" stroke="url(#logoGrad2)" stroke-width="5" stroke-linecap="square"/>
-    </symbol>
-  </defs>
-</svg>
-
-<!-- ═══ MODAL ═══ -->
-<div class="overlay" id="authModal">
-  <div class="modal">
-    <button class="mc" onclick="closeModal()">✕</button>
-    <div class="mlogo">
-      <svg class="logo-svg" style="width:26px;height:26px;"><use href="#apexLogo"/></svg>
-      <span style="font-size:14px;font-weight:800;color:var(--white);">Apex Standard</span>
-    </div>
-    <div class="mtabs">
-      <button class="mtab on" id="t-login" onclick="switchTab('login')">Sign In</button>
-      <button class="mtab" id="t-signup" onclick="switchTab('signup')">Get Started</button>
-    </div>
-    <div id="login-form">
-      <div class="mtitle">Welcome back</div>
-      <div class="msub">Sign in to your Apex Standard dashboard</div>
-      <div class="fg2"><label class="fl">Email</label><input type="email" class="fi" placeholder="you@yourbusiness.com"></div>
-      <div class="fg2"><label class="fl">Password</label><input type="password" class="fi" placeholder="••••••••"></div>
-      <button class="msub-btn">Sign In →</button>
-      <div class="mnote">New here? <a href="#" onclick="switchTab('signup')">Get started free</a></div>
-    </div>
-    <div id="signup-form" style="display:none;">
-      <div class="mtitle">Get started now</div>
-      <div class="msub">Start growing your business with AI today</div>
-      <div class="fg2"><label class="fl">Business Name</label><input type="text" class="fi" placeholder="Your Business Name"></div>
-      <div class="fg2"><label class="fl">Email</label><input type="email" class="fi" placeholder="you@yourbusiness.com"></div>
-      <div class="fg2"><label class="fl">Phone</label><input type="tel" class="fi" placeholder="(555) 000-0000"></div>
-      <button class="msub-btn">Create Account — Free Demo →</button>
-      <div class="mnote">Already have an account? <a href="#" onclick="switchTab('login')">Sign in</a></div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ CHATBOT ═══ -->
-<div class="chat-bubble" id="chatBubble" onclick="toggleChat()">
-  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-  <div class="chat-dot"></div>
-</div>
-
-<div class="chat-window" id="chatWindow">
-  <div class="cw-head">
-    <div class="cw-av"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div>
-    <div>
-      <div class="cw-name">Apex AI</div>
-      <div class="cw-status">Online — responds instantly</div>
-    </div>
-    <button class="cw-close" onclick="toggleChat()">✕</button>
-  </div>
-  <div class="cw-msgs" id="cwMsgs">
-    <div class="msg msg-bot">Hey! I'm the Apex Standard AI assistant. Ask me about services, pricing, or book a free demo. What can I help with?</div>
-  </div>
-  <div class="cw-quick">
-    <button class="cw-q" onclick="quickMsg('What services do you offer?')">Services</button>
-    <button class="cw-q" onclick="quickMsg('What are your prices?')">Pricing</button>
-    <button class="cw-q" onclick="quickMsg('Book a free demo')">Book Demo</button>
-    <button class="cw-q" onclick="quickMsg('How does setup work?')">Setup</button>
-  </div>
-  <div class="cw-input-wrap">
-    <input type="text" class="cw-inp" id="cwInp" placeholder="Ask anything..." onkeydown="if(event.key==='Enter')sendMsg()">
-    <button class="cw-send" onclick="sendMsg()"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
-  </div>
-</div>
-
-<!-- ═══ NAV ═══ -->
-<nav>
-  <a href="#" class="logo-wrap">
-    <svg class="logo-svg"><use href="#apexLogo"/></svg>
-    <span class="logo-name">APEX<small>Standard</small></span>
-  </a>
-  <ul class="nav-links">
-    <li><a href="#services">Solutions</a></li>
-    <li><a href="#how">How It Works</a></li>
-    <li><a href="#process">Process</a></li>
-    <li><a href="#pricing">Pricing</a></li>
-    <li><a href="#reviews">Reviews</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
-  <div class="nav-r">
-    <button class="btn btn-ghost btn-sm" onclick="openModal('login')">Sign In</button>
-    <button class="btn btn-primary btn-sm" onclick="openModal('signup')">Get Started</button>
-  </div>
-</nav>
-
-<div class="layout">
-
-<!-- ═══ SIDEBAR (cleaned) ═══ -->
-<aside>
-  <div class="sb-top">
-    <div class="sb-search">
-      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <span>Search...</span>
-    </div>
-  </div>
-
-  <div class="sb-sect">
-    <div class="sb-sect-lbl">Main</div>
-    <a href="#hero" class="sb-item active">
-      <span class="sbi"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></span>
-      Overview
-    </a>
-    <a href="#services" class="sb-item">
-      <span class="sbi"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></span>
-      AI Solutions
-      <span class="sb-badge">3</span>
-    </a>
-    <a href="#how" class="sb-item">
-      <span class="sbi"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg></span>
-      How It Works
-    </a>
-    <a href="#pricing" class="sb-item">
-      <span class="sbi"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
-      Pricing
-    </a>
-    <a href="#reviews" class="sb-item">
-      <span class="sbi"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
-      Results
-    </a>
-  </div>
-
-  <div class="sb-div"></div>
-
-  <div class="sb-sect">
-    <div class="sb-sect-lbl">Our Services</div>
-    <a href="#services" class="sb-item">
-      <span class="sbi"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
-      AI Chatbot
-      <span class="sb-badge new">Live</span>
-    </a>
-    <a href="#services" class="sb-item">
-      <span class="sbi"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
-      Review Growth
-    </a>
-    <a href="#services" class="sb-item">
-      <span class="sbi"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></span>
-      Social Media
-    </a>
-    <a href="#services" class="sb-item">
-      <span class="sbi"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
-      Analytics
-    </a>
-  </div>
-
-  <div class="sb-div"></div>
-
-  <div class="sb-sect">
-    <div class="sb-sect-lbl">Account</div>
-    <a href="#" class="sb-item" onclick="openModal('login');return false;">
-      <span class="sbi"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-      My Account
-    </a>
-    <a href="#" class="sb-item" onclick="openModal('login');return false;">
-      <span class="sbi"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
-      My Dashboard
-    </a>
-    <a href="#" class="sb-item" onclick="openModal('login');return false;">
-      <span class="sbi"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
-      Billing &amp; Invoices
-    </a>
-    <a href="#" class="sb-item" onclick="openModal('login');return false;">
-      <span class="sbi"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 19.07l1.41-1.41M12 2v2M12 20v2M4.93 4.93l1.41 1.41M19.07 19.07l-1.41-1.41M2 12h2M20 12h2"/></svg></span>
-      Settings
-    </a>
-  </div>
-
-  <div class="sb-div"></div>
-  <div class="sb-bottom">
-    <button class="sb-help-btn" onclick="toggleChat()">
-      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      Get Help
-    </button>
-    <div class="sb-user" onclick="openModal('login')">
-      <div class="sb-user-av">AS</div>
-      <div>
-        <div class="sb-user-name">Guest User</div>
-        <div class="sb-user-role">Sign in to your dashboard</div>
-      </div>
-    </div>
-  </div>
-</aside>
-
-<!-- ═══ MAIN ═══ -->
-<main>
-
-<!-- HERO -->
-<section id="hero">
-  <div class="hero-left">
-    <div class="hero-eyebrow">
-      <span class="hero-chip">Apex 2.0</span>
-      <span class="hero-dot"></span>
-      <span style="color:var(--muted);font-size:11px;">Smarter &amp; Faster</span>
-    </div>
-
-    <h1 class="hero-h1">
-      Automate.<br>
-      Dominate.<br>
-      <em>Scale.</em>
-    </h1>
-
-    <p class="hero-sub">Apex Standard is the AI automation system for local businesses. More leads, better reviews, consistent social — running silently while you focus on the work.</p>
-
-    <div class="hero-btns">
-      <a href="#pricing" class="btn btn-primary btn-lg">See Pricing →</a>
-      <a href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" class="btn btn-outline btn-lg">Get a Demo</a>
-    </div>
-
-    <div class="hero-social">
-      <span>Follow us</span>
-      <div class="hs-icon"><svg viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg></div>
-      <div class="hs-icon"><svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></div>
-      <div class="hs-icon" onclick="openModal('signup')"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-    </div>
-  </div>
-
-  <div class="hero-right">
-    <div class="hero-canvas-wrap">
-      <canvas id="hero3d"></canvas>
-      <!-- Service labels — orbit the AI core, no fake numbers -->
-      <div class="svc-label" style="top:14%;left:-2%;">
-        <span class="svc-ic"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
-        <div><div class="svc-t">AI Chatbot</div><div class="svc-s">Capture every lead</div></div>
-      </div>
-      <div class="svc-label" style="top:46%;right:-2%;">
-        <span class="svc-ic"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
-        <div><div class="svc-t">Review Growth</div><div class="svc-s">Build your reputation</div></div>
-      </div>
-      <div class="svc-label" style="bottom:13%;left:6%;">
-        <span class="svc-ic"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></span>
-        <div><div class="svc-t">Social Media</div><div class="svc-s">Always consistent</div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="gdiv"></div>
-
-<div class="trust">
-  <div class="trust-lbl">Trusted by local businesses across California &amp; Nevada</div>
-  <div class="trust-row">
-    <div class="t-logo"><svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> Dreamers</div>
-    <div class="t-logo"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> Your Hairapy</div>
-    <div class="t-logo"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Smart Grid</div>
-    <div class="t-logo"><svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> Nevada Nails</div>
-    <div class="t-logo"><svg viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg> Cooke Lighting</div>
-    <div class="t-logo"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> Atmosphere</div>
-  </div>
-</div>
-
-<div class="gdiv"></div>
-
-<!-- SERVICES -->
-<section id="services" class="sec">
-  <div class="tag">Solutions</div>
-  <h2 class="sh">AI <em>Solutions</em></h2>
-  <p class="ssub">Three automated systems that handle your leads, reputation, and social presence — running silently while you focus on the work.</p>
-
-  <div class="bento">
-    <div class="bento-card wide">
-      <div class="bc-icon"><div class="ibox"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div></div>
-      <div class="bc-title">AI Lead Capture Chatbot</div>
-      <div class="bc-desc">A 24/7 AI assistant on your website that qualifies leads, captures contacts, and books appointments — even at 2am. Never lose a customer to a competitor who picks up faster.</div>
-      <div class="bc-price"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg> From $150/mo</div>
-    </div>
-    <div class="bento-card">
-      <div class="bc-icon"><div class="ibox"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div></div>
-      <div class="bc-title">Review &amp; Reputation</div>
-      <div class="bc-desc">Automated Google review requests after every visit. Businesses go from 3.8 → 4.6 stars in 6 weeks on average.</div>
-      <div class="bc-price"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg> From $99/mo</div>
-    </div>
-    <div class="bento-card">
-      <div class="bc-icon"><div class="ibox"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div></div>
-      <div class="bc-title">Social Media Automation</div>
-      <div class="bc-desc">AI writes and schedules posts across Instagram, Facebook, and Google — fully branded for your business.</div>
-      <div class="bc-price"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg> From $300/mo</div>
-    </div>
-    <div class="bento-card">
-      <div class="bc-icon"><div class="ibox"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div></div>
-      <div class="bc-title">Live Analytics</div>
-      <div class="bc-desc">Every lead, review, and post tracked in one plain-English dashboard.</div>
-      <div class="bc-price"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg> Included</div>
-    </div>
-    <div class="bento-card">
-      <div class="bc-icon"><div class="ibox"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div></div>
-      <div class="bc-title">48-Hour Setup</div>
-      <div class="bc-desc">We handle everything. Go live within 48 hours of signing up. Zero technical work from you.</div>
-      <div class="bc-price"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg> Guaranteed</div>
-    </div>
-    <div class="bento-card">
-      <div class="bc-icon"><div class="ibox"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg></div></div>
-      <div class="bc-title">Fully Managed</div>
-      <div class="bc-desc">Monthly check-ins, campaign adjustments, optimization built in. If it's not performing — we fix it.</div>
-      <div class="bc-price"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg> Ongoing support</div>
-    </div>
-  </div>
-
-  <div class="stats">
-    <div class="stat"><div class="stat-n">70+</div><div class="stat-d">Satisfied clients</div></div>
-    <div class="stat"><div class="stat-n">100%</div><div class="stat-d">Satisfaction rate</div></div>
-    <div class="stat"><div class="stat-n">48hr</div><div class="stat-d">Setup guarantee</div></div>
-    <div class="stat"><div class="stat-n">30k+</div><div class="stat-d">Industry reach</div></div>
-  </div>
-</section>
-
-
-<div class="gdiv"></div>
-
-<!-- ═══ AI FLOW DIAGRAM ═══ -->
-<section id="how" class="flow-sec">
-  <div class="tag">The System</div>
-  <h2 class="sh">How Apex <em>works for you</em></h2>
-  <p class="ssub">Your business plugged into one AI engine — capturing leads, growing reviews, and posting socially, all flowing automatically while you focus on the work.</p>
-
-  <div class="flow-wrap">
-    <!-- animated connector lines -->
-    <svg class="flow-svg" viewBox="0 0 1140 360" preserveAspectRatio="none">
-      <!-- DB -> Core -->
-      <path class="flow-path" d="M250,150 C320,150 340,170 410,170"/>
-      <path class="flow-dash" d="M250,150 C320,150 340,170 410,170"/>
-      <!-- Core -> outputs -->
-      <path class="flow-path" d="M700,140 C760,120 780,70 840,70"/>
-      <path class="flow-dash" d="M700,140 C760,120 780,70 840,70"/>
-      <path class="flow-path" d="M710,160 C770,150 780,140 840,140"/>
-      <path class="flow-dash" d="M710,160 C770,150 780,140 840,140"/>
-      <path class="flow-path" d="M710,180 C770,190 780,210 840,210"/>
-      <path class="flow-dash" d="M710,180 C770,190 780,210 840,210"/>
-      <path class="flow-path" d="M700,200 C760,230 780,280 840,280"/>
-      <path class="flow-dash" d="M700,200 C760,230 780,280 840,280"/>
-      <!-- outputs -> customers -->
-      <path class="flow-path" d="M1010,140 C1050,140 1060,150 1090,150"/>
-      <path class="flow-dash" d="M1010,140 C1050,140 1060,150 1090,150"/>
-    </svg>
-
-    <div class="flow-grid">
-      <!-- DATABASE -->
-      <div class="flow-col">
-        <div class="flow-col-title">Your Leads</div>
-        <div class="flow-db">
-          <div class="flow-db-head">
-            <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></svg>
-            <span>Local Businesses</span>
-          </div>
-          <div class="flow-contact"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg> Nail Salons</div>
-          <div class="flow-contact"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg> Electricians</div>
-          <div class="flow-contact"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg> Hair Salons</div>
-          <div class="flow-contact"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg> Med Spas</div>
-          <div class="flow-contact dim">+ any local business</div>
-        </div>
-      </div>
-
-      <!-- AI CORE -->
-      <div class="flow-col">
-        <div class="flow-col-title">Apex AI Engine</div>
-        <div class="flow-core">
-          <div class="flow-core-ring2"></div>
-          <div class="flow-core-ring"></div>
-          <div class="flow-core-inner"><span>AI</span></div>
-        </div>
-      </div>
-
-      <!-- OUTPUTS -->
-      <div class="flow-col">
-        <div class="flow-col-title">Automated Actions</div>
-        <div class="flow-out">
-          <div class="flow-out-ic"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-          <div class="flow-out-t">Captures &amp; replies to leads 24/7</div>
-        </div>
-        <div class="flow-out">
-          <div class="flow-out-ic"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-          <div class="flow-out-t">Requests Google reviews</div>
-        </div>
-        <div class="flow-out">
-          <div class="flow-out-ic"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div>
-          <div class="flow-out-t">Posts to social media</div>
-        </div>
-        <div class="flow-out">
-          <div class="flow-out-ic"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 013.07 4.18 2 2 0 015 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L9.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 17z"/></svg></div>
-          <div class="flow-out-t">Follows up automatically</div>
-        </div>
-      </div>
-
-      <!-- CUSTOMERS -->
-      <div class="flow-col">
-        <div class="flow-col-title">You Win</div>
-        <div class="flow-cust">
-          <div class="flow-cust-circle">
-            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <div class="flow-cust-badge"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          </div>
-          <div class="flow-cust-stat">More <em>Leads</em></div>
-          <div class="flow-cust-stat">More <em>Reviews</em></div>
-          <div class="flow-cust-stat">More <em>Customers</em></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- feedback loop -->
-    <div class="flow-feedback">
-      Every response &amp; result <em>feeds back into the system</em> — so your AI keeps getting smarter
-    </div>
-
-    <!-- bottom steps -->
-    <div class="flow-steps">
-      <div class="flow-step">
-        <div class="flow-step-ic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-        <div class="flow-step-t">Capture<br>Leads</div>
-      </div>
-      <div class="flow-step">
-        <div class="flow-step-ic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-        <div class="flow-step-t">Qualify<br>&amp; Sort</div>
-      </div>
-      <div class="flow-step">
-        <div class="flow-step-ic"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></div>
-        <div class="flow-step-t">Personalize<br>Replies</div>
-      </div>
-      <div class="flow-step">
-        <div class="flow-step-ic"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-        <div class="flow-step-t">Engage<br>Customers</div>
-      </div>
-      <div class="flow-step">
-        <div class="flow-step-ic"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg></div>
-        <div class="flow-step-t">Convert<br>to Sales</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PROCESS -->
-<section id="process" class="sec">
-  <div class="tag">Process</div>
-  <h2 class="sh">How It <em>Works</em></h2>
-  <p class="ssub">From your first call to a fully automated business in under 48 hours.</p>
-  <div class="proc">
-    <div class="proc-step">
-      <div class="ps-n">01 — BOOK</div>
-      <div class="ps-icon"><div class="ibox"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 010 1.23 2 2 0 012 0h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 14v2.92z"/></svg></div></div>
-      <div class="ps-title">Book a Free Call</div>
-      <div class="ps-desc">We learn your business, goals, and which AI systems will move the needle. 15 minutes, zero pressure.</div>
-    </div>
-    <div class="proc-step">
-      <div class="ps-n">02 — BUILD</div>
-      <div class="ps-icon"><div class="ibox"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div></div>
-      <div class="ps-title">We Build &amp; Launch</div>
-      <div class="ps-desc">Our team sets up your chatbot, review campaigns, and social automation — live within 48 hours.</div>
-    </div>
-    <div class="proc-step">
-      <div class="ps-n">03 — GROW</div>
-      <div class="ps-icon"><div class="ibox"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div></div>
-      <div class="ps-title">Watch It Work</div>
-      <div class="ps-desc">Leads come in, reviews build up, posts go out. Monthly report shows exactly what your AI delivered.</div>
-    </div>
-  </div>
-</section>
-
-<div class="gdiv"></div>
-
-<!-- PRICING -->
-<section id="pricing" class="sec" style="background:linear-gradient(180deg,transparent,rgba(14,165,233,.04),transparent);">
-  <div class="tag">Pricing</div>
-  <h2 class="sh"><em>Pricing</em></h2>
-  <p class="ssub">No contracts. No hidden fees. Cancel anytime.</p>
-  <div class="price-grid">
-    <div class="pc">
-      <div class="pn">Starter</div>
-      <div class="pamt"><sup>$</sup>199</div>
-      <div class="pper">/month</div>
-      <div class="pset">+ $150 one-time setup fee</div>
-      <p class="pdesc">For businesses that want more leads without the tech headache.</p>
-      <ul class="pf">
-        <li><span class="pck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> AI Lead Capture Chatbot</li>
-        <li><span class="pck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> 24/7 automated responses</li>
-        <li><span class="pck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Lead notifications via SMS/email</li>
-        <li><span class="pck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Monthly performance report</li>
-        <li><span class="pck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> 48-hour setup guarantee</li>
-      </ul>
-      <button class="btn btn-ghost" style="width:100%;justify-content:center;" onclick="openModal('signup')">Get Started</button>
-    </div>
-    <div class="pc hot">
-      <div class="pop">Most Popular</div>
-      <div class="pn">Growth</div>
-      <div class="pamt"><sup>$</sup>449</div>
-      <div class="pper">/month</div>
-      <div class="pset">+ $300 one-time setup fee</div>
-      <p class="pdesc">The full system — leads, reviews, social all on autopilot.</p>
-      <ul class="pf">
-        <li><span class="pck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Everything in Starter</li>
-        <li><span class="pck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> AI Review Management</li>
-        <li><span class="pck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Automated Google review requests</li>
-        <li><span class="pck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> AI Social Media Automation</li>
-        <li><span class="pck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> 12 posts/month all platforms</li>
-        <li><span class="pck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Bi-weekly strategy check-ins</li>
-      </ul>
-      <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="openModal('signup')">Book Free Demo →</button>
-    </div>
-    <div class="pc">
-      <div class="pn">Reviews Only</div>
-      <div class="pamt"><sup>$</sup>99</div>
-      <div class="pper">/month</div>
-      <div class="pset">+ $500 one-time setup fee</div>
-      <p class="pdesc">Just want more 5-star Google reviews? The focused option.</p>
-      <ul class="pf">
-        <li><span class="pck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Automated review request system</li>
-        <li><span class="pck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Google + Facebook targeting</li>
-        <li><span class="pck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Review monitoring &amp; alerts</li>
-        <li><span class="pck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Monthly review report</li>
-        <li><span class="pck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Avg 3–5 new reviews/week</li>
-      </ul>
-      <button class="btn btn-ghost" style="width:100%;justify-content:center;" onclick="openModal('signup')">Get Started</button>
-    </div>
-  </div>
-</section>
-
-<div class="gdiv"></div>
-
-<!-- REVIEWS -->
-<section id="reviews" class="sec">
-  <div class="tag">Results</div>
-  <h2 class="sh">What our <em>clients say</em></h2>
-  <p class="ssub">Real businesses, real results across California and Nevada.</p>
-  <div class="rev-grid">
-    <div class="rc">
-      <div class="rstars"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-      <p class="rtext">"Before Apex Standard we were at 3.9 stars. Six weeks later we're at 4.7 and three people this month said they found us through our reviews. It literally runs itself."</p>
-      <div class="rauthor"><div class="rav" style="background:linear-gradient(135deg,#7c3aed,#db2777);">L</div><div><div class="rname">Lisa T.</div><div class="rbiz">Nail Salon · Las Vegas, NV</div></div></div>
-    </div>
-    <div class="rc">
-      <div class="rstars"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-      <p class="rtext">"The AI chatbot captures after-hours leads and I wake up to jobs in my inbox. Paid for itself in the first week with one new job booked overnight."</p>
-      <div class="rauthor"><div class="rav" style="background:linear-gradient(135deg,#0369a1,#0891b2);">M</div><div><div class="rname">Marcus R.</div><div class="rbiz">Electrical Contractor · Sacramento, CA</div></div></div>
-    </div>
-    <div class="rc">
-      <div class="rstars"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-      <p class="rtext">"AI handles our Instagram and engagement is actually up. The Growth package is exactly what my salon needed — I just focus on doing hair."</p>
-      <div class="rauthor"><div class="rav" style="background:linear-gradient(135deg,#0284c7,#06b6d4);">A</div><div><div class="rname">Aaliyah S.</div><div class="rbiz">Hair Salon · Reno, NV</div></div></div>
-    </div>
-  </div>
-</section>
-
-<div class="gdiv"></div>
-
-<!-- CTA -->
-<section id="contact" class="cta-sec">
-  <div class="cta-in">
-    <h2 class="cta-h">Ready to <em>supercharge</em><br>your business?</h2>
-    <p class="cta-sub">Book a free 15-minute demo. We'll show you exactly how it works for your type of business.</p>
-    <div class="cta-btns">
-      <button class="btn btn-primary btn-xl" onclick="openModal('signup')">Get Started Now →</button>
-      <a href="https://calendly.com/itz-silven-apexstandard/30min" class="btn btn-outline btn-xl">Book a Demo</a>
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="fg">
-    <div class="fb">
-      <a href="#" class="logo-wrap">
-        <svg class="logo-svg" style="width:30px;height:30px;"><use href="#apexLogo"/></svg>
-        <span class="logo-name" style="font-size:14px;">APEX<small>Standard</small></span>
-      </a>
-      <p>AI automation for local businesses. Build trust, capture leads, grow online — on autopilot.</p>
-      <div class="fsoc">
-        <a href="#" class="fsb"><svg viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg></a>
-        <a href="#" class="fsb"><svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
-        <a href="mailto:itz.silven@apexstandard.biz" class="fsb"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
-      </div>
-    </div>
-    <div><h4>Services</h4><ul><li><a href="#services">AI Chatbot</a></li><li><a href="#services">Review Management</a></li><li><a href="#services">Social Automation</a></li><li><a href="#pricing">Pricing</a></li></ul></div>
-    <div><h4>Account</h4><ul><li><a href="#" onclick="openModal('login')">Sign In</a></li><li><a href="#" onclick="openModal('signup')">Get Started</a></li><li><a href="#" onclick="openModal('login')">Billing</a></li><li><a href="#" onclick="toggleChat()">Get Help</a></li></ul></div>
-    <div><h4>Company</h4><ul><li><a href="#services">About</a></li><li><a href="#reviews">Results</a></li><li><a href="mailto:itz.silven@apexstandard.biz">Contact</a></li></ul></div>
-  </div>
-  <div class="fb-bot">
-    <p>© 2024 Apex Standard. All rights reserved.</p>
-    <p>itz.silven@apexstandard.biz</p>
-  </div>
-</footer>
-
-</main>
-</div>
-
-<script>
-function openModal(t){document.getElementById('authModal').classList.add('open');switchTab(t);}
-function closeModal(){document.getElementById('authModal').classList.remove('open');}
-function switchTab(t){
-  document.getElementById('t-login').classList.toggle('on',t==='login');
-  document.getElementById('t-signup').classList.toggle('on',t==='signup');
-  document.getElementById('login-form').style.display=t==='login'?'block':'none';
-  document.getElementById('signup-form').style.display=t==='signup'?'block':'none';
-}
-document.getElementById('authModal').addEventListener('click',e=>{if(e.target===document.getElementById('authModal'))closeModal();});
-
-let chatOpen=false;
-function toggleChat(){chatOpen=!chatOpen;document.getElementById('chatWindow').classList.toggle('open',chatOpen);}
-
-const botReplies={
-  'what services do you offer?':'We offer three core AI systems: Lead Capture Chatbot ($150/mo), Review & Reputation Management ($99/mo), and Social Media Automation ($300/mo). The full Growth bundle is $449/mo.',
-  'what are your prices?':'Plans start at $99/mo (Reviews Only), $199/mo (Starter — AI Chatbot), and $449/mo (Growth — everything). All include our 48-hour setup guarantee.',
-  'book a free demo':'Opening our booking calendar now — pick any time that works and we\'ll see you there! If it doesn\'t open, you can reach us at itz.silven@apexstandard.biz.',
-  'how does setup work?':'After signup, our team fully sets everything up within 48 hours — chatbot customized, review campaigns live, social posts scheduled. Zero tech work from you.',
-};
-function quickMsg(text){
-  addMsg(text,'user');
-  setTimeout(()=>{
-    addMsg(botReplies[text.toLowerCase()]||"Great question! Book a free 15-min demo and our team will walk you through everything specific to your business.",'bot');
-    if(text.toLowerCase()==='book a free demo'){
-      setTimeout(()=>{window.open('https://calendly.com/itz-silven-apexstandard/30min','_blank');},900);
-    }
-  },600);
-}
-function addMsg(text,type){
-  const m=document.getElementById('cwMsgs');
-  const d=document.createElement('div');
-  d.className=`msg msg-${type}`;d.textContent=text;
-  m.appendChild(d);m.scrollTop=m.scrollHeight;
-}
-function sendMsg(){
-  const i=document.getElementById('cwInp');const t=i.value.trim();if(!t)return;
-  addMsg(t,'user');i.value='';
-  setTimeout(()=>{addMsg("Thanks for reaching out! For the best answer, book a free 15-minute demo — our team can address your exact situation. Click 'Get Started' above.",'bot');},700);
-}
-
-const sbItems=document.querySelectorAll('.sb-item');
-window.addEventListener('scroll',()=>{
-  let cur='';
-  document.querySelectorAll('section[id]').forEach(s=>{if(window.scrollY>=s.offsetTop-100)cur=s.id;});
-  sbItems.forEach(it=>{const h=it.getAttribute('href');if(h&&h==='#'+cur){sbItems.forEach(i=>i.classList.remove('active'));it.classList.add('active');}});
-});
-
-const io=new IntersectionObserver(en=>{
-  en.forEach((e,i)=>{
-    if(e.isIntersecting){
-      setTimeout(()=>{e.target.style.transition='opacity .4s ease,transform .4s ease';e.target.style.opacity='1';e.target.style.transform='translateY(0)';},(i%4)*80);
-      io.unobserve(e.target);
-    }
-  });
-},{threshold:.08});
-document.querySelectorAll('.bento-card,.pc,.rc,.proc-step,.stat').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(14px)';io.observe(el);});
-</script>
-
-<!-- ═══ THREE.JS — HIGH-CLASS LIQUID AI CORE ═══ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-(function(){
-  const canvas=document.getElementById('hero3d');
-  if(!canvas)return;
+// ─── Scene Setup ───────────────────────────────────────────────────────────
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0x050a12, 1);
 
-  let W=canvas.parentElement.offsetWidth||520;
-  let H=canvas.parentElement.offsetHeight||560;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 0, 22);
 
-  const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-  renderer.setSize(W,H);
-  renderer.setClearColor(0,0);
+// ─── Mouse tracking ─────────────────────────────────────────────────────────
+const mouse = { x: 0, y: 0 };
+window.addEventListener('mousemove', e => {
+  mouse.x = (e.clientX / window.innerWidth - 0.5) * 2;
+  mouse.y = -(e.clientY / window.innerHeight - 0.5) * 2;
+});
 
-  const scene=new THREE.Scene();
-  const cam=new THREE.PerspectiveCamera(42,W/H,.1,100);
-  cam.position.set(0,0,5.4);
-
-  // ───────── ENV MAP (procedural) for glossy reflections ─────────
-  // Builds a small gradient cube so the metal actually reflects light/colour.
-  const envCanvas=document.createElement('canvas');
-  envCanvas.width=envCanvas.height=128;
-  const ex=envCanvas.getContext('2d');
-  const eg=ex.createLinearGradient(0,0,0,128);
-  eg.addColorStop(0,'#0a2942');
-  eg.addColorStop(.45,'#0e4a6b');
-  eg.addColorStop(.5,'#7dd3fc');   // bright horizon band = liquid highlight
-  eg.addColorStop(.55,'#0e4a6b');
-  eg.addColorStop(1,'#04121d');
-  ex.fillStyle=eg;ex.fillRect(0,0,128,128);
-  const envTex=new THREE.CanvasTexture(envCanvas);
-  envTex.mapping=THREE.EquirectangularReflectionMapping;
-  scene.environment=envTex;
-
-  // ───────── PERLIN NOISE ─────────
-  const perm=new Uint8Array(512),pp=new Uint8Array(256);
-  for(let i=0;i<256;i++)pp[i]=i;
-  for(let i=255;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pp[i],pp[j]]=[pp[j],pp[i]];}
-  for(let i=0;i<512;i++)perm[i]=pp[i&255];
-  const fade=t=>t*t*t*(t*(t*6-15)+10);
-  const lerp=(a,b,t)=>a+t*(b-a);
-  function grad(h,x,y,z){const u=h<8?x:y,v=h<4?y:(h===12||h===14?x:z);return ((h&1)===0?u:-u)+((h&2)===0?v:-v);}
-  function noise3(x,y,z){
-    const X=Math.floor(x)&255,Y=Math.floor(y)&255,Z=Math.floor(z)&255;
-    x-=Math.floor(x);y-=Math.floor(y);z-=Math.floor(z);
-    const u=fade(x),v=fade(y),w=fade(z);
-    const A=perm[X]+Y,AA=perm[A]+Z,AB=perm[A+1]+Z;
-    const B=perm[X+1]+Y,BA=perm[B]+Z,BB=perm[B+1]+Z;
-    return lerp(lerp(lerp(grad(perm[AA]&15,x,y,z),grad(perm[BA]&15,x-1,y,z),u),
-      lerp(grad(perm[AB]&15,x,y-1,z),grad(perm[BB]&15,x-1,y-1,z),u),v),
-      lerp(lerp(grad(perm[AA+1]&15,x,y,z-1),grad(perm[BA+1]&15,x-1,y,z-1),u),
-      lerp(grad(perm[AB+1]&15,x,y-1,z-1),grad(perm[BB+1]&15,x-1,y-1,z-1),u),v),w);
+// ─── State definitions ──────────────────────────────────────────────────────
+const STATES = [
+  {
+    name: 'Neural Core',
+    label: 'AI Brain · The Intelligence Engine',
+    color: new THREE.Color(0x3b82f6),
+    accent: new THREE.Color(0x93c5fd),
+    nodeCount: 280,
+    connectionDist: 3.8,
+    spread: 7,
+    pulsate: true,
+  },
+  {
+    name: 'Lead Capture',
+    label: 'AI Chatbot · 24/7 Lead Capture',
+    color: new THREE.Color(0xf97316),
+    accent: new THREE.Color(0xfb923c),
+    nodeCount: 160,
+    connectionDist: 3.5,
+    spread: 5,
+    pulsate: false,
+  },
+  {
+    name: 'Reputation System',
+    label: 'AI Reviews · Auto Reputation Management',
+    color: new THREE.Color(0x10b981),
+    accent: new THREE.Color(0x34d399),
+    nodeCount: 180,
+    connectionDist: 3.8,
+    spread: 6,
+    pulsate: false,
+  },
+  {
+    name: 'Social Engine',
+    label: 'AI Social · Content on Autopilot',
+    color: new THREE.Color(0xa855f7),
+    accent: new THREE.Color(0xc084fc),
+    nodeCount: 170,
+    connectionDist: 3.6,
+    spread: 6.5,
+    pulsate: false,
   }
+];
 
-  // ───────── LIQUID CORE (glossy chrome) ─────────
-  const RES=128;
-  const geo=new THREE.SphereGeometry(1.4,RES,RES);
-  const base=geo.attributes.position.array.slice();
+// ─── Node system ─────────────────────────────────────────────────────────────
+const MAX_NODES = 280;
+const nodePositions = [];
+const nodeTargets = [];
+const nodeVelocities = [];
+const nodeSpeeds = [];
+const nodeRoles = []; // 0=cortex, 1=deep, 2=synapse
 
-  const mat=new THREE.MeshStandardMaterial({
-    color:0x0c2c44,
-    metalness:1.0,
-    roughness:0.16,
-    envMap:envTex,
-    envMapIntensity:1.4,
-    emissive:0x041018,
-    emissiveIntensity:.5,
-  });
-  const core=new THREE.Mesh(geo,mat);
-  scene.add(core);
+// geometry buffers
+const nodeGeo = new THREE.BufferGeometry();
+const posArr = new Float32Array(MAX_NODES * 3);
+const colArr = new Float32Array(MAX_NODES * 3);
+const sizeArr = new Float32Array(MAX_NODES);
 
-  // Inner emissive cyan glow shell — seen through the gloss as energy
-  const innerGeo=new THREE.SphereGeometry(1.18,48,48);
-  const innerMat=new THREE.MeshBasicMaterial({color:0x0ea5e9,transparent:true,opacity:.14});
-  const inner=new THREE.Mesh(innerGeo,innerMat);
-  scene.add(inner);
+for (let i = 0; i < MAX_NODES; i++) {
+  const v = new THREE.Vector3(
+    (Math.random() - 0.5) * 14,
+    (Math.random() - 0.5) * 14,
+    (Math.random() - 0.5) * 14
+  );
+  nodePositions.push(v.clone());
+  nodeTargets.push(v.clone());
+  nodeVelocities.push(new THREE.Vector3());
+  nodeSpeeds.push(0.015 + Math.random() * 0.025);
+  nodeRoles.push(i < 180 ? 0 : i < 240 ? 1 : 2);
 
-  // ───────── FRESNEL RIM SHELL (custom shader = premium edge light) ─────────
-  const rimMat=new THREE.ShaderMaterial({
-    transparent:true,
-    blending:THREE.AdditiveBlending,
-    side:THREE.BackSide,
-    uniforms:{c:{value:new THREE.Color(0x38bdf8)}},
-    vertexShader:`varying vec3 vN;varying vec3 vP;
-      void main(){vN=normalize(normalMatrix*normal);
-      vec4 mv=modelViewMatrix*vec4(position,1.0);vP=mv.xyz;
-      gl_Position=projectionMatrix*mv;}`,
-    fragmentShader:`varying vec3 vN;varying vec3 vP;uniform vec3 c;
-      void main(){vec3 v=normalize(-vP);
-      float f=pow(1.0-max(dot(vN,v),0.0),2.5);
-      gl_FragColor=vec4(c,f*0.9);}`
-  });
-  const rim=new THREE.Mesh(new THREE.SphereGeometry(1.52,64,64),rimMat);
-  scene.add(rim);
+  posArr[i*3]   = v.x;
+  posArr[i*3+1] = v.y;
+  posArr[i*3+2] = v.z;
+  colArr[i*3]   = 0.23;
+  colArr[i*3+1] = 0.51;
+  colArr[i*3+2] = 1.0;
+  // cortex nodes larger, deep smaller, synapses tiny bright
+  sizeArr[i] = i < 180 ? (2 + Math.random() * 3) : i < 240 ? (1.5 + Math.random() * 2) : (1 + Math.random() * 1.5);
+}
 
-  // ───────── SOFT HALO BEHIND ─────────
-  const hc=document.createElement('canvas');hc.width=hc.height=256;
-  const hx=hc.getContext('2d');
-  const hg=hx.createRadialGradient(128,128,8,128,128,128);
-  hg.addColorStop(0,'rgba(56,189,248,0.42)');
-  hg.addColorStop(.4,'rgba(14,165,233,0.14)');
-  hg.addColorStop(1,'rgba(14,165,233,0)');
-  hx.fillStyle=hg;hx.fillRect(0,0,256,256);
-  const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(hc),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
-  halo.scale.set(7,7,1);halo.position.z=-1.2;
-  scene.add(halo);
+nodeGeo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+nodeGeo.setAttribute('color', new THREE.BufferAttribute(colArr, 3));
+nodeGeo.setAttribute('size', new THREE.BufferAttribute(sizeArr, 1));
 
-  // ───────── ORBIT RINGS (3 services = 3 rings) ─────────
-  function makeRing(r,thick,col,op){
-    const m=new THREE.Mesh(new THREE.TorusGeometry(r,thick,10,160),
-      new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:op,blending:THREE.AdditiveBlending}));
-    scene.add(m);return m;
-  }
-  const ring1=makeRing(2.15,.008,0x7dd3fc,.6); ring1.rotation.x=Math.PI/2.1;
-  const ring2=makeRing(2.45,.006,0x38bdf8,.4); ring2.rotation.x=Math.PI/3; ring2.rotation.y=Math.PI/5;
-  const ring3=makeRing(2.75,.005,0x06b6d4,.28);ring3.rotation.x=Math.PI/2.6;ring3.rotation.z=Math.PI/4;
-
-  // ───────── ORBITING NODES ─────────
-  const nodes=[];
-  const ng=new THREE.SphereGeometry(.03,10,10);
-  for(let i=0;i<20;i++){
-    const a=i/20*Math.PI*2,r=2.0+Math.random()*.85;
-    const col=[0x7dd3fc,0x38bdf8,0x06b6d4][i%3];
-    const m=new THREE.Mesh(ng,new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.7+Math.random()*.3,blending:THREE.AdditiveBlending}));
-    const tilt=(Math.random()-.5)*1.4;
-    m.position.set(Math.cos(a)*r,tilt,Math.sin(a)*r);
-    scene.add(m);
-    nodes.push({m,a,r,tilt,s:.0025+Math.random()*.004});
-  }
-
-  // ───────── LIGHTS ─────────
-  scene.add(new THREE.AmbientLight(0x14384f,.7));
-  const key=new THREE.DirectionalLight(0xbae6fd,2.4);key.position.set(4,5,4);scene.add(key);
-  const rimL=new THREE.DirectionalLight(0x06b6d4,1.7);rimL.position.set(-5,-2,-3);scene.add(rimL);
-  const pt=new THREE.PointLight(0x7dd3fc,2.6,12);pt.position.set(0,2,3);scene.add(pt);
-
-  // ───────── DEFORM ─────────
-  const posAttr=geo.attributes.position;
-  function deform(time){
-    const arr=posAttr.array;
-    for(let i=0;i<arr.length;i+=3){
-      const ox=base[i],oy=base[i+1],oz=base[i+2];
-      const L=Math.sqrt(ox*ox+oy*oy+oz*oz);
-      const nx=ox/L,ny=oy/L,nz=oz/L;
-      const n1=noise3(nx*1.3+time*.5, ny*1.3+time*.35, nz*1.3);          // slow swell
-      const n2=noise3(nx*3.0+time*.9, ny*3.0, nz*3.0+time*.7)*.35;       // fine ripple
-      const d=1+(n1+n2)*.14;
-      arr[i]=nx*L*d;arr[i+1]=ny*L*d;arr[i+2]=nz*L*d;
+const nodeMat = new THREE.ShaderMaterial({
+  vertexShader: `
+    attribute float size;
+    attribute vec3 color;
+    varying vec3 vColor;
+    void main() {
+      vColor = color;
+      vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+      gl_PointSize = size * (300.0 / -mvPosition.z);
+      gl_Position = projectionMatrix * mvPosition;
     }
-    posAttr.needsUpdate=true;
-    geo.computeVertexNormals();
+  `,
+  fragmentShader: `
+    varying vec3 vColor;
+    void main() {
+      float d = distance(gl_PointCoord, vec2(0.5));
+      if (d > 0.5) discard;
+      float alpha = 1.0 - smoothstep(0.2, 0.5, d);
+      gl_FragColor = vec4(vColor, alpha);
+    }
+  `,
+  transparent: true,
+  vertexColors: true,
+  depthWrite: false,
+});
+
+const nodePoints = new THREE.Points(nodeGeo, nodeMat);
+scene.add(nodePoints);
+
+// ─── Connection lines ─────────────────────────────────────────────────────────
+const MAX_LINES = 900;
+const lineGeo = new THREE.BufferGeometry();
+const linePosArr = new Float32Array(MAX_LINES * 2 * 3);
+const lineColArr = new Float32Array(MAX_LINES * 2 * 3);
+lineGeo.setAttribute('position', new THREE.BufferAttribute(linePosArr, 3));
+lineGeo.setAttribute('color', new THREE.BufferAttribute(lineColArr, 3));
+
+const lineMat = new THREE.LineSegments(lineGeo, new THREE.LineBasicMaterial({
+  vertexColors: true,
+  transparent: true,
+  opacity: 0.4,
+  depthWrite: false,
+}));
+scene.add(lineMat);
+
+// ─── Synapse pulse particles ──────────────────────────────────────────────────
+const MAX_PULSES = 60;
+const pulses = [];
+for (let i = 0; i < MAX_PULSES; i++) {
+  pulses.push({ from: 0, to: 1, t: Math.random(), speed: 0.008 + Math.random() * 0.014, active: false });
+}
+const pulseGeo = new THREE.BufferGeometry();
+const pulsePosArr = new Float32Array(MAX_PULSES * 3);
+const pulseColArr = new Float32Array(MAX_PULSES * 3);
+const pulseSizeArr = new Float32Array(MAX_PULSES);
+pulseGeo.setAttribute('position', new THREE.BufferAttribute(pulsePosArr, 3));
+pulseGeo.setAttribute('color', new THREE.BufferAttribute(pulseColArr, 3));
+pulseGeo.setAttribute('size', new THREE.BufferAttribute(pulseSizeArr, 1));
+
+const pulseMat = new THREE.ShaderMaterial({
+  vertexShader: `
+    attribute float size;
+    attribute vec3 color;
+    varying vec3 vColor;
+    void main() {
+      vColor = color;
+      vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+      gl_PointSize = size * (300.0 / -mvPosition.z);
+      gl_Position = projectionMatrix * mvPosition;
+    }
+  `,
+  fragmentShader: `
+    varying vec3 vColor;
+    void main() {
+      float d = distance(gl_PointCoord, vec2(0.5));
+      if (d > 0.5) discard;
+      float alpha = 1.0 - smoothstep(0.0, 0.5, d);
+      gl_FragColor = vec4(vColor, alpha * 0.9);
+    }
+  `,
+  transparent: true,
+  vertexColors: true,
+  depthWrite: false,
+});
+const pulsePoints = new THREE.Points(pulseGeo, pulseMat);
+scene.add(pulsePoints);
+
+let activeEdges = [];
+
+// ─── Central core sphere ─────────────────────────────────────────────────────
+const coreGeo = new THREE.SphereGeometry(1.2, 32, 32);
+const coreMat = new THREE.MeshBasicMaterial({ color: 0x3b82f6, wireframe: true });
+const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+scene.add(coreMesh);
+
+// inner glow sphere
+const glowGeo = new THREE.SphereGeometry(0.9, 16, 16);
+const glowMat = new THREE.MeshBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.15 });
+const glowMesh = new THREE.Mesh(glowGeo, glowMat);
+scene.add(glowMesh);
+
+// ring
+const ringGeo = new THREE.TorusGeometry(2.2, 0.03, 8, 80);
+const ringMat = new THREE.MeshBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.4 });
+const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+ringMesh.rotation.x = Math.PI / 2;
+scene.add(ringMesh);
+
+const ring2Geo = new THREE.TorusGeometry(2.8, 0.015, 8, 80);
+const ring2Mat = new THREE.MeshBasicMaterial({ color: 0x60a5fa, transparent: true, opacity: 0.2 });
+const ring2Mesh = new THREE.Mesh(ring2Geo, ring2Mat);
+ring2Mesh.rotation.x = Math.PI / 3;
+ring2Mesh.rotation.y = Math.PI / 5;
+scene.add(ring2Mesh);
+
+// ─── State shapes ─────────────────────────────────────────────────────────────
+function buildBrainPositions(n, spread) {
+  const pts = [];
+
+  // ── Helper: place a node on a hemisphere surface with sulcal folds
+  function brainSurface(side, u, v, layer) {
+    // side: -1 = left, +1 = right
+    // u,v in [0,1] parametric on hemisphere
+    const theta = u * Math.PI;          // polar
+    const phi   = v * Math.PI;          // azimuth half
+    const sx = side * (Math.sin(theta) * Math.cos(phi));
+    const sy = Math.cos(theta);
+    const sz = Math.sin(theta) * Math.sin(phi);
+
+    // sulci grooves — fold the surface inward at regular bands
+    const foldU = Math.sin(u * Math.PI * 5) * 0.18;  // gyri ridges
+    const foldV = Math.sin(v * Math.PI * 4) * 0.12;
+    const foldW = Math.sin((u + v) * Math.PI * 3) * 0.08;
+    const fold  = 1.0 - Math.abs(foldU + foldV + foldW) * 0.4;
+
+    // layer offset: cortex surface, white matter mid, deep core
+    const r = spread * (0.55 + layer * 0.22) * fold;
+
+    // hemisphere separation gap
+    const xOff = side * spread * 0.08;
+
+    return new THREE.Vector3(sx * r + xOff, sy * r, sz * r);
   }
 
-  // ───────── MOUSE PARALLAX (subtle, premium) ─────────
-  let tgX=0,tgY=0,curX=0,curY=0;
-  window.addEventListener('mousemove',e=>{
-    tgX=(e.clientX/window.innerWidth-.5)*.5;
-    tgY=(e.clientY/window.innerHeight-.5)*.5;
-  });
-
-  let t=0;
-  function tick(){
-    requestAnimationFrame(tick);
-    t+=.006;
-    deform(t);
-
-    curX+=(tgX-curX)*.04; curY+=(tgY-curY)*.04;
-    const grp=[core,inner,rim,ring1,ring2,ring3];
-    core.rotation.y+=.002; inner.rotation.y-=.0014; rim.rotation.y+=.002;
-    core.rotation.x=curY*.5; core.rotation.z=curX*.3;
-    rim.rotation.x=curY*.5;
-
-    ring1.rotation.z+=.0032; ring2.rotation.z-=.0026; ring3.rotation.z+=.002;
-
-    pt.position.x=Math.sin(t*1.6)*2.2;
-    pt.position.y=2+Math.cos(t*1.2)*1;
-    inner.material.opacity=.12+Math.sin(t*2)*.05;
-
-    nodes.forEach(N=>{
-      N.a+=N.s;
-      N.m.position.x=Math.cos(N.a)*N.r;
-      N.m.position.z=Math.sin(N.a)*N.r;
-      N.m.position.y=N.tilt+Math.sin(t+N.a*3)*.15;
-    });
-
-    scene.rotation.x=curY*.15;
-    scene.rotation.y=curX*.2;
-
-    renderer.render(scene,cam);
+  // ── Left hemisphere cortex (surface layer)
+  const cortexL = Math.floor(n * 0.30);
+  for (let i = 0; i < cortexL; i++) {
+    const u = Math.random();
+    const v = Math.random();
+    pts.push(brainSurface(-1, u, v, 1.0));
   }
-  tick();
 
-  // fade in service labels once model is alive
-  setTimeout(()=>{document.querySelectorAll('.svc-label').forEach((el,i)=>{
-    el.style.animation=`floaty 6s ease-in-out ${i*-2}s infinite, svcIn .8s ease ${.3+i*.15}s forwards`;
-  });},300);
+  // ── Right hemisphere cortex
+  const cortexR = Math.floor(n * 0.30);
+  for (let i = 0; i < cortexR; i++) {
+    const u = Math.random();
+    const v = Math.random();
+    pts.push(brainSurface(1, u, v, 1.0));
+  }
 
-  // resize
-  window.addEventListener('resize',()=>{
-    W=canvas.parentElement.offsetWidth;H=canvas.parentElement.offsetHeight;
-    renderer.setSize(W,H);cam.aspect=W/H;cam.updateProjectionMatrix();
-  });
-})();
+  // ── White matter / mid layer both hemispheres
+  const white = Math.floor(n * 0.18);
+  for (let i = 0; i < white; i++) {
+    const side = i % 2 === 0 ? -1 : 1;
+    pts.push(brainSurface(side, Math.random(), Math.random(), 0.6));
+  }
+
+  // ── Deep core / brainstem clusters
+  const deep = Math.floor(n * 0.10);
+  for (let i = 0; i < deep; i++) {
+    const side = i % 2 === 0 ? -1 : 1;
+    pts.push(brainSurface(side, Math.random(), Math.random(), 0.25));
+  }
+
+  // ── Corpus callosum — bridge nodes connecting hemispheres (center band)
+  const corpus = Math.floor(n * 0.07);
+  for (let i = 0; i < corpus; i++) {
+    const x = (Math.random() - 0.5) * spread * 0.18;
+    const y = (Math.random() - 0.5) * spread * 0.35;
+    const z = (Math.random() * 0.6 + 0.1) * spread * 0.55;
+    pts.push(new THREE.Vector3(x, y, z));
+  }
+
+  // ── Frontal lobe emphasis (forward cluster)
+  const frontal = Math.floor(n * 0.05);
+  for (let i = 0; i < frontal; i++) {
+    const side = i % 2 === 0 ? -1 : 1;
+    const x = side * (spread * 0.35 + Math.random() * spread * 0.2);
+    const y = spread * 0.1 + Math.random() * spread * 0.3;
+    const z = -spread * 0.3 + Math.random() * spread * 0.3;
+    pts.push(new THREE.Vector3(x, y, z));
+  }
+
+  return pts;
+}
+
+function buildChatPositions(n, spread) {
+  // speech bubble grid — chatbot
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    const col = Math.floor(i % 10);
+    const row = Math.floor(i / 10);
+    const x = (col - 4.5) * (spread * 0.22);
+    const y = (row - Math.floor(n/10)/2) * (spread * 0.28);
+    const z = (Math.random() - 0.5) * 1.5;
+    pts.push(new THREE.Vector3(x, y, z));
+  }
+  return pts;
+}
+
+function buildReviewPositions(n, spread) {
+  // star pattern — reviews
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    const star = i % 5;
+    const ring = Math.floor(i / 5);
+    const angle = (star / 5) * Math.PI * 2 + (ring * 0.3);
+    const radius = 1.5 + ring * (spread / (n / 5)) * 0.8;
+    const y = (Math.random() - 0.5) * spread * 0.4;
+    pts.push(new THREE.Vector3(
+      Math.cos(angle) * radius,
+      y,
+      Math.sin(angle) * radius
+    ));
+  }
+  return pts;
+}
+
+function buildSocialPositions(n, spread) {
+  // network hub-spoke — social
+  const pts = [];
+  const hubs = 6;
+  for (let i = 0; i < n; i++) {
+    const hub = i % hubs;
+    const hubAngle = (hub / hubs) * Math.PI * 2;
+    const hubX = Math.cos(hubAngle) * spread * 0.55;
+    const hubZ = Math.sin(hubAngle) * spread * 0.55;
+    const local = (Math.random() - 0.5) * spread * 0.4;
+    const local2 = (Math.random() - 0.5) * spread * 0.4;
+    pts.push(new THREE.Vector3(
+      hubX + local,
+      (Math.random() - 0.5) * spread * 0.5,
+      hubZ + local2
+    ));
+  }
+  return pts;
+}
+
+const shapeFns = [buildBrainPositions, buildChatPositions, buildReviewPositions, buildSocialPositions];
+
+function setTargets(stateIdx) {
+  const s = STATES[stateIdx];
+  const fn = shapeFns[stateIdx];
+  const pts = fn(s.nodeCount, s.spread);
+  for (let i = 0; i < MAX_NODES; i++) {
+    const pt = pts[i % pts.length];
+    const jitter = new THREE.Vector3(
+      (Math.random()-0.5)*0.5,
+      (Math.random()-0.5)*0.5,
+      (Math.random()-0.5)*0.5
+    );
+    nodeTargets[i].copy(pt).add(jitter);
+  }
+}
+
+// ─── Color lerp helpers ───────────────────────────────────────────────────────
+let currentColor = new THREE.Color(0x3b82f6);
+let targetColor  = new THREE.Color(0x3b82f6);
+let currentAccent = new THREE.Color(0x60a5fa);
+let targetAccent  = new THREE.Color(0x60a5fa);
+const lerpColor = new THREE.Color();
+
+// ─── State machine ────────────────────────────────────────────────────────────
+const INTERVAL = 4000; // 4 seconds per state
+let stateIdx = 0;
+let lastSwitch = performance.now();
+let transitioning = false;
+
+const serviceNameEl = document.getElementById('service-name');
+const progressBar = document.getElementById('progress-bar');
+const dots = [0,1,2,3].map(i => document.getElementById('dot-'+i));
+
+function switchState(idx) {
+  stateIdx = idx;
+  const s = STATES[idx];
+  targetColor.copy(s.color);
+  targetAccent.copy(s.accent);
+  setTargets(idx);
+  serviceNameEl.style.opacity = '0';
+  setTimeout(() => {
+    serviceNameEl.textContent = s.label;
+    serviceNameEl.style.opacity = '1';
+  }, 400);
+  dots.forEach((d,i) => d.classList.toggle('active', i === idx));
+}
+
+setTargets(0);
+serviceNameEl.textContent = STATES[0].label;
+
+// ─── Main render loop ─────────────────────────────────────────────────────────
+const clock = new THREE.Clock();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+  const now = performance.now();
+
+  // auto-advance state
+  const elapsed = now - lastSwitch;
+  const pct = Math.min(elapsed / INTERVAL, 1);
+  progressBar.style.width = (pct * 100) + '%';
+  progressBar.style.transition = 'width ' + (INTERVAL/1000) + 's linear';
+
+  if (elapsed > INTERVAL) {
+    lastSwitch = now;
+    switchState((stateIdx + 1) % STATES.length);
+  }
+
+  // lerp colors
+  currentColor.lerp(targetColor, 0.03);
+  currentAccent.lerp(targetAccent, 0.03);
+
+  // update nodes
+  const positions = nodeGeo.attributes.position.array;
+  const colors = nodeGeo.attributes.color.array;
+  for (let i = 0; i < MAX_NODES; i++) {
+    const pos = nodePositions[i];
+    const tgt = nodeTargets[i];
+    const vel = nodeVelocities[i];
+    const spd = nodeSpeeds[i];
+
+    // spring toward target
+    vel.x += (tgt.x - pos.x) * 0.06;
+    vel.y += (tgt.y - pos.y) * 0.06;
+    vel.z += (tgt.z - pos.z) * 0.06;
+    vel.multiplyScalar(0.88);
+
+    // subtle oscillation
+    pos.x += vel.x + Math.sin(t * spd * 2 + i) * 0.008;
+    pos.y += vel.y + Math.cos(t * spd * 1.5 + i) * 0.008;
+    pos.z += vel.z + Math.sin(t * spd + i * 0.5) * 0.006;
+
+    positions[i*3]   = pos.x;
+    positions[i*3+1] = pos.y;
+    positions[i*3+2] = pos.z;
+
+    // color shimmer
+    const shimmer = 0.85 + 0.15 * Math.sin(t * 2 + i * 0.3);
+    lerpColor.lerpColors(currentColor, currentAccent, Math.sin(i * 0.7) * 0.5 + 0.5);
+    colors[i*3]   = lerpColor.r * shimmer;
+    colors[i*3+1] = lerpColor.g * shimmer;
+    colors[i*3+2] = lerpColor.b * shimmer;
+  }
+  nodeGeo.attributes.position.needsUpdate = true;
+  nodeGeo.attributes.color.needsUpdate = true;
+
+  // update connections + collect active edges
+  const lp = lineGeo.attributes.position.array;
+  const lc = lineGeo.attributes.color.array;
+  const dist = STATES[stateIdx].connectionDist;
+  let lineIdx = 0;
+  activeEdges = [];
+  for (let i = 0; i < MAX_NODES && lineIdx < MAX_LINES; i++) {
+    for (let j = i+1; j < MAX_NODES && lineIdx < MAX_LINES; j++) {
+      const dx = nodePositions[i].x - nodePositions[j].x;
+      const dy = nodePositions[i].y - nodePositions[j].y;
+      const dz = nodePositions[i].z - nodePositions[j].z;
+      const d = Math.sqrt(dx*dx + dy*dy + dz*dz);
+      if (d < dist) {
+        const alpha = (1 - d / dist) * 0.7;
+        lp[lineIdx*6]   = nodePositions[i].x;
+        lp[lineIdx*6+1] = nodePositions[i].y;
+        lp[lineIdx*6+2] = nodePositions[i].z;
+        lp[lineIdx*6+3] = nodePositions[j].x;
+        lp[lineIdx*6+4] = nodePositions[j].y;
+        lp[lineIdx*6+5] = nodePositions[j].z;
+        const c = currentColor;
+        // brain state: brighter inner lines
+        const brightness = stateIdx === 0 ? alpha * 1.2 : alpha;
+        lc[lineIdx*6]   = c.r * brightness;
+        lc[lineIdx*6+1] = c.g * brightness;
+        lc[lineIdx*6+2] = c.b * brightness;
+        lc[lineIdx*6+3] = c.r * alpha * 0.4;
+        lc[lineIdx*6+4] = c.g * alpha * 0.4;
+        lc[lineIdx*6+5] = c.b * alpha * 0.4;
+        activeEdges.push([i, j]);
+        lineIdx++;
+      }
+    }
+  }
+  for (let k = lineIdx; k < MAX_LINES; k++) {
+    lp[k*6] = lp[k*6+1] = lp[k*6+2] = 0;
+    lp[k*6+3] = lp[k*6+4] = lp[k*6+5] = 0;
+  }
+  lineGeo.attributes.position.needsUpdate = true;
+  lineGeo.attributes.color.needsUpdate = true;
+  lineGeo.setDrawRange(0, lineIdx * 2);
+
+  // ── Synapse pulses (brain state only, subtle on others)
+  const pulseActive = stateIdx === 0;
+  if (activeEdges.length > 0) {
+    for (let p = 0; p < MAX_PULSES; p++) {
+      const pulse = pulses[p];
+      if (!pulse.active) {
+        if (Math.random() < (pulseActive ? 0.04 : 0.008)) {
+          const edge = activeEdges[Math.floor(Math.random() * activeEdges.length)];
+          pulse.from = edge[0];
+          pulse.to   = edge[1];
+          pulse.t    = 0;
+          pulse.speed = 0.01 + Math.random() * 0.02;
+          pulse.active = true;
+        }
+      }
+      if (pulse.active) {
+        pulse.t += pulse.speed;
+        if (pulse.t >= 1) { pulse.active = false; }
+        const a = nodePositions[pulse.from];
+        const b = nodePositions[pulse.to];
+        pulsePosArr[p*3]   = a.x + (b.x - a.x) * pulse.t;
+        pulsePosArr[p*3+1] = a.y + (b.y - a.y) * pulse.t;
+        pulsePosArr[p*3+2] = a.z + (b.z - a.z) * pulse.t;
+        const bright = 1.0 - Math.abs(pulse.t - 0.5) * 1.5;
+        pulseColArr[p*3]   = currentAccent.r * bright + 0.4;
+        pulseColArr[p*3+1] = currentAccent.g * bright + 0.4;
+        pulseColArr[p*3+2] = currentAccent.b * bright + 0.5;
+        pulseSizeArr[p] = pulseActive ? (3 + bright * 4) : (1.5 + bright * 2);
+      } else {
+        pulsePosArr[p*3] = pulsePosArr[p*3+1] = pulsePosArr[p*3+2] = 0;
+        pulseSizeArr[p] = 0;
+      }
+    }
+    pulseGeo.attributes.position.needsUpdate = true;
+    pulseGeo.attributes.color.needsUpdate = true;
+    pulseGeo.attributes.size.needsUpdate = true;
+  }
+
+  // core rotation + mouse parallax
+  const targetRX = mouse.y * 0.3;
+  const targetRY = mouse.x * 0.3;
+  coreMesh.rotation.y += 0.008;
+  coreMesh.rotation.x += 0.003;
+  coreMesh.material.color.copy(currentColor);
+  glowMesh.material.color.copy(currentColor);
+
+  ringMesh.rotation.z += 0.004;
+  ringMesh.material.color.copy(currentColor);
+  ring2Mesh.rotation.y += 0.006;
+  ring2Mesh.rotation.x += 0.002;
+  ring2Mesh.material.color.copy(currentAccent);
+
+  // pulse core
+  const pulse = 1 + 0.05 * Math.sin(t * 2.5);
+  coreMesh.scale.setScalar(pulse);
+  glowMesh.scale.setScalar(pulse * 1.1);
+
+  // camera mouse parallax
+  camera.position.x += (mouse.x * 2 - camera.position.x) * 0.04;
+  camera.position.y += (mouse.y * 1.5 - camera.position.y) * 0.04;
+  camera.lookAt(0, 0, 0);
+
+  renderer.render(scene, camera);
+}
+
+// ─── Resize ───────────────────────────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+animate();
 </script>
 </body>
 </html>
