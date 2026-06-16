@@ -3,691 +3,697 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Apex Standard – Hero Animation</title>
+<title>Apex Standard — Collect leads. Build reputation. Stay consistent.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+:root{
+  --bg:#05080d;
+  --bg-2:#0a1019;
+  --bg-3:#0e1622;
+  --line:rgba(255,255,255,.08);
+  --line-2:rgba(255,255,255,.14);
+  --txt:#f4f8ff;
+  --muted:#8a97ab;
+  --muted-2:#5d6a7d;
+  --sky:#38bdf8;
+  --cyan:#06b6d4;
+  --grad:linear-gradient(135deg,#38bdf8 0%,#06b6d4 100%);
+  --grad-soft:linear-gradient(135deg,rgba(56,189,248,.14),rgba(6,182,212,.14));
+  --r:16px;
+  --maxw:1180px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--txt);
+  font-family:'Inter',system-ui,sans-serif;
+  line-height:1.5;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+.grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 
-  body {
-    background: #050a12;
-    font-family: 'Inter', sans-serif;
-    overflow: hidden;
-    height: 100vh;
-    width: 100vw;
-  }
+/* buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-weight:600;font-size:15px;border-radius:999px;
+  padding:12px 22px;cursor:pointer;border:1px solid transparent;
+  transition:transform .15s ease,box-shadow .25s ease,background .2s ease,border-color .2s;
+  white-space:nowrap;
+}
+.btn-primary{background:var(--grad);color:#04121b;box-shadow:0 8px 30px rgba(56,189,248,.28)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(56,189,248,.42)}
+.btn-ghost{background:transparent;color:var(--txt);border-color:var(--line-2)}
+.btn-ghost:hover{border-color:var(--sky);background:rgba(56,189,248,.06)}
+.btn-lg{padding:15px 30px;font-size:16px}
+.btn:focus-visible{outline:2px solid var(--sky);outline-offset:3px}
 
-  #canvas-container {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-  }
+/* nav */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(5,8,13,.72);backdrop-filter:blur(14px);
+  border-bottom:1px solid transparent;transition:border-color .3s,background .3s;
+}
+.nav.scrolled{border-bottom-color:var(--line);background:rgba(5,8,13,.9)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:68px}
+.logo{display:flex;align-items:center;gap:11px;font-weight:800;font-size:19px;letter-spacing:-.02em}
+.logo-mark{
+  width:30px;height:30px;border-radius:8px;background:var(--grad);
+  display:grid;place-items:center;color:#04121b;font-weight:900;font-size:16px;
+  box-shadow:0 4px 16px rgba(56,189,248,.4);
+}
+.nav-right{display:flex;align-items:center;gap:12px}
+.nav-signin{font-weight:600;font-size:15px;color:var(--muted);padding:10px 6px}
+.nav-signin:hover{color:var(--txt)}
 
-  canvas {
-    display: block;
-  }
+/* hero */
+.hero{position:relative;padding:160px 0 70px;text-align:center;overflow:hidden}
+.hero-glow{
+  position:absolute;top:-120px;left:50%;transform:translateX(-50%);
+  width:900px;height:600px;pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(56,189,248,.22),rgba(6,182,212,.08) 40%,transparent 70%);
+  filter:blur(20px);
+}
+.hero-content{position:relative;z-index:2}
+.pill{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid var(--line-2);border-radius:999px;
+  padding:7px 16px;font-size:13px;color:var(--muted);margin-bottom:28px;
+  background:rgba(255,255,255,.02);
+}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--sky);box-shadow:0 0 10px var(--sky)}
+h1.hero-h{
+  font-size:clamp(40px,6.4vw,76px);font-weight:900;line-height:1.02;
+  letter-spacing:-.035em;max-width:14ch;margin:0 auto 22px;
+}
+.hero-sub{font-size:clamp(17px,2vw,21px);color:var(--muted);max-width:38ch;margin:0 auto 34px}
+.hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.hero-note{margin-top:18px;font-size:13px;color:var(--muted-2)}
 
-  /* HUD overlay */
-  #hud {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
+/* hero visual */
+.hero-visual{
+  position:relative;z-index:2;margin-top:64px;
+  border:1px solid var(--line);border-radius:20px;
+  background:linear-gradient(180deg,var(--bg-3),var(--bg-2));
+  box-shadow:0 40px 120px rgba(0,0,0,.6),0 0 0 1px rgba(56,189,248,.06);
+  overflow:hidden;
+}
+.hv-bar{display:flex;align-items:center;gap:7px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.hv-bar i{width:11px;height:11px;border-radius:50%;background:#27313f;display:inline-block}
+.hv-bar i:nth-child(1){background:#ff5f57}.hv-bar i:nth-child(2){background:#febc2e}.hv-bar i:nth-child(3){background:#28c840}
+.hv-url{margin-left:14px;font-size:12px;color:var(--muted-2);background:var(--bg);padding:5px 14px;border-radius:8px;border:1px solid var(--line)}
+.hv-body{display:grid;grid-template-columns:230px 1fr;min-height:340px}
+.hv-side{border-right:1px solid var(--line);padding:20px 16px;background:rgba(0,0,0,.2)}
+.hv-side h5{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted-2);margin-bottom:14px}
+.hv-nav-item{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:9px;font-size:13px;color:var(--muted);margin-bottom:4px}
+.hv-nav-item.on{background:var(--grad-soft);color:var(--txt);border:1px solid rgba(56,189,248,.2)}
+.hv-nav-item .ic{width:16px;height:16px;border-radius:5px;background:var(--grad);opacity:.85}
+.hv-main{padding:26px}
+.hv-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
+.hv-stat{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--bg-3)}
+.hv-stat .lbl{font-size:11px;color:var(--muted-2);margin-bottom:8px}
+.hv-stat .val{font-size:24px;font-weight:800;letter-spacing:-.02em}
+.hv-stat .val.up{color:var(--sky)}
+.hv-chart{border:1px solid var(--line);border-radius:12px;padding:18px;background:var(--bg-3);height:170px;position:relative}
+.hv-chart .ct{font-size:12px;color:var(--muted-2);margin-bottom:10px}
+.hv-bars{display:flex;align-items:flex-end;gap:10px;height:110px}
+.hv-bars span{flex:1;border-radius:6px 6px 0 0;background:var(--grad);opacity:.85}
 
-  #state-label {
-    position: absolute;
-    bottom: 48px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 24px;
-    align-items: center;
-  }
+/* trust */
+.trust{padding:54px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.trust p{text-align:center;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2);margin-bottom:30px}
+.trust-row{display:flex;flex-wrap:wrap;justify-content:center;gap:20px 46px;align-items:center}
+.trust-logo{
+  font-weight:700;font-size:17px;color:var(--muted);letter-spacing:-.01em;
+  opacity:.6;filter:grayscale(1);transition:opacity .2s,color .2s;
+  display:flex;align-items:center;gap:9px;
+}
+.trust-logo:hover{opacity:1;color:var(--txt)}
+.trust-logo .tg{width:20px;height:20px;border-radius:6px;background:var(--grad);opacity:.7}
 
-  .dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.2);
-    transition: background 0.4s, transform 0.4s;
-  }
+/* section base */
+section.block{padding:96px 0}
+.eyebrow{display:inline-block;font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--sky);margin-bottom:16px}
+.h2{font-size:clamp(30px,4.4vw,48px);font-weight:800;letter-spacing:-.03em;line-height:1.08}
+.lead{color:var(--muted);font-size:18px;max-width:52ch;margin-top:18px}
+.sec-head{margin-bottom:54px}
+.sec-head.center{text-align:center}
+.sec-head.center .lead{margin-left:auto;margin-right:auto}
 
-  .dot.active {
-    background: #f97316;
-    transform: scale(1.5);
-    box-shadow: 0 0 12px #f97316;
-  }
+/* feature cards */
+.features{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.fcard{
+  border:1px solid var(--line);border-radius:var(--r);padding:28px 24px;
+  background:linear-gradient(180deg,var(--bg-2),var(--bg));
+  transition:transform .2s,border-color .2s,box-shadow .2s;
+}
+.fcard:hover{transform:translateY(-4px);border-color:rgba(56,189,248,.3);box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.fic{width:46px;height:46px;border-radius:12px;background:var(--grad-soft);border:1px solid rgba(56,189,248,.25);display:grid;place-items:center;margin-bottom:20px}
+.fic svg{width:22px;height:22px;stroke:var(--sky)}
+.fcard h3{font-size:17px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em}
+.fcard p{font-size:14px;color:var(--muted);line-height:1.55}
 
-  #service-name {
-    position: absolute;
-    bottom: 80px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.5);
-    transition: opacity 0.5s;
-    white-space: nowrap;
-  }
+/* case study */
+.case{
+  border-radius:24px;overflow:hidden;border:1px solid var(--line);
+  background:linear-gradient(135deg,#0b1422,#080d15);
+  display:grid;grid-template-columns:1.05fr 1fr;
+  box-shadow:0 30px 80px rgba(0,0,0,.45);
+}
+.case-img{position:relative;background:linear-gradient(135deg,#0e1b2e,#0a131f);padding:40px;display:flex;flex-direction:column;justify-content:center;gap:18px;border-right:1px solid var(--line)}
+.case-rating{display:flex;align-items:center;gap:20px}
+.cr-box{flex:1;border:1px solid var(--line);border-radius:14px;padding:18px;background:rgba(0,0,0,.25);text-align:center}
+.cr-box .num{font-size:38px;font-weight:900;letter-spacing:-.03em}
+.cr-box .num.old{color:var(--muted)}
+.cr-box .num.new{color:var(--sky)}
+.cr-box .stars{font-size:15px;letter-spacing:2px;margin-top:6px}
+.cr-box .stars.old{color:var(--muted-2)}
+.cr-box .stars.new{color:#fbbf24}
+.cr-box small{display:block;font-size:11px;color:var(--muted-2);margin-top:8px;text-transform:uppercase;letter-spacing:.08em}
+.cr-arrow{font-size:26px;color:var(--sky)}
+.case-meta{display:flex;flex-wrap:wrap;gap:10px}
+.chip{font-size:12px;border:1px solid var(--line-2);border-radius:999px;padding:6px 13px;color:var(--muted)}
+.chip b{color:var(--sky);font-weight:700}
+.case-body{padding:44px 42px;display:flex;flex-direction:column;justify-content:center}
+.case-body .tag{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--sky);font-weight:600;margin-bottom:20px}
+.case-quote{font-size:22px;font-weight:600;line-height:1.4;letter-spacing:-.015em;margin-bottom:24px}
+.case-author{display:flex;align-items:center;gap:13px;margin-bottom:30px}
+.ca-av{width:44px;height:44px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-weight:800;color:#04121b}
+.case-author .nm{font-weight:600;font-size:15px}
+.case-author .rl{font-size:13px;color:var(--muted)}
 
-  #top-label {
-    position: absolute;
-    top: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 10px;
-    letter-spacing: 6px;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.2);
-  }
+/* what it is */
+.what-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:60px;align-items:center}
+.what-list{margin-top:28px;display:flex;flex-direction:column;gap:16px}
+.what-item{display:flex;gap:14px;align-items:flex-start}
+.what-item .ck{flex-shrink:0;width:24px;height:24px;border-radius:7px;background:var(--grad-soft);border:1px solid rgba(56,189,248,.3);display:grid;place-items:center}
+.what-item .ck svg{width:13px;height:13px;stroke:var(--sky)}
+.what-item p{font-size:15px;color:var(--muted)}.what-item p b{color:var(--txt);font-weight:600}
+.ui-mock{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--bg-2);box-shadow:0 30px 70px rgba(0,0,0,.5)}
+.um-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.um-head .t{font-weight:700;font-size:14px}
+.um-head .b{font-size:11px;color:var(--sky);border:1px solid rgba(56,189,248,.3);border-radius:999px;padding:4px 11px;background:var(--grad-soft)}
+.um-chat{padding:20px;display:flex;flex-direction:column;gap:14px}
+.bubble{max-width:78%;padding:12px 16px;border-radius:14px;font-size:14px;line-height:1.45}
+.bubble.bot{background:var(--bg-3);border:1px solid var(--line);border-bottom-left-radius:4px}
+.bubble.user{align-self:flex-end;background:var(--grad);color:#04121b;font-weight:500;border-bottom-right-radius:4px}
+.um-typing{display:flex;gap:5px;padding:6px 0}
+.um-typing span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blink 1.4s infinite both}
+.um-typing span:nth-child(2){animation-delay:.2s}.um-typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,60%,100%{opacity:.25}30%{opacity:1}}
 
-  /* Progress bar */
-  #progress-bar {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #f97316, #3b82f6);
-    width: 0%;
-    transition: width linear;
-  }
+/* tabs */
+.tabs-head{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:40px;border:1px solid var(--line);border-radius:999px;padding:6px;width:fit-content;margin-left:auto;margin-right:auto;background:var(--bg-2)}
+.tab-btn{
+  border:none;background:transparent;color:var(--muted);font-family:inherit;
+  font-weight:600;font-size:15px;padding:11px 24px;border-radius:999px;cursor:pointer;transition:.2s;
+}
+.tab-btn.active{background:var(--grad);color:#04121b;box-shadow:0 6px 20px rgba(56,189,248,.3)}
+.tab-btn:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.tab-panel{display:none;animation:fade .4s ease}
+.tab-panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.tab-grid{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center;border:1px solid var(--line);border-radius:22px;padding:46px;background:linear-gradient(135deg,var(--bg-2),var(--bg))}
+.tab-grid .tp h3{font-size:30px;font-weight:800;letter-spacing:-.025em;margin-bottom:8px}
+.tab-grid .price{display:inline-block;font-size:14px;color:var(--sky);font-weight:600;margin-bottom:18px;border:1px solid rgba(56,189,248,.3);border-radius:999px;padding:5px 14px;background:var(--grad-soft)}
+.tab-grid .tp p{color:var(--muted);font-size:16px;margin-bottom:22px}
+.tab-feats{display:flex;flex-direction:column;gap:12px}
+.tab-feats li{list-style:none;display:flex;gap:11px;align-items:center;font-size:15px}
+.tab-feats li svg{width:18px;height:18px;stroke:var(--sky);flex-shrink:0}
+.tab-vis{border:1px solid var(--line);border-radius:16px;background:var(--bg-3);padding:24px;min-height:280px;display:flex;flex-direction:column;gap:14px;justify-content:center}
+.vis-row{display:flex;align-items:center;gap:13px;padding:13px 15px;border:1px solid var(--line);border-radius:11px;background:var(--bg-2)}
+.vis-row .vi{width:34px;height:34px;border-radius:9px;background:var(--grad-soft);border:1px solid rgba(56,189,248,.25);display:grid;place-items:center;flex-shrink:0}
+.vis-row .vi svg{width:16px;height:16px;stroke:var(--sky)}
+.vis-row .vt{font-size:13px;font-weight:600}
+.vis-row .vs{font-size:11px;color:var(--muted-2);margin-top:2px}
+.vis-row .vb{margin-left:auto;font-size:11px;color:var(--sky);font-weight:600}
+
+/* supported services */
+.serv-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.serv-col{border:1px solid var(--line);border-radius:var(--r);padding:30px;background:var(--bg-2)}
+.serv-col h4{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--sky);margin-bottom:20px;font-weight:600}
+.serv-col ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.serv-col li{display:flex;gap:9px;align-items:center;font-size:14px;color:var(--muted)}
+.serv-col li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--grad);flex-shrink:0}
+
+/* resources */
+.res-row{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.rcard{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--bg-2);transition:transform .2s,border-color .2s}
+.rcard:hover{transform:translateY(-4px);border-color:rgba(56,189,248,.3)}
+.rcard .rtop{height:120px;background:linear-gradient(135deg,#0e1b2e,#0a131f);position:relative;overflow:hidden}
+.rcard .rtop::after{content:"";position:absolute;inset:0;background:var(--grad-soft);opacity:.5}
+.rcard .rtop .ri{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;z-index:2;opacity:.85}
+.rcard .rtop .ri svg{width:40px;height:40px;stroke:var(--sky)}
+.rcard .rbody{padding:20px}
+.rcard .rlabel{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--sky);font-weight:600;margin-bottom:10px}
+.rcard h4{font-size:15px;font-weight:700;line-height:1.35;letter-spacing:-.01em}
+.rcard .rmeta{margin-top:14px;font-size:12px;color:var(--muted-2)}
+
+/* pull quote */
+.pullquote{text-align:center;padding:30px 0}
+.pq-mark{font-size:60px;line-height:0;color:var(--sky);font-family:Georgia,serif;opacity:.4;margin-bottom:10px}
+.pq-text{font-size:clamp(24px,3.6vw,38px);font-weight:600;font-style:italic;letter-spacing:-.02em;line-height:1.3;max-width:20ch;margin:0 auto 30px}
+.pq-attr{display:flex;align-items:center;gap:13px;justify-content:center}
+.pq-av{width:48px;height:48px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-weight:800;color:#04121b}
+.pq-attr .nm{font-weight:600}.pq-attr .rl{font-size:13px;color:var(--muted)}
+
+/* final cta */
+.final{position:relative;text-align:center;padding:100px 0;overflow:hidden;border-top:1px solid var(--line)}
+.final-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:500px;background:radial-gradient(ellipse,rgba(56,189,248,.18),transparent 70%);filter:blur(20px);pointer-events:none}
+.final h2{position:relative;font-size:clamp(32px,5vw,58px);font-weight:900;letter-spacing:-.035em;line-height:1.05;max-width:18ch;margin:0 auto 22px}
+.final p{position:relative;color:var(--muted);font-size:18px;margin-bottom:34px}
+.final-cta{position:relative;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding:64px 0 36px;background:var(--bg-2)}
+.foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+.foot-brand .logo{margin-bottom:16px}
+.foot-brand p{font-size:14px;color:var(--muted);max-width:30ch;line-height:1.6}
+.foot-col h5{font-size:13px;font-weight:700;margin-bottom:16px}
+.foot-col a{display:block;font-size:14px;color:var(--muted);margin-bottom:11px;transition:color .15s}
+.foot-col a:hover{color:var(--sky)}
+.foot-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid var(--line);flex-wrap:wrap;gap:14px}
+.foot-bottom p{font-size:13px;color:var(--muted-2)}
+.foot-social{display:flex;gap:12px}
+.foot-social a{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);transition:.2s}
+.foot-social a:hover{border-color:var(--sky);color:var(--sky)}
+.foot-social svg{width:16px;height:16px}
+
+/* responsive */
+@media(max-width:980px){
+  .hv-body{grid-template-columns:1fr}.hv-side{display:none}
+  .features{grid-template-columns:repeat(2,1fr)}
+  .case{grid-template-columns:1fr}.case-img{border-right:none;border-bottom:1px solid var(--line)}
+  .what-grid{grid-template-columns:1fr;gap:40px}
+  .tab-grid{grid-template-columns:1fr;gap:34px;padding:32px}
+  .serv-grid{grid-template-columns:1fr}
+  .res-row{grid-template-columns:repeat(2,1fr)}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:32px}
+  .foot-brand{grid-column:1/-1}
+}
+@media(max-width:560px){
+  section.block{padding:64px 0}
+  .features,.res-row{grid-template-columns:1fr}
+  .serv-col ul{grid-template-columns:1fr}
+  .case-body{padding:30px 24px}.case-img{padding:28px}
+  .nav-signin{display:none}
+  .foot-grid{grid-template-columns:1fr}
+  .tabs-head{width:100%}.tab-btn{flex:1;padding:11px 8px;font-size:13px}
+  .hero{padding:130px 0 50px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
-<div id="canvas-container">
-  <canvas id="c"></canvas>
-  <div id="hud">
-    <span id="top-label">Apex Standard · AI Automation</span>
-    <span id="service-name">Neural Core</span>
-    <div id="state-label">
-      <div class="dot active" id="dot-0"></div>
-      <div class="dot" id="dot-1"></div>
-      <div class="dot" id="dot-2"></div>
-      <div class="dot" id="dot-3"></div>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a href="#" class="logo"><span class="logo-mark">A</span>Apex Standard</a>
+    <div class="nav-right">
+      <a href="mailto:itz.silven@apexstandard.biz" class="nav-signin">Sign In</a>
+      <a class="btn btn-primary book">Book Demo</a>
     </div>
   </div>
-  <div id="progress-bar"></div>
-</div>
+</nav>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-glow"></div>
+  <div class="wrap hero-content">
+    <span class="pill"><span class="dot"></span>AI growth systems for local business</span>
+    <h1 class="hero-h">Collect leads. Build reputation. <span class="grad-text">Stay consistent.</span> Repeat.</h1>
+    <p class="hero-sub">One system that captures every lead, grows your star rating, and keeps your social feed alive — without you lifting a finger.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary btn-lg book">Book a 30-min demo</a>
+      <a class="btn btn-ghost btn-lg" href="#what">See how it works</a>
+    </div>
+    <p class="hero-note">No contracts • Setup in 3 days • Cancel anytime</p>
+
+    <!-- hero visual -->
+    <div class="hero-visual">
+      <div class="hv-bar"><i></i><i></i><i></i><span class="hv-url">app.apexstandard.biz/dashboard</span></div>
+      <div class="hv-body">
+        <aside class="hv-side">
+          <h5>Workspace</h5>
+          <div class="hv-nav-item on"><span class="ic"></span>Overview</div>
+          <div class="hv-nav-item"><span class="ic"></span>Lead Inbox</div>
+          <div class="hv-nav-item"><span class="ic"></span>Reviews</div>
+          <div class="hv-nav-item"><span class="ic"></span>Social Queue</div>
+          <div class="hv-nav-item"><span class="ic"></span>Reports</div>
+        </aside>
+        <div class="hv-main">
+          <div class="hv-cards">
+            <div class="hv-stat"><div class="lbl">Leads captured</div><div class="val up">+142</div></div>
+            <div class="hv-stat"><div class="lbl">Avg. rating</div><div class="val up">4.7★</div></div>
+            <div class="hv-stat"><div class="lbl">Posts published</div><div class="val">28</div></div>
+          </div>
+          <div class="hv-chart">
+            <div class="ct">Leads this month</div>
+            <div class="hv-bars">
+              <span style="height:38%"></span><span style="height:52%"></span><span style="height:46%"></span>
+              <span style="height:64%"></span><span style="height:58%"></span><span style="height:78%"></span>
+              <span style="height:71%"></span><span style="height:92%"></span><span style="height:84%"></span>
+              <span style="height:100%"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- TRUST -->
+<section class="trust">
+  <div class="wrap">
+    <p>Trusted by local businesses across CA &amp; NV</p>
+    <div class="trust-row">
+      <span class="trust-logo"><span class="tg"></span>Dreamers Hair &amp; Nail</span>
+      <span class="trust-logo"><span class="tg"></span>Nevada Nails &amp; Lash</span>
+      <span class="trust-logo"><span class="tg"></span>Smart Grid Electric</span>
+      <span class="trust-logo"><span class="tg"></span>Your Hairapy</span>
+      <span class="trust-logo"><span class="tg"></span>Atmosphere Nail Spa</span>
+      <span class="trust-logo"><span class="tg"></span>Cooke Lighting</span>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow">Why Apex Standard</span>
+      <h2 class="h2">Everything your front desk forgets to do</h2>
+      <p class="lead">Three automations that run the moment a customer finds you — capture, reputation, and presence, handled.</p>
+    </div>
+    <div class="features">
+      <div class="fcard">
+        <div class="fic"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <h3>Never miss a lead</h3>
+        <p>An AI chatbot answers visitors 24/7, books appointments, and drops every contact straight into your inbox.</p>
+      </div>
+      <div class="fcard">
+        <div class="fic"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9 16 14 18 21 12 17 6 21 8 14 2 9 9 9"/></svg></div>
+        <h3>Climb the star rating</h3>
+        <p>Automatically request reviews from happy customers and intercept unhappy ones before they go public.</p>
+      </div>
+      <div class="fcard">
+        <div class="fic"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="3.5"/><circle cx="17" cy="7" r="1.2" fill="currentColor"/></svg></div>
+        <h3>Always-on social</h3>
+        <p>Branded posts scheduled and published for you, so your feed never goes quiet between busy weeks.</p>
+      </div>
+      <div class="fcard">
+        <div class="fic"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></div>
+        <h3>See what's working</h3>
+        <p>One dashboard ties leads, reviews, and posts together so you know exactly where growth is coming from.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CASE STUDY -->
+<section class="block" style="padding-top:0">
+  <div class="wrap">
+    <div class="case">
+      <div class="case-img">
+        <div class="case-rating">
+          <div class="cr-box"><div class="num old">3.9</div><div class="stars old">★★★★☆</div><small>Before</small></div>
+          <div class="cr-arrow">→</div>
+          <div class="cr-box"><div class="num new">4.7</div><div class="stars new">★★★★★</div><small>6 weeks later</small></div>
+        </div>
+        <div class="case-meta">
+          <span class="chip"><b>+118</b> new reviews</span>
+          <span class="chip"><b>3×</b> booking requests</span>
+          <span class="chip"><b>0</b> extra staff hours</span>
+        </div>
+      </div>
+      <div class="case-body">
+        <span class="tag">Customer Story — Nail Salon</span>
+        <p class="case-quote">"We went from 3.9 to 4.7 stars in six weeks. New clients now mention our reviews when they book — Apex Standard did the asking for us, every single day."</p>
+        <div class="case-author">
+          <div class="ca-av">M</div>
+          <div><div class="nm">Maya R.</div><div class="rl">Owner, Atmosphere Nail Spa</div></div>
+        </div>
+        <a class="btn btn-primary book">Get results like this</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT IT IS -->
+<section class="block" id="what">
+  <div class="wrap">
+    <div class="what-grid">
+      <div>
+        <span class="eyebrow">What it is</span>
+        <h2 class="h2">A growth engine that runs while you work the chair</h2>
+        <p class="lead">Apex Standard plugs into your website and Google profile, then quietly does the follow-up your team never has time for.</p>
+        <div class="what-list">
+          <div class="what-item"><span class="ck"><svg fill="none" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><p><b>Captures</b> every website visitor with a chatbot that books and qualifies in real time.</p></div>
+          <div class="what-item"><span class="ck"><svg fill="none" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><p><b>Requests reviews</b> by text and email at the perfect moment after each visit.</p></div>
+          <div class="what-item"><span class="ck"><svg fill="none" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><p><b>Publishes social posts</b> on a schedule you approve once and forget.</p></div>
+        </div>
+      </div>
+      <div class="ui-mock">
+        <div class="um-head"><span class="t">Lead Capture Chatbot</span><span class="b">● Live</span></div>
+        <div class="um-chat">
+          <div class="bubble bot">Hi! 👋 Looking to book an appointment or have a question?</div>
+          <div class="bubble user">Do you have any openings this Saturday?</div>
+          <div class="bubble bot">We do! I have 11:30 AM and 2:00 PM open. Want me to hold one for you?</div>
+          <div class="bubble user">2 PM please</div>
+          <div class="um-typing"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TABS -->
+<section class="block" style="background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow">Capabilities</span>
+      <h2 class="h2">Pick one. Or run all three together.</h2>
+    </div>
+    <div class="tabs-head" role="tablist">
+      <button class="tab-btn active" role="tab" data-tab="t1">AI Chatbot</button>
+      <button class="tab-btn" role="tab" data-tab="t2">Review System</button>
+      <button class="tab-btn" role="tab" data-tab="t3">Social Media</button>
+    </div>
+
+    <div class="tab-panel active" id="t1">
+      <div class="tab-grid">
+        <div class="tp">
+          <h3>AI Lead Capture Chatbot</h3>
+          <span class="price">$100/mo + $250 setup</span>
+          <p>A trained assistant on your site that answers questions, books appointments, and captures contacts around the clock.</p>
+          <ul class="tab-feats">
+            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>24/7 instant replies to visitors</li>
+            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Books straight into your calendar</li>
+            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Every lead logged to your inbox</li>
+          </ul>
+        </div>
+        <div class="tab-vis">
+          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><div><div class="vt">New conversation</div><div class="vs">Visitor from Google</div></div><span class="vb">Now</span></div>
+          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg></span><div><div class="vt">Appointment booked</div><div class="vs">Saturday · 2:00 PM</div></div><span class="vb">✓</span></div>
+          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span><div><div class="vt">Lead saved</div><div class="vs">Added to inbox</div></div><span class="vb">✓</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="t2">
+      <div class="tab-grid">
+        <div class="tp">
+          <h3>Review &amp; Reputation Management</h3>
+          <span class="price">$100/mo + $150 setup</span>
+          <p>Turn happy customers into 5-star reviews automatically — and catch problems privately before they ever go public.</p>
+          <ul class="tab-feats">
+            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Automated review requests by text &amp; email</li>
+            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Negative feedback routed to you first</li>
+            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Live rating tracking on one dashboard</li>
+          </ul>
+        </div>
+        <div class="tab-vis">
+          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9 16 14 18 21 12 17 6 21 8 14 2 9 9 9"/></svg></span><div><div class="vt">★★★★★ review posted</div><div class="vs">"Best mani I've had!"</div></div><span class="vb">+1</span></div>
+          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></span><div><div class="vt">Request sent</div><div class="vs">14 customers today</div></div><span class="vb">Sent</span></div>
+          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span><div><div class="vt">Rating trend</div><div class="vs">3.9 → 4.7 ★</div></div><span class="vb">↑</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="t3">
+      <div class="tab-grid">
+        <div class="tp">
+          <h3>Social Media Automation</h3>
+          <span class="price">$100/mo + $450 setup</span>
+          <p>A steady stream of branded posts created and published for you, so your business always looks active and open.</p>
+          <ul class="tab-feats">
+            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Branded posts written for your business</li>
+            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Scheduled and published automatically</li>
+            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>You approve the plan once a month</li>
+          </ul>
+        </div>
+        <div class="tab-vis">
+          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="3.5"/></svg></span><div><div class="vt">Post published</div><div class="vs">"Fall nail looks 🍂"</div></div><span class="vb">Live</span></div>
+          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg></span><div><div class="vt">3 posts scheduled</div><div class="vs">This week</div></div><span class="vb">Queued</span></div>
+          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.6a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.07a5.5 5.5 0 1 0-7.78 7.78L12 21l8.84-8.62a5.5 5.5 0 0 0 0-7.78z"/></svg></span><div><div class="vt">Engagement</div><div class="vs">+64% this month</div></div><span class="vb">↑</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUPPORTED SERVICES -->
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow">Built for your industry</span>
+      <h2 class="h2">Tuned for the businesses we serve</h2>
+    </div>
+    <div class="serv-grid">
+      <div class="serv-col">
+        <h4>Beauty &amp; Personal Care</h4>
+        <ul>
+          <li>Nail Salons</li><li>Hair Salons</li>
+          <li>Med Spas</li><li>Lash &amp; Brow Studios</li>
+          <li>Barbershops</li><li>Day Spas</li>
+        </ul>
+      </div>
+      <div class="serv-col">
+        <h4>Home &amp; Trade Services</h4>
+        <ul>
+          <li>Electricians</li><li>Lighting Contractors</li>
+          <li>HVAC</li><li>Plumbers</li>
+          <li>Landscapers</li><li>Cleaning Services</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESOURCES -->
+<section class="block" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow">Resources</span>
+      <h2 class="h2">Guides to grow your local business</h2>
+    </div>
+    <div class="res-row">
+      <a class="rcard book">
+        <div class="rtop"><span class="ri"><svg fill="none" stroke-width="1.6" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span></div>
+        <div class="rbody"><div class="rlabel">Playbook</div><h4>How a chatbot can recover 40% of missed bookings</h4><div class="rmeta">5 min read</div></div>
+      </a>
+      <a class="rcard book">
+        <div class="rtop"><span class="ri"><svg fill="none" stroke-width="1.6" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9 16 14 18 21 12 17 6 21 8 14 2 9 9 9"/></svg></span></div>
+        <div class="rbody"><div class="rlabel">Guide</div><h4>From 3.9 to 4.7: a 6-week reputation roadmap</h4><div class="rmeta">7 min read</div></div>
+      </a>
+      <a class="rcard book">
+        <div class="rtop"><span class="ri"><svg fill="none" stroke-width="1.6" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="3.5"/></svg></span></div>
+        <div class="rbody"><div class="rlabel">Template</div><h4>30 days of social posts for salons &amp; spas</h4><div class="rmeta">Free download</div></div>
+      </a>
+      <a class="rcard book">
+        <div class="rtop"><span class="ri"><svg fill="none" stroke-width="1.6" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span></div>
+        <div class="rbody"><div class="rlabel">Case Study</div><h4>Why electricians win more jobs with after-hours capture</h4><div class="rmeta">4 min read</div></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- PULL QUOTE -->
+<section class="block" style="background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap pullquote">
+    <div class="pq-mark">"</div>
+    <p class="pq-text">It feels like we hired a full marketing team — but it just runs by itself.</p>
+    <div class="pq-attr">
+      <div class="pq-av">D</div>
+      <div style="text-align:left"><div class="nm">Devon C.</div><div class="rl">Owner, Cooke Lighting &amp; Electric</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final">
+  <div class="final-glow"></div>
+  <div class="wrap">
+    <h2>Ready to collect, build, and stay consistent?</h2>
+    <p>Book a 30-minute demo and see your business running on Apex Standard.</p>
+    <div class="final-cta">
+      <a class="btn btn-primary btn-lg book">Book your demo</a>
+      <a class="btn btn-ghost btn-lg" href="mailto:itz.silven@apexstandard.biz">Email us</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="#" class="logo"><span class="logo-mark">A</span>Apex Standard</a>
+        <p>AI growth systems that collect leads, build reputation, and keep local businesses consistent.</p>
+      </div>
+      <div class="foot-col">
+        <h5>Services</h5>
+        <a class="book">AI Chatbot</a>
+        <a class="book">Review System</a>
+        <a class="book">Social Media</a>
+        <a class="book">Full Bundle</a>
+      </div>
+      <div class="foot-col">
+        <h5>Industries</h5>
+        <a class="book">Nail Salons</a>
+        <a class="book">Hair Salons</a>
+        <a class="book">Med Spas</a>
+        <a class="book">Electricians</a>
+      </div>
+      <div class="foot-col">
+        <h5>Company</h5>
+        <a href="#what">How it works</a>
+        <a class="book">Pricing</a>
+        <a class="book">Case studies</a>
+        <a href="mailto:itz.silven@apexstandard.biz">Contact</a>
+      </div>
+      <div class="foot-col">
+        <h5>Get started</h5>
+        <a class="book">Book a demo</a>
+        <a href="mailto:itz.silven@apexstandard.biz">itz.silven@apexstandard.biz</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <p>© 2026 Apex Standard. All rights reserved.</p>
+      <div class="foot-social">
+        <a class="book" aria-label="Instagram"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+        <a class="book" aria-label="Facebook"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="mailto:itz.silven@apexstandard.biz" aria-label="Email"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
 <script>
-// ─── Scene Setup ───────────────────────────────────────────────────────────
-const canvas = document.getElementById('c');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x050a12, 1);
-
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 0, 22);
-
-// ─── Mouse tracking ─────────────────────────────────────────────────────────
-const mouse = { x: 0, y: 0 };
-window.addEventListener('mousemove', e => {
-  mouse.x = (e.clientX / window.innerWidth - 0.5) * 2;
-  mouse.y = -(e.clientY / window.innerHeight - 0.5) * 2;
+const CALENDLY="https://calendly.com/itz-silven-apexstandard/30min";
+document.querySelectorAll(".book").forEach(el=>{
+  el.style.cursor="pointer";
+  el.addEventListener("click",e=>{e.preventDefault();window.open(CALENDLY,"_blank","noopener");});
 });
-
-// ─── State definitions ──────────────────────────────────────────────────────
-const STATES = [
-  {
-    name: 'Neural Core',
-    label: 'AI Brain · The Intelligence Engine',
-    color: new THREE.Color(0x3b82f6),
-    accent: new THREE.Color(0x93c5fd),
-    nodeCount: 280,
-    connectionDist: 3.8,
-    spread: 7,
-    pulsate: true,
-  },
-  {
-    name: 'Lead Capture',
-    label: 'AI Chatbot · 24/7 Lead Capture',
-    color: new THREE.Color(0xf97316),
-    accent: new THREE.Color(0xfb923c),
-    nodeCount: 160,
-    connectionDist: 3.5,
-    spread: 5,
-    pulsate: false,
-  },
-  {
-    name: 'Reputation System',
-    label: 'AI Reviews · Auto Reputation Management',
-    color: new THREE.Color(0x10b981),
-    accent: new THREE.Color(0x34d399),
-    nodeCount: 180,
-    connectionDist: 3.8,
-    spread: 6,
-    pulsate: false,
-  },
-  {
-    name: 'Social Engine',
-    label: 'AI Social · Content on Autopilot',
-    color: new THREE.Color(0xa855f7),
-    accent: new THREE.Color(0xc084fc),
-    nodeCount: 170,
-    connectionDist: 3.6,
-    spread: 6.5,
-    pulsate: false,
-  }
-];
-
-// ─── Node system ─────────────────────────────────────────────────────────────
-const MAX_NODES = 280;
-const nodePositions = [];
-const nodeTargets = [];
-const nodeVelocities = [];
-const nodeSpeeds = [];
-const nodeRoles = []; // 0=cortex, 1=deep, 2=synapse
-
-// geometry buffers
-const nodeGeo = new THREE.BufferGeometry();
-const posArr = new Float32Array(MAX_NODES * 3);
-const colArr = new Float32Array(MAX_NODES * 3);
-const sizeArr = new Float32Array(MAX_NODES);
-
-for (let i = 0; i < MAX_NODES; i++) {
-  const v = new THREE.Vector3(
-    (Math.random() - 0.5) * 14,
-    (Math.random() - 0.5) * 14,
-    (Math.random() - 0.5) * 14
-  );
-  nodePositions.push(v.clone());
-  nodeTargets.push(v.clone());
-  nodeVelocities.push(new THREE.Vector3());
-  nodeSpeeds.push(0.015 + Math.random() * 0.025);
-  nodeRoles.push(i < 180 ? 0 : i < 240 ? 1 : 2);
-
-  posArr[i*3]   = v.x;
-  posArr[i*3+1] = v.y;
-  posArr[i*3+2] = v.z;
-  colArr[i*3]   = 0.23;
-  colArr[i*3+1] = 0.51;
-  colArr[i*3+2] = 1.0;
-  // cortex nodes larger, deep smaller, synapses tiny bright
-  sizeArr[i] = i < 180 ? (2 + Math.random() * 3) : i < 240 ? (1.5 + Math.random() * 2) : (1 + Math.random() * 1.5);
-}
-
-nodeGeo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
-nodeGeo.setAttribute('color', new THREE.BufferAttribute(colArr, 3));
-nodeGeo.setAttribute('size', new THREE.BufferAttribute(sizeArr, 1));
-
-const nodeMat = new THREE.ShaderMaterial({
-  vertexShader: `
-    attribute float size;
-    attribute vec3 color;
-    varying vec3 vColor;
-    void main() {
-      vColor = color;
-      vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-      gl_PointSize = size * (300.0 / -mvPosition.z);
-      gl_Position = projectionMatrix * mvPosition;
-    }
-  `,
-  fragmentShader: `
-    varying vec3 vColor;
-    void main() {
-      float d = distance(gl_PointCoord, vec2(0.5));
-      if (d > 0.5) discard;
-      float alpha = 1.0 - smoothstep(0.2, 0.5, d);
-      gl_FragColor = vec4(vColor, alpha);
-    }
-  `,
-  transparent: true,
-  vertexColors: true,
-  depthWrite: false,
+const nav=document.getElementById("nav");
+addEventListener("scroll",()=>nav.classList.toggle("scrolled",scrollY>20));
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.tab).classList.add("active");
+  });
 });
-
-const nodePoints = new THREE.Points(nodeGeo, nodeMat);
-scene.add(nodePoints);
-
-// ─── Connection lines ─────────────────────────────────────────────────────────
-const MAX_LINES = 900;
-const lineGeo = new THREE.BufferGeometry();
-const linePosArr = new Float32Array(MAX_LINES * 2 * 3);
-const lineColArr = new Float32Array(MAX_LINES * 2 * 3);
-lineGeo.setAttribute('position', new THREE.BufferAttribute(linePosArr, 3));
-lineGeo.setAttribute('color', new THREE.BufferAttribute(lineColArr, 3));
-
-const lineMat = new THREE.LineSegments(lineGeo, new THREE.LineBasicMaterial({
-  vertexColors: true,
-  transparent: true,
-  opacity: 0.4,
-  depthWrite: false,
-}));
-scene.add(lineMat);
-
-// ─── Synapse pulse particles ──────────────────────────────────────────────────
-const MAX_PULSES = 60;
-const pulses = [];
-for (let i = 0; i < MAX_PULSES; i++) {
-  pulses.push({ from: 0, to: 1, t: Math.random(), speed: 0.008 + Math.random() * 0.014, active: false });
-}
-const pulseGeo = new THREE.BufferGeometry();
-const pulsePosArr = new Float32Array(MAX_PULSES * 3);
-const pulseColArr = new Float32Array(MAX_PULSES * 3);
-const pulseSizeArr = new Float32Array(MAX_PULSES);
-pulseGeo.setAttribute('position', new THREE.BufferAttribute(pulsePosArr, 3));
-pulseGeo.setAttribute('color', new THREE.BufferAttribute(pulseColArr, 3));
-pulseGeo.setAttribute('size', new THREE.BufferAttribute(pulseSizeArr, 1));
-
-const pulseMat = new THREE.ShaderMaterial({
-  vertexShader: `
-    attribute float size;
-    attribute vec3 color;
-    varying vec3 vColor;
-    void main() {
-      vColor = color;
-      vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-      gl_PointSize = size * (300.0 / -mvPosition.z);
-      gl_Position = projectionMatrix * mvPosition;
-    }
-  `,
-  fragmentShader: `
-    varying vec3 vColor;
-    void main() {
-      float d = distance(gl_PointCoord, vec2(0.5));
-      if (d > 0.5) discard;
-      float alpha = 1.0 - smoothstep(0.0, 0.5, d);
-      gl_FragColor = vec4(vColor, alpha * 0.9);
-    }
-  `,
-  transparent: true,
-  vertexColors: true,
-  depthWrite: false,
-});
-const pulsePoints = new THREE.Points(pulseGeo, pulseMat);
-scene.add(pulsePoints);
-
-let activeEdges = [];
-
-// ─── Central core sphere ─────────────────────────────────────────────────────
-const coreGeo = new THREE.SphereGeometry(1.2, 32, 32);
-const coreMat = new THREE.MeshBasicMaterial({ color: 0x3b82f6, wireframe: true });
-const coreMesh = new THREE.Mesh(coreGeo, coreMat);
-scene.add(coreMesh);
-
-// inner glow sphere
-const glowGeo = new THREE.SphereGeometry(0.9, 16, 16);
-const glowMat = new THREE.MeshBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.15 });
-const glowMesh = new THREE.Mesh(glowGeo, glowMat);
-scene.add(glowMesh);
-
-// ring
-const ringGeo = new THREE.TorusGeometry(2.2, 0.03, 8, 80);
-const ringMat = new THREE.MeshBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.4 });
-const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-ringMesh.rotation.x = Math.PI / 2;
-scene.add(ringMesh);
-
-const ring2Geo = new THREE.TorusGeometry(2.8, 0.015, 8, 80);
-const ring2Mat = new THREE.MeshBasicMaterial({ color: 0x60a5fa, transparent: true, opacity: 0.2 });
-const ring2Mesh = new THREE.Mesh(ring2Geo, ring2Mat);
-ring2Mesh.rotation.x = Math.PI / 3;
-ring2Mesh.rotation.y = Math.PI / 5;
-scene.add(ring2Mesh);
-
-// ─── State shapes ─────────────────────────────────────────────────────────────
-function buildBrainPositions(n, spread) {
-  const pts = [];
-
-  // ── Helper: place a node on a hemisphere surface with sulcal folds
-  function brainSurface(side, u, v, layer) {
-    // side: -1 = left, +1 = right
-    // u,v in [0,1] parametric on hemisphere
-    const theta = u * Math.PI;          // polar
-    const phi   = v * Math.PI;          // azimuth half
-    const sx = side * (Math.sin(theta) * Math.cos(phi));
-    const sy = Math.cos(theta);
-    const sz = Math.sin(theta) * Math.sin(phi);
-
-    // sulci grooves — fold the surface inward at regular bands
-    const foldU = Math.sin(u * Math.PI * 5) * 0.18;  // gyri ridges
-    const foldV = Math.sin(v * Math.PI * 4) * 0.12;
-    const foldW = Math.sin((u + v) * Math.PI * 3) * 0.08;
-    const fold  = 1.0 - Math.abs(foldU + foldV + foldW) * 0.4;
-
-    // layer offset: cortex surface, white matter mid, deep core
-    const r = spread * (0.55 + layer * 0.22) * fold;
-
-    // hemisphere separation gap
-    const xOff = side * spread * 0.08;
-
-    return new THREE.Vector3(sx * r + xOff, sy * r, sz * r);
-  }
-
-  // ── Left hemisphere cortex (surface layer)
-  const cortexL = Math.floor(n * 0.30);
-  for (let i = 0; i < cortexL; i++) {
-    const u = Math.random();
-    const v = Math.random();
-    pts.push(brainSurface(-1, u, v, 1.0));
-  }
-
-  // ── Right hemisphere cortex
-  const cortexR = Math.floor(n * 0.30);
-  for (let i = 0; i < cortexR; i++) {
-    const u = Math.random();
-    const v = Math.random();
-    pts.push(brainSurface(1, u, v, 1.0));
-  }
-
-  // ── White matter / mid layer both hemispheres
-  const white = Math.floor(n * 0.18);
-  for (let i = 0; i < white; i++) {
-    const side = i % 2 === 0 ? -1 : 1;
-    pts.push(brainSurface(side, Math.random(), Math.random(), 0.6));
-  }
-
-  // ── Deep core / brainstem clusters
-  const deep = Math.floor(n * 0.10);
-  for (let i = 0; i < deep; i++) {
-    const side = i % 2 === 0 ? -1 : 1;
-    pts.push(brainSurface(side, Math.random(), Math.random(), 0.25));
-  }
-
-  // ── Corpus callosum — bridge nodes connecting hemispheres (center band)
-  const corpus = Math.floor(n * 0.07);
-  for (let i = 0; i < corpus; i++) {
-    const x = (Math.random() - 0.5) * spread * 0.18;
-    const y = (Math.random() - 0.5) * spread * 0.35;
-    const z = (Math.random() * 0.6 + 0.1) * spread * 0.55;
-    pts.push(new THREE.Vector3(x, y, z));
-  }
-
-  // ── Frontal lobe emphasis (forward cluster)
-  const frontal = Math.floor(n * 0.05);
-  for (let i = 0; i < frontal; i++) {
-    const side = i % 2 === 0 ? -1 : 1;
-    const x = side * (spread * 0.35 + Math.random() * spread * 0.2);
-    const y = spread * 0.1 + Math.random() * spread * 0.3;
-    const z = -spread * 0.3 + Math.random() * spread * 0.3;
-    pts.push(new THREE.Vector3(x, y, z));
-  }
-
-  return pts;
-}
-
-function buildChatPositions(n, spread) {
-  // speech bubble grid — chatbot
-  const pts = [];
-  for (let i = 0; i < n; i++) {
-    const col = Math.floor(i % 10);
-    const row = Math.floor(i / 10);
-    const x = (col - 4.5) * (spread * 0.22);
-    const y = (row - Math.floor(n/10)/2) * (spread * 0.28);
-    const z = (Math.random() - 0.5) * 1.5;
-    pts.push(new THREE.Vector3(x, y, z));
-  }
-  return pts;
-}
-
-function buildReviewPositions(n, spread) {
-  // star pattern — reviews
-  const pts = [];
-  for (let i = 0; i < n; i++) {
-    const star = i % 5;
-    const ring = Math.floor(i / 5);
-    const angle = (star / 5) * Math.PI * 2 + (ring * 0.3);
-    const radius = 1.5 + ring * (spread / (n / 5)) * 0.8;
-    const y = (Math.random() - 0.5) * spread * 0.4;
-    pts.push(new THREE.Vector3(
-      Math.cos(angle) * radius,
-      y,
-      Math.sin(angle) * radius
-    ));
-  }
-  return pts;
-}
-
-function buildSocialPositions(n, spread) {
-  // network hub-spoke — social
-  const pts = [];
-  const hubs = 6;
-  for (let i = 0; i < n; i++) {
-    const hub = i % hubs;
-    const hubAngle = (hub / hubs) * Math.PI * 2;
-    const hubX = Math.cos(hubAngle) * spread * 0.55;
-    const hubZ = Math.sin(hubAngle) * spread * 0.55;
-    const local = (Math.random() - 0.5) * spread * 0.4;
-    const local2 = (Math.random() - 0.5) * spread * 0.4;
-    pts.push(new THREE.Vector3(
-      hubX + local,
-      (Math.random() - 0.5) * spread * 0.5,
-      hubZ + local2
-    ));
-  }
-  return pts;
-}
-
-const shapeFns = [buildBrainPositions, buildChatPositions, buildReviewPositions, buildSocialPositions];
-
-function setTargets(stateIdx) {
-  const s = STATES[stateIdx];
-  const fn = shapeFns[stateIdx];
-  const pts = fn(s.nodeCount, s.spread);
-  for (let i = 0; i < MAX_NODES; i++) {
-    const pt = pts[i % pts.length];
-    const jitter = new THREE.Vector3(
-      (Math.random()-0.5)*0.5,
-      (Math.random()-0.5)*0.5,
-      (Math.random()-0.5)*0.5
-    );
-    nodeTargets[i].copy(pt).add(jitter);
-  }
-}
-
-// ─── Color lerp helpers ───────────────────────────────────────────────────────
-let currentColor = new THREE.Color(0x3b82f6);
-let targetColor  = new THREE.Color(0x3b82f6);
-let currentAccent = new THREE.Color(0x60a5fa);
-let targetAccent  = new THREE.Color(0x60a5fa);
-const lerpColor = new THREE.Color();
-
-// ─── State machine ────────────────────────────────────────────────────────────
-const INTERVAL = 4000; // 4 seconds per state
-let stateIdx = 0;
-let lastSwitch = performance.now();
-let transitioning = false;
-
-const serviceNameEl = document.getElementById('service-name');
-const progressBar = document.getElementById('progress-bar');
-const dots = [0,1,2,3].map(i => document.getElementById('dot-'+i));
-
-function switchState(idx) {
-  stateIdx = idx;
-  const s = STATES[idx];
-  targetColor.copy(s.color);
-  targetAccent.copy(s.accent);
-  setTargets(idx);
-  serviceNameEl.style.opacity = '0';
-  setTimeout(() => {
-    serviceNameEl.textContent = s.label;
-    serviceNameEl.style.opacity = '1';
-  }, 400);
-  dots.forEach((d,i) => d.classList.toggle('active', i === idx));
-}
-
-setTargets(0);
-serviceNameEl.textContent = STATES[0].label;
-
-// ─── Main render loop ─────────────────────────────────────────────────────────
-const clock = new THREE.Clock();
-
-function animate() {
-  requestAnimationFrame(animate);
-  const t = clock.getElapsedTime();
-  const now = performance.now();
-
-  // auto-advance state
-  const elapsed = now - lastSwitch;
-  const pct = Math.min(elapsed / INTERVAL, 1);
-  progressBar.style.width = (pct * 100) + '%';
-  progressBar.style.transition = 'width ' + (INTERVAL/1000) + 's linear';
-
-  if (elapsed > INTERVAL) {
-    lastSwitch = now;
-    switchState((stateIdx + 1) % STATES.length);
-  }
-
-  // lerp colors
-  currentColor.lerp(targetColor, 0.03);
-  currentAccent.lerp(targetAccent, 0.03);
-
-  // update nodes
-  const positions = nodeGeo.attributes.position.array;
-  const colors = nodeGeo.attributes.color.array;
-  for (let i = 0; i < MAX_NODES; i++) {
-    const pos = nodePositions[i];
-    const tgt = nodeTargets[i];
-    const vel = nodeVelocities[i];
-    const spd = nodeSpeeds[i];
-
-    // spring toward target
-    vel.x += (tgt.x - pos.x) * 0.06;
-    vel.y += (tgt.y - pos.y) * 0.06;
-    vel.z += (tgt.z - pos.z) * 0.06;
-    vel.multiplyScalar(0.88);
-
-    // subtle oscillation
-    pos.x += vel.x + Math.sin(t * spd * 2 + i) * 0.008;
-    pos.y += vel.y + Math.cos(t * spd * 1.5 + i) * 0.008;
-    pos.z += vel.z + Math.sin(t * spd + i * 0.5) * 0.006;
-
-    positions[i*3]   = pos.x;
-    positions[i*3+1] = pos.y;
-    positions[i*3+2] = pos.z;
-
-    // color shimmer
-    const shimmer = 0.85 + 0.15 * Math.sin(t * 2 + i * 0.3);
-    lerpColor.lerpColors(currentColor, currentAccent, Math.sin(i * 0.7) * 0.5 + 0.5);
-    colors[i*3]   = lerpColor.r * shimmer;
-    colors[i*3+1] = lerpColor.g * shimmer;
-    colors[i*3+2] = lerpColor.b * shimmer;
-  }
-  nodeGeo.attributes.position.needsUpdate = true;
-  nodeGeo.attributes.color.needsUpdate = true;
-
-  // update connections + collect active edges
-  const lp = lineGeo.attributes.position.array;
-  const lc = lineGeo.attributes.color.array;
-  const dist = STATES[stateIdx].connectionDist;
-  let lineIdx = 0;
-  activeEdges = [];
-  for (let i = 0; i < MAX_NODES && lineIdx < MAX_LINES; i++) {
-    for (let j = i+1; j < MAX_NODES && lineIdx < MAX_LINES; j++) {
-      const dx = nodePositions[i].x - nodePositions[j].x;
-      const dy = nodePositions[i].y - nodePositions[j].y;
-      const dz = nodePositions[i].z - nodePositions[j].z;
-      const d = Math.sqrt(dx*dx + dy*dy + dz*dz);
-      if (d < dist) {
-        const alpha = (1 - d / dist) * 0.7;
-        lp[lineIdx*6]   = nodePositions[i].x;
-        lp[lineIdx*6+1] = nodePositions[i].y;
-        lp[lineIdx*6+2] = nodePositions[i].z;
-        lp[lineIdx*6+3] = nodePositions[j].x;
-        lp[lineIdx*6+4] = nodePositions[j].y;
-        lp[lineIdx*6+5] = nodePositions[j].z;
-        const c = currentColor;
-        // brain state: brighter inner lines
-        const brightness = stateIdx === 0 ? alpha * 1.2 : alpha;
-        lc[lineIdx*6]   = c.r * brightness;
-        lc[lineIdx*6+1] = c.g * brightness;
-        lc[lineIdx*6+2] = c.b * brightness;
-        lc[lineIdx*6+3] = c.r * alpha * 0.4;
-        lc[lineIdx*6+4] = c.g * alpha * 0.4;
-        lc[lineIdx*6+5] = c.b * alpha * 0.4;
-        activeEdges.push([i, j]);
-        lineIdx++;
-      }
-    }
-  }
-  for (let k = lineIdx; k < MAX_LINES; k++) {
-    lp[k*6] = lp[k*6+1] = lp[k*6+2] = 0;
-    lp[k*6+3] = lp[k*6+4] = lp[k*6+5] = 0;
-  }
-  lineGeo.attributes.position.needsUpdate = true;
-  lineGeo.attributes.color.needsUpdate = true;
-  lineGeo.setDrawRange(0, lineIdx * 2);
-
-  // ── Synapse pulses (brain state only, subtle on others)
-  const pulseActive = stateIdx === 0;
-  if (activeEdges.length > 0) {
-    for (let p = 0; p < MAX_PULSES; p++) {
-      const pulse = pulses[p];
-      if (!pulse.active) {
-        if (Math.random() < (pulseActive ? 0.04 : 0.008)) {
-          const edge = activeEdges[Math.floor(Math.random() * activeEdges.length)];
-          pulse.from = edge[0];
-          pulse.to   = edge[1];
-          pulse.t    = 0;
-          pulse.speed = 0.01 + Math.random() * 0.02;
-          pulse.active = true;
-        }
-      }
-      if (pulse.active) {
-        pulse.t += pulse.speed;
-        if (pulse.t >= 1) { pulse.active = false; }
-        const a = nodePositions[pulse.from];
-        const b = nodePositions[pulse.to];
-        pulsePosArr[p*3]   = a.x + (b.x - a.x) * pulse.t;
-        pulsePosArr[p*3+1] = a.y + (b.y - a.y) * pulse.t;
-        pulsePosArr[p*3+2] = a.z + (b.z - a.z) * pulse.t;
-        const bright = 1.0 - Math.abs(pulse.t - 0.5) * 1.5;
-        pulseColArr[p*3]   = currentAccent.r * bright + 0.4;
-        pulseColArr[p*3+1] = currentAccent.g * bright + 0.4;
-        pulseColArr[p*3+2] = currentAccent.b * bright + 0.5;
-        pulseSizeArr[p] = pulseActive ? (3 + bright * 4) : (1.5 + bright * 2);
-      } else {
-        pulsePosArr[p*3] = pulsePosArr[p*3+1] = pulsePosArr[p*3+2] = 0;
-        pulseSizeArr[p] = 0;
-      }
-    }
-    pulseGeo.attributes.position.needsUpdate = true;
-    pulseGeo.attributes.color.needsUpdate = true;
-    pulseGeo.attributes.size.needsUpdate = true;
-  }
-
-  // core rotation + mouse parallax
-  const targetRX = mouse.y * 0.3;
-  const targetRY = mouse.x * 0.3;
-  coreMesh.rotation.y += 0.008;
-  coreMesh.rotation.x += 0.003;
-  coreMesh.material.color.copy(currentColor);
-  glowMesh.material.color.copy(currentColor);
-
-  ringMesh.rotation.z += 0.004;
-  ringMesh.material.color.copy(currentColor);
-  ring2Mesh.rotation.y += 0.006;
-  ring2Mesh.rotation.x += 0.002;
-  ring2Mesh.material.color.copy(currentAccent);
-
-  // pulse core
-  const pulse = 1 + 0.05 * Math.sin(t * 2.5);
-  coreMesh.scale.setScalar(pulse);
-  glowMesh.scale.setScalar(pulse * 1.1);
-
-  // camera mouse parallax
-  camera.position.x += (mouse.x * 2 - camera.position.x) * 0.04;
-  camera.position.y += (mouse.y * 1.5 - camera.position.y) * 0.04;
-  camera.lookAt(0, 0, 0);
-
-  renderer.render(scene, camera);
-}
-
-// ─── Resize ───────────────────────────────────────────────────────────────────
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-animate();
 </script>
+
+<!-- HubSpot tracking -->
+<script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/246155394.js"></script>
+<!-- Tidio chatbot -->
+<script src="//code.tidio.co/klvwo76ujoxjv906k2w3rrkff2agkhpr.js" async></script>
 </body>
 </html>
