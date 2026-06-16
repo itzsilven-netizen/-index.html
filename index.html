@@ -605,92 +605,353 @@ footer{border-top:1px solid var(--line);padding:60px 0 40px;background:var(--cha
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 const CALENDLY="https://calendly.com/itz-silven-apexstandard/30min";
-
-/* book demo */
 function wireBook(){document.querySelectorAll(".book").forEach(el=>{el.style.cursor="pointer";el.onclick=e=>{e.preventDefault();window.open(CALENDLY,"_blank","noopener");};});}
 wireBook();
 document.getElementById("topSignin").onclick=()=>window.open("mailto:itz.silven@apexstandard.biz");
 document.getElementById("accountBtn").onclick=()=>window.open("mailto:itz.silven@apexstandard.biz");
-
-/* sidebar nav + active state */
 const links=[...document.querySelectorAll(".sb-link[data-sec]")];
 const navtos=[...document.querySelectorAll(".nav-to")];
 function go(sec){const el=document.getElementById(sec);if(el)el.scrollIntoView({behavior:"smooth"});closeSb();}
 links.forEach(l=>l.onclick=()=>go(l.dataset.sec));
 navtos.forEach(l=>l.onclick=e=>{e.preventDefault();go(l.dataset.sec);});
-
-/* scroll spy */
 const secs=["home","what-we-do","what-it-is","capabilities","why-us","resources"].map(id=>document.getElementById(id));
 const spy=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const id=e.target.id;links.forEach(l=>l.classList.toggle("active",l.dataset.sec===id));}});},{rootMargin:"-45% 0px -50% 0px"});
 secs.forEach(s=>s&&spy.observe(s));
-
-/* mobile sidebar */
 const sb=document.getElementById("sidebar"),scrim=document.getElementById("scrim");
 function openSb(){sb.classList.add("open");scrim.classList.add("show");}
 function closeSb(){sb.classList.remove("open");scrim.classList.remove("show");}
 document.getElementById("burger").onclick=openSb;scrim.onclick=closeSb;
-
-/* theme toggle */
 const tt=document.getElementById("themeToggle");
-function setTheme(t){if(t==="light")document.documentElement.setAttribute("data-theme","light");else document.documentElement.removeAttribute("data-theme");}
 let theme="dark";
-tt.onclick=()=>{theme=theme==="dark"?"light":"dark";setTheme(theme);};
+tt.onclick=()=>{theme=theme==="dark"?"light":"dark";if(theme==="light")document.documentElement.setAttribute("data-theme","light");else document.documentElement.removeAttribute("data-theme");};
 tt.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tt.onclick();}};
-
-/* tabs */
 document.querySelectorAll(".tab-btn").forEach(btn=>{btn.onclick=()=>{
   document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
   document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
   btn.classList.add("active");document.getElementById(btn.dataset.tab).classList.add("active");
 };});
-
-/* reveal on scroll */
 const rev=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");rev.unobserve(e.target);}});},{threshold:.12});
 document.querySelectorAll(".reveal:not(.in)").forEach(el=>rev.observe(el));
 
-/* ---- THREE.JS ambient 3D background ---- */
+/* ============================================================
+   AI BRAIN — scroll-driven camera journey
+   Phase 0 (scroll 0–20%):   eye-level, facing the brain
+   Phase 1 (scroll 20–55%):  camera rises, tilts downward (top-down view)
+   Phase 2 (scroll 55–100%): dive INTO the brain — fly through cortex tunnels
+   ============================================================ */
 (function(){
-  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  if(window.matchMedia("(prefers-reduced-motion:reduce)").matches)return;
   const canvas=document.getElementById("bg3d");
-  let renderer;try{renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});}catch(e){return;}
-  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  let W=innerWidth,H=innerHeight;
+  let renderer;
+  try{renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});}catch(e){return;}
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.8));
+  renderer.setSize(W,H);
+  renderer.shadowMap.enabled=false;
   const scene=new THREE.Scene();
-  const cam=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,100);
-  cam.position.z=18;
+  scene.fog=new THREE.FogExp2(0x000000,.028);
 
-  // particle field
-  const N=900,geo=new THREE.BufferGeometry(),pos=new Float32Array(N*3);
-  for(let i=0;i<N;i++){pos[i*3]=(Math.random()-.5)*60;pos[i*3+1]=(Math.random()-.5)*40;pos[i*3+2]=(Math.random()-.5)*40;}
-  geo.setAttribute("position",new THREE.BufferAttribute(pos,3));
-  const pmat=new THREE.PointsMaterial({color:0x9aa9bd,size:.08,transparent:true,opacity:.55});
-  const pts=new THREE.Points(geo,pmat);scene.add(pts);
+  const cam=new THREE.PerspectiveCamera(55,W/H,.1,300);
 
-  // wireframe icosahedron — the "standard" mark
-  const ico=new THREE.Mesh(
-    new THREE.IcosahedronGeometry(5.4,1),
-    new THREE.MeshBasicMaterial({color:0x7e8b9c,wireframe:true,transparent:true,opacity:.22})
-  );scene.add(ico);
-  const ico2=new THREE.Mesh(
-    new THREE.IcosahedronGeometry(3.2,0),
-    new THREE.MeshBasicMaterial({color:0xcdd4dc,wireframe:true,transparent:true,opacity:.14})
-  );scene.add(ico2);
+  /* ---- MATERIALS ---- */
+  const matCortex=new THREE.MeshPhongMaterial({color:0x1a2c42,specular:0x3a5a7c,shininess:40,
+    transparent:true,opacity:.82,wireframe:false,side:THREE.FrontSide});
+  const matWire=new THREE.MeshBasicMaterial({color:0x3d6080,wireframe:true,transparent:true,opacity:.18});
+  const matGlow=new THREE.MeshBasicMaterial({color:0x5eacd4,transparent:true,opacity:.07});
+  const matNeuronLine=new THREE.LineBasicMaterial({color:0x4a8fba,transparent:true,opacity:.45});
+  const matSynapse=new THREE.PointsMaterial({color:0x7ec8e3,size:.055,transparent:true,opacity:.7});
+  const matPulse=new THREE.MeshBasicMaterial({color:0x9dd8f0,transparent:true,opacity:.0});
+  const matInner=new THREE.MeshPhongMaterial({color:0x0f2035,specular:0x2a4a6c,shininess:60,
+    transparent:true,opacity:.9,side:THREE.BackSide});
+  const matAxon=new THREE.LineBasicMaterial({color:0x2a6090,transparent:true,opacity:.55});
 
-  let mx=0,my=0;addEventListener("mousemove",e=>{mx=(e.clientX/innerWidth-.5);my=(e.clientY/innerHeight-.5);});
-  let sy=0;addEventListener("scroll",()=>{sy=scrollY;});
+  /* ---- BRAIN GEOMETRY ---- */
+  // Build a detailed procedural brain using layered gyri (folds)
+  const brainGroup=new THREE.Group();
+  scene.add(brainGroup);
 
-  function resize(){renderer.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();}
-  resize();addEventListener("resize",resize);
+  // Helper: noise-distorted sphere for cortex surface
+  function noiseSphere(r,detail,nscale,nampl){
+    const geo=new THREE.SphereGeometry(r,detail,detail);
+    const pos=geo.attributes.position;
+    for(let i=0;i<pos.count;i++){
+      const x=pos.getX(i),y=pos.getY(i),z=pos.getZ(i);
+      const n=simplex3(x*nscale,y*nscale,z*nscale);
+      const n2=simplex3(x*nscale*2.3+4,y*nscale*2.3,z*nscale*2.3)*0.5;
+      const n3=simplex3(x*nscale*5+8,y*nscale*5,z*nscale*5)*0.25;
+      const bump=(n+n2+n3)*nampl;
+      const len=Math.sqrt(x*x+y*y+z*z);
+      const s=1+bump/len;
+      pos.setXYZ(i,x*s,y*s,z*s);
+    }
+    geo.computeVertexNormals();
+    return geo;
+  }
 
-  function loop(t){
-    t*=.0004;
-    ico.rotation.x=t*.6+sy*.0009;ico.rotation.y=t*.8;
-    ico2.rotation.x=-t*.9;ico2.rotation.y=t*.5+sy*.0011;
-    pts.rotation.y=t*.18;pts.rotation.x=t*.05;
-    cam.position.x+=((mx*4)-cam.position.x)*.04;
-    cam.position.y+=((-my*3)-cam.position.y)*.04;
-    cam.position.z=18-Math.min(sy,1400)*.004;
-    cam.lookAt(0,0,0);
-    renderer.render(scene,cam);requestAnimationFrame(loop);
+  // Simplex-like noise (value noise as fallback)
+  function simplex3(x,y,z){
+    const hash=(a,b,c)=>{let h=(a*374761393+b*668265263+c*2147483647)>>>0;h^=h>>>13;h*=1274126177;h^=h>>>16;return h/4294967296;};
+    const ix=Math.floor(x),iy=Math.floor(y),iz=Math.floor(z);
+    const fx=x-ix,fy=y-iy,fz=z-iz;
+    const s=t=>(t*t*t*(t*(t*6-15)+10));
+    const ux=s(fx),uy=s(fy),uz=s(fz);
+    const lerp=(a,b,t)=>a+(b-a)*t;
+    const v000=hash(ix,iy,iz)*2-1,v100=hash(ix+1,iy,iz)*2-1,v010=hash(ix,iy+1,iz)*2-1,v110=hash(ix+1,iy+1,iz)*2-1;
+    const v001=hash(ix,iy,iz+1)*2-1,v101=hash(ix+1,iy,iz+1)*2-1,v011=hash(ix,iy+1,iz+1)*2-1,v111=hash(ix+1,iy+1,iz+1)*2-1;
+    return lerp(lerp(lerp(v000,v100,ux),lerp(v010,v110,ux),uy),lerp(lerp(v001,v101,ux),lerp(v011,v111,ux),uy),uz);
+  }
+
+  // Main cortex hemisphere — left
+  const leftGeo=noiseSphere(4.8,64,.38,1.2);
+  const leftMesh=new THREE.Mesh(leftGeo,matCortex);
+  leftMesh.position.set(-1.1,0,0);
+  brainGroup.add(leftMesh);
+  brainGroup.add(new THREE.Mesh(leftGeo,matWire));
+
+  // Right hemisphere
+  const rightGeo=noiseSphere(4.6,64,.41,1.15);
+  const rightMesh=new THREE.Mesh(rightGeo,matCortex);
+  rightMesh.position.set(1.1,0,0);
+  brainGroup.add(rightMesh);
+
+  // Inner glow shell
+  const glowGeo=noiseSphere(5.2,32,.22,.5);
+  const glowMesh=new THREE.Mesh(glowGeo,matGlow);
+  brainGroup.add(glowMesh);
+
+  // Interior (seen when we fly inside) — backside shell
+  const innerGeo=new THREE.SphereGeometry(4.3,48,48);
+  const innerMesh=new THREE.Mesh(innerGeo,matInner);
+  brainGroup.add(innerMesh);
+
+  // Cerebellum (back, bottom)
+  const cGeo=noiseSphere(2.2,40,.65,0.7);
+  const cMesh=new THREE.Mesh(cGeo,matCortex.clone());
+  cMesh.position.set(0,-2.4,-3.5);
+  cMesh.scale.set(1.4,.8,1);
+  brainGroup.add(cMesh);
+
+  // Brain stem
+  const stemGeo=new THREE.CylinderGeometry(.5,.35,3.2,20,8,false);
+  const stemPos=stemGeo.attributes.position;
+  for(let i=0;i<stemPos.count;i++){
+    const y=stemPos.getY(i);
+    stemPos.setX(i,stemPos.getX(i)*(1+simplex3(stemPos.getX(i)*.8,y*.8,0)*.12));
+    stemPos.setZ(i,stemPos.getZ(i)*(1+simplex3(0,y*.8,stemPos.getZ(i)*.8)*.12));
+  }
+  stemGeo.computeVertexNormals();
+  const stemMesh=new THREE.Mesh(stemGeo,matCortex.clone());
+  stemMesh.position.set(0,-4.4,-1.2);
+  stemMesh.rotation.z=0.18;
+  brainGroup.add(stemMesh);
+
+  // Corpus callosum (central band)
+  const ccGeo=new THREE.TorusGeometry(1.6,.28,18,60,Math.PI);
+  const ccMesh=new THREE.Mesh(ccGeo,matCortex.clone());
+  ccMesh.rotation.z=Math.PI/2;
+  ccMesh.position.set(0,.3,-.4);
+  brainGroup.add(ccMesh);
+
+  /* ---- GYRI FOLDS — ribbon-like folded surfaces ---- */
+  function addGyrus(cx,cy,cz,rx,ry,rz,rot,col){
+    const g=new THREE.TorusGeometry(rx,ry,14,60,Math.PI*(1.2+Math.random()*.6));
+    const m=new THREE.MeshPhongMaterial({color:col||0x1e3550,specular:0x3a6080,shininess:30,transparent:true,opacity:.75});
+    const mesh=new THREE.Mesh(g,m);
+    mesh.position.set(cx,cy,cz);
+    mesh.rotation.set(rot.x||0,rot.y||0,rot.z||0);
+    brainGroup.add(mesh);
+  }
+  // left gyri
+  addGyrus(-2.8,1.8,.5,1.8,.18,1,{x:Math.PI*.3,y:.8,z:.2});
+  addGyrus(-3.2,0,.8,1.6,.16,1,{x:Math.PI*.5,y:.3,z:.4});
+  addGyrus(-2.4,-1.4,.4,1.4,.15,1,{x:Math.PI*.6,y:1.1,z:.1});
+  addGyrus(-2.6,2.2,-1,1.5,.17,1,{x:Math.PI*.2,y:-.4,z:.5});
+  addGyrus(-3.4,.8,-1.2,1.3,.15,1,{x:Math.PI*.45,y:-.6,z:.3});
+  addGyrus(-2.2,2.8,.0,1.2,.14,1,{x:Math.PI*.1,y:.2,z:.7});
+  addGyrus(-1.4,3.4,.5,1.1,.13,1,{x:0,y:.9,z:.2});
+  addGyrus(-3.0,-0.5,2.2,1.3,.16,1,{x:Math.PI*.7,y:.4,z:-.3});
+  // right gyri
+  addGyrus(2.8,1.8,.5,1.8,.18,1,{x:Math.PI*.3,y:-.8,z:-.2},0x1d3448);
+  addGyrus(3.2,0,.8,1.6,.16,1,{x:Math.PI*.5,y:-.3,z:-.4},0x1d3448);
+  addGyrus(2.4,-1.4,.4,1.4,.15,1,{x:Math.PI*.6,y:-1.1,z:-.1},0x1d3448);
+  addGyrus(2.6,2.2,-1,1.5,.17,1,{x:Math.PI*.2,y:.4,z:-.5},0x1d3448);
+  addGyrus(3.4,.8,-1.2,1.3,.15,1,{x:Math.PI*.45,y:.6,z:-.3},0x1d3448);
+  addGyrus(2.2,2.8,.0,1.2,.14,1,{x:Math.PI*.1,y:-.2,z:-.7},0x1d3448);
+  addGyrus(1.4,3.4,.5,1.1,.13,1,{x:0,y:-.9,z:-.2},0x1d3448);
+  addGyrus(3.0,-0.5,2.2,1.3,.16,1,{x:Math.PI*.7,y:-.4,z:.3},0x1d3448);
+
+  /* ---- NEURON NETWORK (visible through cortex) ---- */
+  const neuronGroup=new THREE.Group();
+  brainGroup.add(neuronGroup);
+  const nodes=[];
+  const nodeCount=200;
+  // distribute inside brain volume
+  for(let i=0;i<nodeCount;i++){
+    let x,y,z,d;
+    do{x=(Math.random()-.5)*8;y=(Math.random()-.5)*8;z=(Math.random()-.5)*8;d=Math.sqrt(x*x+y*y+z*z);}while(d>4.5);
+    nodes.push(new THREE.Vector3(x,y,z));
+  }
+  // Draw axon connections (near-neighbor lines)
+  const linePositions=[];
+  for(let i=0;i<nodeCount;i++){
+    const a=nodes[i];
+    for(let j=i+1;j<nodeCount;j++){
+      const b=nodes[j];
+      if(a.distanceTo(b)<2.0&&Math.random()>.55){
+        linePositions.push(a.x,a.y,a.z,b.x,b.y,b.z);
+      }
+    }
+  }
+  const lineGeo=new THREE.BufferGeometry();
+  lineGeo.setAttribute("position",new THREE.BufferAttribute(new Float32Array(linePositions),3));
+  neuronGroup.add(new THREE.LineSegments(lineGeo,matNeuronLine));
+
+  // Synapse dots (node positions)
+  const synGeo=new THREE.BufferGeometry();
+  const synPos=new Float32Array(nodes.flatMap(n=>[n.x,n.y,n.z]));
+  synGeo.setAttribute("position",new THREE.BufferAttribute(synPos,3));
+  neuronGroup.add(new THREE.Points(synGeo,matSynapse));
+
+  /* ---- ELECTRICAL PULSES ---- */
+  const pulses=[];
+  for(let i=0;i<14;i++){
+    const geo=new THREE.SphereGeometry(.06+Math.random()*.05,8,8);
+    const mat=new THREE.MeshBasicMaterial({color:0x7ec8e3,transparent:true,opacity:0});
+    const mesh=new THREE.Mesh(geo,mat);
+    // pick a random edge to travel
+    const ei=Math.floor(Math.random()*(linePositions.length/6));
+    pulses.push({mesh,ei,t:Math.random(),speed:.003+Math.random()*.005,mat});
+    brainGroup.add(mesh);
+  }
+
+  /* ---- DENDRITE TENDRILS (fine surface lines) ---- */
+  function addDendrite(origin,dir,steps,spread){
+    const pts=[origin.clone()];
+    let cur=origin.clone(),d=dir.clone();
+    for(let i=0;i<steps;i++){
+      d.add(new THREE.Vector3((Math.random()-.5)*spread,(Math.random()-.5)*spread,(Math.random()-.5)*spread)).normalize().multiplyScalar(.4+Math.random()*.3);
+      cur=cur.clone().add(d);
+      if(cur.length()>5.2)break;
+      pts.push(cur.clone());
+    }
+    if(pts.length<2)return;
+    const g=new THREE.BufferGeometry().setFromPoints(pts);
+    const m=new THREE.Line(g,matAxon);
+    brainGroup.add(m);
+  }
+  for(let i=0;i<220;i++){
+    const phi=Math.random()*Math.PI*2,theta=Math.random()*Math.PI;
+    const r=3.8+Math.random()*.6;
+    const o=new THREE.Vector3(Math.sin(theta)*Math.cos(phi)*r,Math.cos(theta)*r,Math.sin(theta)*Math.sin(phi)*r);
+    const d=o.clone().normalize().negate().add(new THREE.Vector3((Math.random()-.5)*.4,(Math.random()-.5)*.4,(Math.random()-.5)*.4));
+    addDendrite(o,d,6+Math.floor(Math.random()*8),.5);
+  }
+
+  /* ---- GLOW PARTICLES (synaptic field) ---- */
+  const sprayCount=1800;
+  const sprayGeo=new THREE.BufferGeometry();
+  const sprayPos=new Float32Array(sprayCount*3);
+  for(let i=0;i<sprayCount;i++){
+    let x,y,z,d;
+    do{x=(Math.random()-.5)*14;y=(Math.random()-.5)*14;z=(Math.random()-.5)*14;d=Math.sqrt(x*x+y*y+z*z);}while(d<3||d>7);
+    sprayPos[i*3]=x;sprayPos[i*3+1]=y;sprayPos[i*3+2]=z;
+  }
+  sprayGeo.setAttribute("position",new THREE.BufferAttribute(sprayPos,3));
+  const sprayMat=new THREE.PointsMaterial({color:0x4a8fba,size:.038,transparent:true,opacity:.35});
+  scene.add(new THREE.Points(sprayGeo,sprayMat));
+
+  /* ---- LIGHTS ---- */
+  scene.add(new THREE.AmbientLight(0x0a1a2e,.8));
+  const key=new THREE.DirectionalLight(0x5eacd4,1.4);key.position.set(5,8,6);scene.add(key);
+  const fill=new THREE.DirectionalLight(0x1a3a5c,.7);fill.position.set(-6,-4,-5);scene.add(fill);
+  const rim=new THREE.DirectionalLight(0x3a7090,.9);rim.position.set(0,6,-8);scene.add(rim);
+  const ptL=new THREE.PointLight(0x3a8ab8,2.2,20);ptL.position.set(0,0,0);brainGroup.add(ptL);
+  const ptR=new THREE.PointLight(0x1a5070,1.4,15);ptR.position.set(3,2,3);scene.add(ptR);
+  const inner=new THREE.PointLight(0x5ec8f0,1.8,10);inner.position.set(0,.5,0);brainGroup.add(inner);
+
+  /* ---- CAMERA PATH ---- */
+  // 3 keyframe positions that get interpolated by scroll
+  // Phase 0: eye-level far view
+  const camP0={pos:new THREE.Vector3(0,0,22),look:new THREE.Vector3(0,0,0)};
+  // Phase 1: high up, looking down
+  const camP1={pos:new THREE.Vector3(0,22,4),look:new THREE.Vector3(0,0,0)};
+  // Phase 2: inside the brain
+  const camP2={pos:new THREE.Vector3(0,.5,.2),look:new THREE.Vector3(0,0,-1)};
+
+  function lerp(a,b,t){return a+(b-a)*t;}
+  function lerpV3(a,b,t,out=new THREE.Vector3()){out.set(lerp(a.x,b.x,t),lerp(a.y,b.y,t),lerp(a.z,b.z,t));return out;}
+  function easeInOut(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
+  function easeIn(t){return t*t*t;}
+
+  let scrollY2=0;
+  window.addEventListener("scroll",()=>{scrollY2=window.scrollY;});
+
+  let mx=0,my=0;
+  window.addEventListener("mousemove",e=>{mx=(e.clientX/W-.5)*2;my=(e.clientY/H-.5)*2;});
+  window.addEventListener("resize",()=>{W=innerWidth;H=innerHeight;renderer.setSize(W,H);cam.aspect=W/H;cam.updateProjectionMatrix();});
+
+  const tmpPos=new THREE.Vector3(),tmpLook=new THREE.Vector3();
+
+  function updateCamera(){
+    const totalH=Math.max(document.body.scrollHeight-H,1);
+    const t=Math.min(scrollY2/totalH,1);
+
+    if(t<.3){
+      // Phase 0 → 1: rise and tilt
+      const p=easeInOut(t/.3);
+      lerpV3(camP0.pos,camP1.pos,p,tmpPos);
+      lerpV3(camP0.look,camP1.look,p,tmpLook);
+      // subtle mouse parallax
+      tmpPos.x+=mx*1.2;tmpPos.z+=my*.6;
+      scene.fog.density=.028-p*.015;
+    } else {
+      // Phase 1 → 2: dive into brain
+      const p=easeIn((t-.3)/.7);
+      lerpV3(camP1.pos,camP2.pos,p,tmpPos);
+      lerpV3(camP1.look,camP2.look,p,tmpLook);
+      scene.fog.density=.028+p*.06;
+      // as we go inside, reveal inner neuron network more
+      matNeuronLine.opacity=.45+p*.55;
+      matSynapse.opacity=.7+p*.3;
+      matCortex.opacity=Math.max(.2,.82-p*.7);
+      matWire.opacity=Math.max(.04,.18-p*.14);
+      inner.intensity=1.8+p*3;
+    }
+    cam.position.copy(tmpPos);
+    cam.lookAt(tmpLook);
+  }
+
+  /* ---- RENDER LOOP ---- */
+  let t0=0;
+  function loop(ts){
+    const dt=(ts-t0)*.001;t0=ts;
+    // slow ambient rotation when not deep inside
+    const scrollFrac=Math.min(scrollY2/Math.max(document.body.scrollHeight-H,1),1);
+    const rotSpeed=Math.max(0,.12-scrollFrac*.15);
+    brainGroup.rotation.y+=rotSpeed*dt;
+
+    // pulse electricity along axons
+    pulses.forEach(p=>{
+      p.t+=p.speed;
+      if(p.t>1){p.t=0;p.ei=Math.floor(Math.random()*(linePositions.length/6));}
+      const base=p.ei*6;
+      if(base+5>=linePositions.length)return;
+      const ax=linePositions[base],ay=linePositions[base+1],az=linePositions[base+2];
+      const bx=linePositions[base+3],by=linePositions[base+4],bz=linePositions[base+5];
+      const tt=p.t;
+      p.mesh.position.set(ax+(bx-ax)*tt,ay+(by-ay)*tt,az+(bz-az)*tt);
+      const bright=Math.sin(p.t*Math.PI);
+      p.mat.opacity=bright*.85;
+      p.mesh.scale.setScalar(.6+bright*.8);
+    });
+
+    // shimmer ambient light
+    ptL.intensity=2.2+Math.sin(ts*.0008)*0.5;
+    inner.color.setHSL(.57+Math.sin(ts*.0003)*.04,1,.65);
+
+    updateCamera();
+    renderer.render(scene,cam);
+    requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);
 })();
