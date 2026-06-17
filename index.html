@@ -1,415 +1,912 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Apex Standard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apex Standard — Collect leads. Build reputation. Stay consistent.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --ink:#f5f7fa;
-    --muted:#aab3c0;
-    --accent:#5b8cff;
-    --panel-bg:rgba(10,14,22,.55);
-    --line:rgba(255,255,255,.12);
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:#05070c;color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
-  /* The only element that creates page height — drives the scroll */
-  #scroll-space{position:relative;width:1px;}
+:root{
+  /* logo-derived palette */
+  --ink:#08090c;          /* near black */
+  --char:#0d1117;         /* charcoal */
+  --char-2:#11161f;
+  --navy:#1a2536;         /* logo navy */
+  --navy-2:#22324a;
+  --line:rgba(255,255,255,.07);
+  --line-2:rgba(255,255,255,.13);
+  --txt:#f3f5f7;
+  --muted:#9aa3ad;
+  --muted-2:#646e79;
+  --silver:#c7ccd1;
+  --accent:#aeb8c4;       /* cool silver accent */
+  --accent-2:#5b6b80;     /* steel navy */
+  --grad:linear-gradient(135deg,#cdd4dc 0%,#7e8b9c 50%,#3c4a5e 100%);
+  --grad-soft:linear-gradient(135deg,rgba(174,184,196,.12),rgba(91,107,128,.10));
+  --r:16px;
+  --sb:248px;             /* sidebar width */
+}
+[data-theme="light"]{
+  --ink:#eef1f4;--char:#f6f8fa;--char-2:#ffffff;--navy:#dfe5ec;--navy-2:#cdd6e0;
+  --line:rgba(10,20,35,.10);--line-2:rgba(10,20,35,.16);
+  --txt:#10151c;--muted:#4a5560;--muted-2:#74808c;--silver:#2a3340;
+  --accent:#48566a;--accent-2:#6b7a8f;
+  --grad:linear-gradient(135deg,#3c4a5e 0%,#5b6b80 50%,#8995a4 100%);
+  --grad-soft:linear-gradient(135deg,rgba(60,74,94,.10),rgba(91,107,128,.08));
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--ink);color:var(--txt);
+  font-family:'Inter',system-ui,sans-serif;line-height:1.5;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  transition:background .5s ease,color .5s ease;
+}
+a{color:inherit;text-decoration:none}
+.serif{font-family:'Cormorant Garamond',Georgia,serif}
+.grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 
-  /* Fixed full-screen WebGL video background */
-  #bg{position:fixed;inset:0;width:100vw;height:100vh;display:block;z-index:0;}
+/* ---- buttons ---- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  font-weight:600;font-size:15px;border-radius:999px;padding:13px 24px;cursor:pointer;
+  border:1px solid transparent;white-space:nowrap;
+  transition:transform .18s,box-shadow .25s,background .2s,border-color .2s,color .2s;}
+.btn-primary{background:var(--grad);color:#0a0f16;box-shadow:0 10px 34px rgba(91,107,128,.32)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 46px rgba(174,184,196,.4)}
+.btn-ghost{background:transparent;color:var(--txt);border-color:var(--line-2)}
+.btn-ghost:hover{border-color:var(--accent);background:rgba(174,184,196,.06)}
+.btn-lg{padding:16px 32px;font-size:16px}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
-  /* Page panels (fixed, faded in/out by JS) */
-  #panels{position:fixed;inset:0;z-index:2;pointer-events:none;}
-  .panel{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-    opacity:0;will-change:opacity,transform;}
-  .panel .card{
-    pointer-events:auto;max-width:820px;width:90%;padding:48px 52px;border-radius:22px;
-    background:var(--panel-bg);border:1px solid var(--line);
-    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-    box-shadow:0 30px 80px rgba(0,0,0,.45);}
-  .eyebrow{letter-spacing:.28em;text-transform:uppercase;font-size:12px;color:var(--accent);margin:0 0 14px;}
-  .panel h1{font-size:clamp(34px,6vw,66px);line-height:1.02;margin:0 0 18px;font-weight:800;letter-spacing:-.02em;}
-  .panel h2{font-size:clamp(28px,5vw,52px);line-height:1.05;margin:0 0 18px;font-weight:800;letter-spacing:-.02em;}
-  .panel p{font-size:clamp(16px,2.1vw,20px);line-height:1.55;color:var(--muted);margin:0 0 14px;}
-  .pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;}
-  .pill{font-size:14px;padding:9px 16px;border-radius:999px;border:1px solid var(--line);
-    background:rgba(255,255,255,.04);color:var(--ink);}
-  .cta{display:inline-block;margin-top:26px;padding:13px 26px;border-radius:12px;
-    background:var(--accent);color:#fff;font-weight:600;text-decoration:none;
-    box-shadow:0 12px 30px rgba(91,140,255,.35);}
+/* ---- sidebar ---- */
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sb);z-index:90;
+  background:linear-gradient(180deg,var(--char),var(--ink));
+  border-right:1px solid var(--line);display:flex;flex-direction:column;
+  padding:26px 18px;transition:transform .35s ease,background .5s;}
+.sb-brand{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 8px 24px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.sb-mark{width:100%;max-width:170px;height:auto;object-fit:contain;display:block;margin:0 auto;filter:drop-shadow(0 2px 10px rgba(0,0,0,.5)) brightness(1.15)}
+[data-theme="light"] .sb-mark{filter:invert(.86) drop-shadow(0 1px 3px rgba(0,0,0,.25))}
+.sb-name{font-weight:800;font-size:16px;letter-spacing:-.01em;line-height:1.15}
+.sb-name small{display:block;font-weight:500;font-size:10px;letter-spacing:.22em;color:var(--muted-2);margin-top:3px}
+.sb-nav{display:flex;flex-direction:column;gap:3px;flex:1}
+.sb-link{display:flex;align-items:center;gap:13px;padding:11px 13px;border-radius:11px;
+  font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;
+  transition:background .2s,color .2s;position:relative}
+.sb-link svg{width:18px;height:18px;stroke:currentColor;flex-shrink:0;opacity:.85}
+.sb-link:hover{background:rgba(255,255,255,.04);color:var(--txt)}
+.sb-link.active{background:var(--grad-soft);color:var(--txt);border:1px solid var(--line)}
+.sb-link.active::before{content:"";position:absolute;left:-18px;top:50%;transform:translateY(-50%);
+  width:3px;height:22px;border-radius:3px;background:var(--grad)}
+.sb-foot{border-top:1px solid var(--line);padding-top:14px;margin-top:10px;display:flex;flex-direction:column;gap:3px}
+.sb-toggle{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border-radius:11px;
+  font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;transition:.2s}
+.sb-toggle:hover{background:rgba(255,255,255,.04);color:var(--txt)}
+.tog-track{width:42px;height:23px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid var(--line-2);position:relative;transition:background .3s}
+.tog-knob{position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:var(--accent);transition:left .3s,background .3s}
+[data-theme="light"] .tog-knob{left:21px;background:var(--navy)}
 
-  /* Sidebar nav */
-  #sidebar{position:fixed;top:0;left:0;height:100vh;width:230px;z-index:5;
-    display:flex;flex-direction:column;justify-content:center;gap:6px;padding:0 22px;
-    background:linear-gradient(90deg,rgba(5,7,12,.72),rgba(5,7,12,0));}
-  #brand{position:fixed;top:26px;left:24px;z-index:6;font-weight:800;letter-spacing:.02em;font-size:18px;}
-  #brand span{color:var(--accent);}
-  #sidebar button{all:unset;cursor:pointer;color:var(--muted);font-size:15px;font-weight:600;
-    padding:10px 14px;border-radius:10px;transition:color .2s,background .2s,padding-left .2s;}
-  #sidebar button:hover{color:var(--ink);background:rgba(255,255,255,.05);}
-  #sidebar button.active{color:var(--ink);background:rgba(91,140,255,.16);padding-left:20px;}
-  #sidebar button .dot{display:inline-block;width:7px;height:7px;border-radius:50%;
-    background:transparent;margin-right:10px;vertical-align:middle;transition:background .2s;}
-  #sidebar button.active .dot{background:var(--accent);}
+/* mobile sidebar */
+.sb-burger{display:none;position:fixed;top:16px;left:16px;z-index:95;width:44px;height:44px;
+  border-radius:12px;background:var(--char);border:1px solid var(--line);align-items:center;justify-content:center;cursor:pointer}
+.sb-burger span{width:18px;height:2px;background:var(--txt);position:relative;display:block}
+.sb-burger span::before,.sb-burger span::after{content:"";position:absolute;left:0;width:18px;height:2px;background:var(--txt)}
+.sb-burger span::before{top:-6px}.sb-burger span::after{top:6px}
+.sb-scrim{display:none;position:fixed;inset:0;z-index:88;background:rgba(0,0,0,.5);backdrop-filter:blur(3px)}
 
-  /* Top progress bar */
-  #progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:7;
-    background:linear-gradient(90deg,var(--accent),#9db8ff);}
+/* ---- main shell ---- */
+.main{margin-left:var(--sb);transition:margin .35s}
+.wrap{max-width:1120px;margin:0 auto;padding:0 40px}
+section{position:relative}
 
-  /* Scroll hint */
-  #hint{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:6;
-    color:var(--muted);font-size:13px;letter-spacing:.18em;text-transform:uppercase;
-    transition:opacity .4s;}
+/* top bar (book demo, right) */
+.topbar{position:fixed;top:0;left:var(--sb);right:0;height:0;z-index:80;pointer-events:none}
+.topbar .tb-in{position:absolute;top:22px;right:40px;pointer-events:auto;display:flex;gap:12px;align-items:center}
+.tb-signin{font-size:14px;font-weight:600;color:var(--muted);padding:10px 8px}
+.tb-signin:hover{color:var(--txt)}
 
-  @media (max-width:720px){
-    #sidebar{width:auto;background:none;padding:0 12px;gap:2px;}
-    #sidebar button{font-size:13px;padding:7px 10px;}
-    .panel .card{padding:30px 24px;}
-  }
+/* ---- hero ---- */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:120px 40px 80px;overflow:visible;background:transparent}
+#bg3d{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.9}
+.hero>*{position:relative;z-index:2}
+.pill{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line-2);border-radius:999px;
+  padding:8px 18px;font-size:13px;color:var(--muted);margin-bottom:30px;background:rgba(255,255,255,.02);
+  backdrop-filter:blur(6px)}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+h1.hero-h{font-size:clamp(44px,7vw,88px);font-weight:900;line-height:.98;letter-spacing:-.04em;max-width:15ch;margin:0 auto 26px}
+.hero-sub{font-size:clamp(17px,2vw,21px);color:var(--muted);max-width:40ch;margin:0 auto 36px;line-height:1.5}
+.hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.hero-note{margin-top:20px;font-size:13px;color:var(--muted-2)}
+.scroll-cue{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--muted-2);font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+.scroll-cue .mouse{width:22px;height:34px;border:1.5px solid var(--muted-2);border-radius:12px;position:relative}
+.scroll-cue .mouse::after{content:"";position:absolute;top:6px;left:50%;transform:translateX(-50%);width:3px;height:7px;border-radius:2px;background:var(--muted);animation:scrolldot 1.6s ease infinite}
+@keyframes scrolldot{0%{opacity:0;top:6px}30%{opacity:1}60%{opacity:1;top:16px}100%{opacity:0;top:18px}}
+
+/* ---- section scaffolding ---- */
+.block{padding:130px 0;position:relative;z-index:2;background:transparent}
+.block.alt{background:transparent}
+.eyebrow{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
+.h2{font-size:clamp(32px,4.6vw,52px);font-weight:800;letter-spacing:-.035em;line-height:1.06}
+.lead{color:var(--muted);font-size:18px;max-width:54ch;margin-top:20px;line-height:1.55}
+.sec-head{margin-bottom:60px}
+.sec-head.center{text-align:center}
+.sec-head.center .lead{margin-left:auto;margin-right:auto}
+
+/* reveal animation */
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+.reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}.reveal.d3{transition-delay:.24s}.reveal.d4{transition-delay:.32s}
+
+/* ---- what we do (feature cards) ---- */
+.features{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.fcard{border:1px solid var(--line);border-radius:20px;padding:34px;
+  background:linear-gradient(180deg,var(--char-2),var(--char));position:relative;overflow:hidden;
+  transition:transform .3s,border-color .3s,box-shadow .3s}
+.fcard::after{content:"";position:absolute;inset:0;background:var(--grad-soft);opacity:0;transition:opacity .3s}
+.fcard:hover{transform:translateY(-6px);border-color:var(--line-2);box-shadow:0 30px 70px rgba(0,0,0,.4)}
+.fcard:hover::after{opacity:1}
+.fcard>*{position:relative;z-index:2}
+.fnum{font-family:'Cormorant Garamond',serif;font-size:14px;letter-spacing:.1em;color:var(--muted-2);margin-bottom:18px}
+.fic{width:52px;height:52px;border-radius:14px;background:var(--grad-soft);border:1px solid var(--line-2);display:grid;place-items:center;margin-bottom:22px}
+.fic svg{width:24px;height:24px;stroke:var(--accent)}
+.fcard h3{font-size:21px;font-weight:700;margin-bottom:11px;letter-spacing:-.02em}
+.fcard p{font-size:15px;color:var(--muted);line-height:1.6}
+.fprice{margin-top:20px;display:inline-block;font-size:13px;color:var(--silver);font-weight:600;border:1px solid var(--line);border-radius:999px;padding:6px 14px;background:rgba(255,255,255,.02)}
+
+/* ---- what it is ---- */
+.what-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:64px;align-items:center}
+.what-list{margin-top:32px;display:flex;flex-direction:column;gap:18px}
+.what-item{display:flex;gap:15px;align-items:flex-start}
+.what-item .ck{flex-shrink:0;width:26px;height:26px;border-radius:8px;background:var(--grad-soft);border:1px solid var(--line-2);display:grid;place-items:center}
+.what-item .ck svg{width:14px;height:14px;stroke:var(--accent)}
+.what-item p{font-size:15px;color:var(--muted);line-height:1.55}.what-item p b{color:var(--txt);font-weight:600}
+.ui-mock{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--char-2);box-shadow:0 40px 90px rgba(0,0,0,.5)}
+.um-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.um-head .t{font-weight:700;font-size:14px}
+.um-head .b{font-size:11px;color:var(--accent);border:1px solid var(--line-2);border-radius:999px;padding:4px 12px;background:var(--grad-soft);display:flex;align-items:center;gap:6px}
+.um-head .b::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.um-chat{padding:24px;display:flex;flex-direction:column;gap:15px}
+.bubble{max-width:80%;padding:13px 17px;border-radius:16px;font-size:14px;line-height:1.45}
+.bubble.bot{background:var(--char);border:1px solid var(--line);border-bottom-left-radius:5px}
+.bubble.user{align-self:flex-end;background:var(--grad);color:#0a0f16;font-weight:500;border-bottom-right-radius:5px}
+.um-typing{display:flex;gap:5px;padding:6px 2px}
+.um-typing span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blink 1.4s infinite both}
+.um-typing span:nth-child(2){animation-delay:.2s}.um-typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,60%,100%{opacity:.25}30%{opacity:1}}
+
+/* ---- capabilities tabs ---- */
+.tabs-head{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:44px;border:1px solid var(--line);border-radius:999px;padding:6px;width:fit-content;margin-left:auto;margin-right:auto;background:var(--char-2)}
+.tab-btn{border:none;background:transparent;color:var(--muted);font-family:inherit;font-weight:600;font-size:15px;padding:12px 26px;border-radius:999px;cursor:pointer;transition:.25s}
+.tab-btn.active{background:var(--grad);color:#0a0f16;box-shadow:0 8px 22px rgba(91,107,128,.3)}
+.tab-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tab-panel{display:none}
+.tab-panel.active{display:block;animation:fade .5s ease}
+@keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.tab-grid{display:grid;grid-template-columns:1fr 1fr;gap:54px;align-items:center;border:1px solid var(--line);border-radius:24px;padding:52px;background:linear-gradient(135deg,var(--char-2),var(--char))}
+.tab-grid .tp h3{font-size:32px;font-weight:800;letter-spacing:-.03em;margin-bottom:10px}
+.tab-grid .price{display:inline-block;font-size:14px;color:var(--silver);font-weight:600;margin-bottom:20px;border:1px solid var(--line-2);border-radius:999px;padding:6px 15px;background:var(--grad-soft)}
+.tab-grid .tp p{color:var(--muted);font-size:16px;margin-bottom:24px;line-height:1.55}
+.tab-feats{display:flex;flex-direction:column;gap:13px}
+.tab-feats li{list-style:none;display:flex;gap:12px;align-items:center;font-size:15px}
+.tab-feats li svg{width:18px;height:18px;stroke:var(--accent);flex-shrink:0}
+.tab-vis{border:1px solid var(--line);border-radius:18px;background:var(--char);padding:26px;min-height:290px;display:flex;flex-direction:column;gap:14px;justify-content:center}
+.vis-row{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--char-2);transition:transform .2s}
+.vis-row:hover{transform:translateX(4px)}
+.vis-row .vi{width:36px;height:36px;border-radius:10px;background:var(--grad-soft);border:1px solid var(--line-2);display:grid;place-items:center;flex-shrink:0}
+.vis-row .vi svg{width:17px;height:17px;stroke:var(--accent)}
+.vis-row .vt{font-size:13px;font-weight:600}
+.vis-row .vs{font-size:11px;color:var(--muted-2);margin-top:2px}
+.vis-row .vb{margin-left:auto;font-size:11px;color:var(--accent);font-weight:600}
+
+/* ---- why us ---- */
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.why-card{border:1px solid var(--line);border-radius:20px;padding:34px;background:linear-gradient(180deg,var(--char-2),var(--char));transition:transform .3s,border-color .3s}
+.why-card:hover{transform:translateY(-5px);border-color:var(--line-2)}
+.why-big{font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:700;line-height:1;letter-spacing:-.02em;margin-bottom:16px;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.why-card h3{font-size:18px;font-weight:700;margin-bottom:10px;letter-spacing:-.01em}
+.why-card p{font-size:14px;color:var(--muted);line-height:1.6}
+
+/* ---- industries ---- */
+.serv-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.serv-col{border:1px solid var(--line);border-radius:20px;padding:36px;background:var(--char-2)}
+.serv-col h4{font-size:12px;text-transform:uppercase;letter-spacing:.18em;color:var(--accent);margin-bottom:24px;font-weight:700}
+.serv-col ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.serv-col li{display:flex;gap:10px;align-items:center;font-size:15px;color:var(--muted)}
+.serv-col li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--grad);flex-shrink:0}
+
+/* ---- resources ---- */
+.res-row{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.rcard{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--char-2);cursor:pointer;transition:transform .3s,border-color .3s}
+.rcard:hover{transform:translateY(-6px);border-color:var(--line-2)}
+.rcard .rtop{height:130px;background:linear-gradient(135deg,var(--navy),var(--char));position:relative;overflow:hidden}
+.rcard .rtop::after{content:"";position:absolute;inset:0;background:var(--grad-soft);opacity:.5}
+.rcard .rtop .ri{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;opacity:.9}
+.rcard .rtop .ri svg{width:38px;height:38px;stroke:var(--accent)}
+.rcard .rbody{padding:22px}
+.rcard .rlabel{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:11px}
+.rcard h4{font-size:15px;font-weight:700;line-height:1.35;letter-spacing:-.01em}
+.rcard .rmeta{margin-top:15px;font-size:12px;color:var(--muted-2)}
+
+/* ---- final cta ---- */
+.final{text-align:center;padding:140px 40px;position:relative;z-index:2;overflow:hidden;background:transparent}
+.final h2{font-size:clamp(36px,5.4vw,64px);font-weight:900;letter-spacing:-.04em;line-height:1.02;max-width:20ch;margin:0 auto 24px}
+.final p{color:var(--muted);font-size:18px;margin-bottom:38px}
+.final-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+/* ---- footer ---- */
+footer{border-top:1px solid var(--line);padding:60px 0 40px;background:linear-gradient(180deg,rgba(8,9,12,0),rgba(8,9,12,.92) 40%);position:relative;z-index:2;backdrop-filter:blur(4px)}
+.foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+.foot-brand .fb-top{display:flex;align-items:center;gap:11px;margin-bottom:16px}
+.foot-brand img{width:30px;height:34px;object-fit:contain}
+[data-theme="light"] .foot-brand img{filter:invert(.86)}
+.foot-brand .fb-name{font-weight:800;font-size:17px}
+.foot-brand p{font-size:14px;color:var(--muted);max-width:32ch;line-height:1.6}
+.foot-col h5{font-size:13px;font-weight:700;margin-bottom:16px}
+.foot-col a{display:block;font-size:14px;color:var(--muted);margin-bottom:11px;cursor:pointer;transition:color .15s}
+.foot-col a:hover{color:var(--accent)}
+.foot-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid var(--line);flex-wrap:wrap;gap:14px}
+.foot-bottom p{font-size:13px;color:var(--muted-2)}
+.foot-social{display:flex;gap:12px}
+.foot-social a{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);cursor:pointer;transition:.2s}
+.foot-social a:hover{border-color:var(--accent);color:var(--accent)}
+.foot-social svg{width:16px;height:16px}
+
+/* ---- responsive ---- */
+@media(max-width:1080px){
+  .what-grid{grid-template-columns:1fr;gap:44px}
+  .tab-grid{grid-template-columns:1fr;gap:38px;padding:36px}
+  .why-grid{grid-template-columns:1fr}
+  .res-row{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:860px){
+  :root{--sb:0px}
+  .sidebar{transform:translateX(-100%);width:264px}
+  .sidebar.open{transform:none;box-shadow:0 0 60px rgba(0,0,0,.6)}
+  .sb-burger{display:flex}
+  .sb-scrim.show{display:block}
+  .topbar{left:0}
+  .topbar .tb-in{right:16px;top:16px}
+  .tb-signin{display:none}
+  .wrap{padding:0 22px}
+  .features,.serv-grid{grid-template-columns:1fr}
+  .serv-col ul{grid-template-columns:1fr 1fr}
+  .res-row{grid-template-columns:1fr}
+  .block{padding:84px 0}
+  .hero{padding:100px 22px 80px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .reveal{opacity:1;transform:none}
+}
+
+/* glass legibility over live brain */
+.fcard,.why-card,.serv-col,.ui-mock,.tab-grid,.tab-vis,.rcard,.tabs-head{
+  background-color:rgba(13,17,23,.62)!important;backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);
+}
+[data-theme="light"] .fcard,[data-theme="light"] .why-card,[data-theme="light"] .serv-col,
+[data-theme="light"] .ui-mock,[data-theme="light"] .tab-grid,[data-theme="light"] .tab-vis,
+[data-theme="light"] .rcard,[data-theme="light"] .tabs-head{
+  background-color:rgba(246,248,250,.7)!important;
+}
+.sec-head .h2,.hero-h{text-shadow:0 2px 30px rgba(0,0,0,.55)}
+.lead,.hero-sub{text-shadow:0 1px 18px rgba(0,0,0,.5)}
+/* darken zone directly behind text blocks via radial vignette layers handled by canvas; keep body pure */
+#bg3d{opacity:1}
+
+
+.sb-logo{width:100%;max-width:150px}
+.sb-logo .mono{font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:600;fill:var(--txt)}
+.sb-logo .word{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;letter-spacing:.18em;fill:var(--txt)}
+.sb-logo .sub{font-family:'Inter',sans-serif;font-size:5.2px;font-weight:600;letter-spacing:.18em;fill:var(--muted-2)}
+.sb-logo .ln{stroke:var(--muted);stroke-width:1}
+
 </style>
 </head>
 <body>
-  <div id="progress"></div>
-  <div id="brand">Apex<span>·</span>Standard</div>
 
-  <nav id="sidebar"></nav>
+<!-- SIDEBAR -->
+<div class="sb-burger" id="burger" aria-label="Open menu"><span></span></div>
+<div class="sb-scrim" id="scrim"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <svg class="sb-logo" viewBox="0 0 150 95">
+      <text class="mono" x="75" y="42" text-anchor="middle">AS</text>
+      <text class="word" x="75" y="68" text-anchor="middle">APEX</text>
+      <line class="ln" x1="20" y1="78" x2="48" y2="78"/>
+      <text class="word" x="75" y="82" text-anchor="middle" style="font-size:13px;letter-spacing:.3em">STANDARD</text>
+      <line class="ln" x1="102" y1="78" x2="130" y2="78"/>
+      <text class="sub" x="75" y="92" text-anchor="middle">ELEVATING BUSINESSES</text>
+    </svg>
+  </div>
+  <nav class="sb-nav">
+    <a class="sb-link active" data-sec="home"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</a>
+    <a class="sb-link" data-sec="what-we-do"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>What We Do</a>
+    <a class="sb-link" data-sec="what-it-is"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>What It Is</a>
+    <a class="sb-link" data-sec="capabilities"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>Capabilities</a>
+    <a class="sb-link" data-sec="why-us"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><path d="m12 2 2.6 6.6L21 9.2l-5 4.5L17.6 21 12 17.3 6.4 21 8 13.7 3 9.2l6.4-.6z"/></svg>Why Us</a>
+    <a class="sb-link" data-sec="resources"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M14 3v5h5"/></svg>Resources</a>
+  </nav>
+  <div class="sb-foot">
+    <a class="sb-link" id="accountBtn"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Sign In / Create Account</a>
+    <div class="sb-toggle" id="themeToggle" role="button" tabindex="0" aria-label="Toggle theme">
+      <span style="display:flex;align-items:center;gap:13px"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/></svg>Theme</span>
+      <span class="tog-track"><span class="tog-knob"></span></span>
+    </div>
+  </div>
+</aside>
 
-  <canvas id="bg"></canvas>
+<!-- TOP BAR -->
+<div class="topbar"><div class="tb-in">
+  <a class="tb-signin" id="topSignin">Sign In</a>
+  <a class="btn btn-primary book">Book Demo</a>
+</div></div>
 
-  <div id="panels"></div>
+<canvas id="bg3d"></canvas>
 
-  <div id="hint">Scroll to explore ↓</div>
+<div class="main">
 
-  <div id="scroll-space"></div>
+<!-- HOME / HERO -->
+<section class="hero" id="home">
+  <span class="pill reveal in"><span class="dot"></span>AI growth systems for local business</span>
+  <h1 class="hero-h reveal in d1">Collect leads. Build reputation. <span class="grad-text">Stay consistent.</span> Repeat.</h1>
+  <p class="hero-sub reveal in d2">One system that captures every lead, grows your star rating, and keeps your social feed alive — without you lifting a finger.</p>
+  <div class="hero-cta reveal in d3">
+    <a class="btn btn-primary btn-lg book">Book a 30-min demo</a>
+    <a class="btn btn-ghost btn-lg nav-to" data-sec="what-it-is">See how it works</a>
+  </div>
+  <p class="hero-note reveal in d4">No contracts • Setup in days • Cancel anytime</p>
+  <div class="scroll-cue"><span class="mouse"></span>Scroll</div>
+</section>
 
-  <!-- ============ DATA: edit copy here ============ -->
-  <script id="page-data" type="application/json">
-  [
-    {
-      "id":"home","nav":"Home","eyebrow":"AI-Powered Growth",
-      "title":"Collect leads. Build reputation. Stay consistent.",
-      "body":"One unified system that captures leads, manages reviews, and automates your social presence — built for local businesses.",
-      "pills":["Lead Capture","Reputation","Automation"],
-      "cta":"Book a 30-min demo","href":"mailto:itz.silven@apexstandard.biz?subject=Book%20a%2030-min%20demo"
-    },
-    {
-      "id":"what-we-do","nav":"What We Do","eyebrow":"What We Do",
-      "title":"Three core services, one engine.",
-      "body":"Lead generation, review management, and social media automation — available individually or bundled together for compounding results.",
-      "pills":["Leads","Reviews","Social"],
-      "cta":"See Capabilities","href":"#capabilities"
-    },
-    {
-      "id":"what-it-is","nav":"What It Is","eyebrow":"What It Is",
-      "title":"A growth engine that runs itself.",
-      "body":"Apex Standard ties every touchpoint together so your business keeps growing while you stay focused on the work you do best.",
-      "pills":["Unified","Hands-off","Always-on"],
-      "cta":"See it in action","href":"#capabilities"
-    },
-    {
-      "id":"capabilities","nav":"Capabilities","eyebrow":"Capabilities",
-      "title":"Everything you need, transparently priced.",
-      "body":"Each service comes fully featured with clear, month-to-month pricing. No long-term contracts, no surprises.",
-      "pills":["Full-featured","Month-to-month","No contracts"],
-      "cta":"Book a 30-min demo","href":"mailto:itz.silven@apexstandard.biz?subject=Pricing%20%26%20demo"
-    },
-    {
-      "id":"why-us","nav":"Why Us","eyebrow":"Why Us",
-      "title":"Integrated, fast, and made for local.",
-      "body":"Quick setup, true integration across services, and pricing designed for local businesses like salons, spas, and trades.",
-      "pills":["Quick setup","Integrated","Local pricing"],
-      "cta":"Book a 30-min demo","href":"mailto:itz.silven@apexstandard.biz?subject=Book%20a%2030-min%20demo"
-    },
-    {
-      "id":"resources","nav":"Resources","eyebrow":"Resources",
-      "title":"Guides & templates to grow faster.",
-      "body":"Free playbooks, templates, and resources to help your business collect more leads and build a stronger reputation.",
-      "pills":["Guides","Templates","Playbooks"],
-      "cta":"Browse Resources","href":"https://apexstandard.biz/#resources"
+<!-- WHAT WE DO -->
+<section class="block alt" id="what-we-do">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">What we do</span>
+      <h2 class="h2">Three systems. One standard.</h2>
+      <p class="lead">Each one runs the follow-up your front desk never has time for — and they're even stronger together.</p>
+    </div>
+    <div class="features">
+      <div class="fcard reveal">
+        <div class="fnum">01</div>
+        <div class="fic"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <h3>AI Lead Capture Chatbot</h3>
+        <p>A trained assistant on your site that answers visitors around the clock, books appointments, and drops every contact into your inbox.</p>
+        <span class="fprice">$100/mo + $250 setup</span>
+      </div>
+      <div class="fcard reveal d1">
+        <div class="fnum">02</div>
+        <div class="fic"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9 16 14 18 21 12 17 6 21 8 14 2 9 9 9"/></svg></div>
+        <h3>Review &amp; Reputation Management</h3>
+        <p>Turn happy customers into 5-star reviews automatically, and catch unhappy ones privately before they ever go public.</p>
+        <span class="fprice">$100/mo + $150 setup</span>
+      </div>
+      <div class="fcard reveal d2">
+        <div class="fnum">03</div>
+        <div class="fic"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="3.5"/><circle cx="17" cy="7" r="1.2" fill="currentColor"/></svg></div>
+        <h3>Social Media Automation</h3>
+        <p>A steady stream of branded posts created, scheduled, and published for you so your feed never goes quiet between busy weeks.</p>
+        <span class="fprice">$100/mo + $450 setup</span>
+      </div>
+      <div class="fcard reveal d3">
+        <div class="fnum">04</div>
+        <div class="fic"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></div>
+        <h3>Run all three together</h3>
+        <p>Bundle the full system and every lead, review, and post works off one connected standard — at a price built for local business.</p>
+        <span class="fprice">Bundle pricing available</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT IT IS -->
+<section class="block" id="what-it-is">
+  <div class="wrap">
+    <div class="what-grid">
+      <div class="reveal">
+        <span class="eyebrow">What it is</span>
+        <h2 class="h2">A growth engine that runs while you work the chair</h2>
+        <p class="lead">Apex Standard plugs into your website and Google profile, then quietly does the follow-up your team never has time for.</p>
+        <div class="what-list">
+          <div class="what-item"><span class="ck"><svg fill="none" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><p><b>Captures</b> every website visitor with a chatbot that books and qualifies in real time.</p></div>
+          <div class="what-item"><span class="ck"><svg fill="none" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><p><b>Requests reviews</b> by text and email at the right moment after each visit.</p></div>
+          <div class="what-item"><span class="ck"><svg fill="none" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><p><b>Publishes social posts</b> on a schedule you approve once and forget.</p></div>
+        </div>
+      </div>
+      <div class="ui-mock reveal d2">
+        <div class="um-head"><span class="t">Lead Capture Chatbot</span><span class="b">Live</span></div>
+        <div class="um-chat">
+          <div class="bubble bot">Hi! 👋 Looking to book an appointment or have a question?</div>
+          <div class="bubble user">Do you have any openings this Saturday?</div>
+          <div class="bubble bot">We do! I have 11:30 AM and 2:00 PM open. Want me to hold one for you?</div>
+          <div class="bubble user">2 PM please</div>
+          <div class="um-typing"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CAPABILITIES -->
+<section class="block alt" id="capabilities">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Capabilities</span>
+      <h2 class="h2">Pick one. Or run all three together.</h2>
+    </div>
+    <div class="tabs-head reveal" role="tablist">
+      <button class="tab-btn active" role="tab" data-tab="t1">AI Chatbot</button>
+      <button class="tab-btn" role="tab" data-tab="t2">Review System</button>
+      <button class="tab-btn" role="tab" data-tab="t3">Social Media</button>
+    </div>
+
+    <div class="tab-panel active" id="t1">
+      <div class="tab-grid">
+        <div class="tp">
+          <h3>AI Lead Capture Chatbot</h3>
+          <span class="price">$100/mo + $250 setup</span>
+          <p>A trained assistant on your site that answers questions, books appointments, and captures contacts around the clock.</p>
+          <ul class="tab-feats">
+            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>24/7 instant replies to visitors</li>
+            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Books straight into your calendar</li>
+            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Every lead logged to your inbox</li>
+          </ul>
+        </div>
+        <div class="tab-vis">
+          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><div><div class="vt">New conversation</div><div class="vs">Visitor from Google</div></div><span class="vb">Now</span></div>
+          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg></span><div><div class="vt">Appointment booked</div><div class="vs">Saturday · 2:00 PM</div></div><span class="vb">✓</span></div>
+          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span><div><div class="vt">Lead saved</div><div class="vs">Added to inbox</div></div><span class="vb">✓</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="t2">
+      <div class="tab-grid">
+        <div class="tp">
+          <h3>Review &amp; Reputation Management</h3>
+          <span class="price">$100/mo + $150 setup</span>
+          <p>Turn happy customers into 5-star reviews automatically — and catch problems privately before they ever go public.</p>
+          <ul class="tab-feats">
+            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Automated review requests by text &amp; email</li>
+            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Negative feedback routed to you first</li>
+            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Live rating tracking on one dashboard</li>
+          </ul>
+        </div>
+        <div class="tab-vis">
+          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9 16 14 18 21 12 17 6 21 8 14 2 9 9 9"/></svg></span><div><div class="vt">★★★★★ review posted</div><div class="vs">"Best service I've had!"</div></div><span class="vb">+1</span></div>
+          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></span><div><div class="vt">Request sent</div><div class="vs">After each visit</div></div><span class="vb">Sent</span></div>
+          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M22 4 12 14l-3-3"/></svg></span><div><div class="vt">Private feedback caught</div><div class="vs">Routed to you first</div></div><span class="vb">✓</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="t3">
+      <div class="tab-grid">
+        <div class="tp">
+          <h3>Social Media Automation</h3>
+          <span class="price">$100/mo + $450 setup</span>
+          <p>A steady stream of branded posts created and published for you, so your business always looks active and open.</p>
+          <ul class="tab-feats">
+            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Branded posts written for your business</li>
+            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Scheduled and published automatically</li>
+            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>You approve the plan once a month</li>
+          </ul>
+        </div>
+        <div class="tab-vis">
+          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="3.5"/></svg></span><div><div class="vt">Post published</div><div class="vs">On brand, on time</div></div><span class="vb">Live</span></div>
+          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg></span><div><div class="vt">Week scheduled</div><div class="vs">Queued in advance</div></div><span class="vb">Queued</span></div>
+          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.6a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.07a5.5 5.5 0 1 0-7.78 7.78L12 21l8.84-8.62a5.5 5.5 0 0 0 0-7.78z"/></svg></span><div><div class="vt">Approve once</div><div class="vs">You stay in control</div></div><span class="vb">✓</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section class="block" id="why-us">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Why us</span>
+      <h2 class="h2">Built for local business, held to a higher standard</h2>
+      <p class="lead">No bloated agency retainers. No long contracts. Just systems that do the work and pay for themselves.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card reveal">
+        <div class="why-big">01</div>
+        <h3>One connected system</h3>
+        <p>Leads, reviews, and social all run off a single standard instead of five disconnected tools you have to babysit.</p>
+      </div>
+      <div class="why-card reveal d1">
+        <div class="why-big">02</div>
+        <h3>Set up in days, not months</h3>
+        <p>We handle the build and the integrations. You approve it once and it starts working for your business right away.</p>
+      </div>
+      <div class="why-card reveal d2">
+        <div class="why-big">03</div>
+        <h3>Priced for Main Street</h3>
+        <p>Flat monthly pricing built for salons, spas, and trades — no contracts, cancel anytime, keep what works.</p>
+      </div>
+    </div>
+    <div class="serv-grid" style="margin-top:24px">
+      <div class="serv-col reveal">
+        <h4>Beauty &amp; Personal Care</h4>
+        <ul>
+          <li>Nail Salons</li><li>Hair Salons</li>
+          <li>Med Spas</li><li>Lash &amp; Brow Studios</li>
+          <li>Barbershops</li><li>Day Spas</li>
+        </ul>
+      </div>
+      <div class="serv-col reveal d1">
+        <h4>Home &amp; Trade Services</h4>
+        <ul>
+          <li>Electricians</li><li>Lighting Contractors</li>
+          <li>HVAC</li><li>Plumbers</li>
+          <li>Landscapers</li><li>Cleaning Services</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESOURCES -->
+<section class="block alt" id="resources">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Resources</span>
+      <h2 class="h2">Guides to grow your local business</h2>
+    </div>
+    <div class="res-row">
+      <a class="rcard reveal book">
+        <div class="rtop"><span class="ri"><svg fill="none" stroke-width="1.6" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span></div>
+        <div class="rbody"><div class="rlabel">Playbook</div><h4>How a chatbot can recover missed bookings</h4><div class="rmeta">5 min read</div></div>
+      </a>
+      <a class="rcard reveal d1 book">
+        <div class="rtop"><span class="ri"><svg fill="none" stroke-width="1.6" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9 16 14 18 21 12 17 6 21 8 14 2 9 9 9"/></svg></span></div>
+        <div class="rbody"><div class="rlabel">Guide</div><h4>A simple roadmap to a stronger star rating</h4><div class="rmeta">7 min read</div></div>
+      </a>
+      <a class="rcard reveal d2 book">
+        <div class="rtop"><span class="ri"><svg fill="none" stroke-width="1.6" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="3.5"/></svg></span></div>
+        <div class="rbody"><div class="rlabel">Template</div><h4>30 days of social posts for salons &amp; spas</h4><div class="rmeta">Free download</div></div>
+      </a>
+      <a class="rcard reveal d3 book">
+        <div class="rtop"><span class="ri"><svg fill="none" stroke-width="1.6" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span></div>
+        <div class="rbody"><div class="rlabel">Guide</div><h4>Why trades win more jobs with after-hours capture</h4><div class="rmeta">4 min read</div></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final">
+  <div class="wrap reveal">
+    <h2>Ready to collect, build, and stay consistent?</h2>
+    <p>Book a 30-minute demo and see your business running on Apex Standard.</p>
+    <div class="final-cta">
+      <a class="btn btn-primary btn-lg book">Book your demo</a>
+      <a class="btn btn-ghost btn-lg" href="mailto:itz.silven@apexstandard.biz">Email us</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand"><div class="fb-name">Apex Standard</div><p>AI growth systems that collect leads, build reputation, and keep local businesses consistent.</p></div>
+        <p>AI growth systems that collect leads, build reputation, and keep local businesses consistent.</p>
+      </div>
+      <div class="foot-col">
+        <h5>Services</h5>
+        <a class="nav-to" data-sec="what-we-do">AI Chatbot</a>
+        <a class="nav-to" data-sec="what-we-do">Review System</a>
+        <a class="nav-to" data-sec="what-we-do">Social Media</a>
+        <a class="nav-to" data-sec="capabilities">Capabilities</a>
+      </div>
+      <div class="foot-col">
+        <h5>Company</h5>
+        <a class="nav-to" data-sec="what-it-is">What it is</a>
+        <a class="nav-to" data-sec="why-us">Why us</a>
+        <a class="nav-to" data-sec="resources">Resources</a>
+        <a href="mailto:itz.silven@apexstandard.biz">Contact</a>
+      </div>
+      <div class="foot-col">
+        <h5>Get started</h5>
+        <a class="book">Book a demo</a>
+        <a href="mailto:itz.silven@apexstandard.biz">itz.silven@apexstandard.biz</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <p>© 2026 Apex Standard. Elevating businesses. Driving excellence.</p>
+      <div class="foot-social">
+        <a class="book" aria-label="Instagram"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+        <a class="book" aria-label="Facebook"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="mailto:itz.silven@apexstandard.biz" aria-label="Email"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</div><!-- /main -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+var CALENDLY="https://calendly.com/itz-silven-apexstandard/30min";
+document.querySelectorAll(".book").forEach(function(el){el.style.cursor="pointer";el.onclick=function(e){e.preventDefault();window.open(CALENDLY,"_blank","noopener");};});
+document.getElementById("topSignin").onclick=function(){window.open("mailto:itz.silven@apexstandard.biz");};
+document.getElementById("accountBtn").onclick=function(){window.open("mailto:itz.silven@apexstandard.biz");};
+var links=[].slice.call(document.querySelectorAll(".sb-link[data-sec]"));
+function go(sec){var el=document.getElementById(sec);if(el)el.scrollIntoView({behavior:"smooth"});closeSb();}
+links.forEach(function(l){l.onclick=function(){go(l.dataset.sec);};});
+[].slice.call(document.querySelectorAll(".nav-to")).forEach(function(l){l.onclick=function(e){e.preventDefault();go(l.dataset.sec);};});
+var sb=document.getElementById("sidebar"),scrim=document.getElementById("scrim");
+function openSb(){sb.classList.add("open");scrim.classList.add("show");}
+function closeSb(){sb.classList.remove("open");scrim.classList.remove("show");}
+document.getElementById("burger").onclick=openSb;scrim.onclick=closeSb;
+var tt=document.getElementById("themeToggle"),theme="dark";
+tt.onclick=function(){theme=theme==="dark"?"light":"dark";if(theme==="light")document.documentElement.setAttribute("data-theme","light");else document.documentElement.removeAttribute("data-theme");};
+document.querySelectorAll(".tab-btn").forEach(function(btn){btn.onclick=function(){document.querySelectorAll(".tab-btn").forEach(function(b){b.classList.remove("active");});document.querySelectorAll(".tab-panel").forEach(function(p){p.classList.remove("active");});btn.classList.add("active");document.getElementById(btn.dataset.tab).classList.add("active");};});
+try{var rev=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");rev.unobserve(e.target);}});},{threshold:.12});document.querySelectorAll(".reveal:not(.in)").forEach(function(el){rev.observe(el);});}catch(e){document.querySelectorAll(".reveal").forEach(function(el){el.classList.add("in");});}
+var spy=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var id=e.target.id;links.forEach(function(l){l.classList.toggle("active",l.dataset.sec===id);});}});},{rootMargin:"-45% 0px -50% 0px"});
+["home","what-we-do","what-it-is","capabilities","why-us","resources"].forEach(function(id){var s=document.getElementById(id);if(s)spy.observe(s);});
+
+/* ============================================================
+   APEX STANDARD — METALLIC AI BRAIN, STRAIGHT-IN DOLLY
+   Single continuous push: every scroll moves the camera
+   directly toward and into the brain, then through glowing
+   neural corridors. No rise/zoom-out detour.
+   Performance-scaled by device.
+   ============================================================ */
+window.addEventListener("load",function(){
+  if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+  var s=document.createElement("script");
+  s.src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
+  s.onload=initBrain;s.onerror=function(){};
+  document.head.appendChild(s);
+});
+
+function initBrain(){
+ try{
+  var canvas=document.getElementById("bg3d"),W=innerWidth,H=innerHeight;
+  // ---- performance tier ----
+  var cores=navigator.hardwareConcurrency||4;
+  var small=Math.min(W,H)<760;
+  var LOW=small||cores<=4;
+  var DETAIL=LOW?72:128;          // sphere segments
+  var NODES=LOW?260:460;          // neurons
+  var FIELD=LOW?900:2200;         // ambient particles
+  var TUBES=LOW?14:26;            // corridor strands
+  var PR=Math.min(devicePixelRatio,LOW?1.5:2);
+
+  var renderer=new THREE.WebGLRenderer({canvas:canvas,alpha:true,antialias:true,powerPreference:"high-performance"});
+  renderer.setPixelRatio(PR);renderer.setSize(W,H);
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  var scene=new THREE.Scene();
+  scene.fog=new THREE.FogExp2(0x05080f,.020);
+  var cam=new THREE.PerspectiveCamera(55,W/H,.03,500);
+
+  /* ---------- noise ---------- */
+  function hsh(a,b,c){var h=(a*374761393+b*668265263+c*2147483647)>>>0;h^=h>>>13;h=Math.imul(h,1274126177);h^=h>>>16;return (h>>>0)/4294967296;}
+  function n3(x,y,z){var ix=Math.floor(x),iy=Math.floor(y),iz=Math.floor(z),fx=x-ix,fy=y-iy,fz=z-iz;
+    function sm(t){return t*t*t*(t*(t*6-15)+10);}var ux=sm(fx),uy=sm(fy),uz=sm(fz);
+    function L(a,b,t){return a+(b-a)*t;}function c(dx,dy,dz){return hsh(ix+dx,iy+dy,iz+dz)*2-1;}
+    return L(L(L(c(0,0,0),c(1,0,0),ux),L(c(0,1,0),c(1,1,0),ux),uy),L(L(c(0,0,1),c(1,0,1),ux),L(c(0,1,1),c(1,1,1),ux),uy),uz);}
+  function fbm(x,y,z){return n3(x,y,z)*.6+n3(x*2.1+9,y*2.1,z*2.1)*.3+n3(x*4.4+4,y*4.4,z*4.4)*.18+n3(x*8.7+2,y*8.7,z*8.7)*.09;}
+
+  /* ---------- brain group ---------- */
+  var brain=new THREE.Group();scene.add(brain);
+
+  // anatomically-shaped hemisphere: ellipsoid base + ridged gyri folds,
+  // flattened on the inner (fissure) side, tapered front/back like a real lobe.
+  function hemisphere(sign,seed){
+    var g=new THREE.SphereGeometry(4.6,DETAIL,DETAIL),p=g.attributes.position;
+    for(var i=0;i<p.count;i++){
+      var x=p.getX(i),y=p.getY(i),z=p.getZ(i);
+      // base ellipsoid proportions (longer front-back, narrower side-to-side)
+      var ex=x*0.74, ey=y*0.92, ez=z*1.06;
+      // ridged folds (gyri): sharp valleys via abs of fbm
+      var f1=fbm(ex*.85+seed, ey*.85, ez*.85);
+      var ridge=1.0-Math.abs(fbm(ex*1.7+seed*3, ey*1.7, ez*1.7));
+      var f2=fbm(ex*3.3+seed*5, ey*3.3, ez*3.3)*0.4;
+      var folds=(ridge*0.85 + f1*0.5 + f2)*0.62;
+      var len=Math.sqrt(ex*ex+ey*ey+ez*ez)||1;
+      var sc=1+folds/len;
+      var nx=ex*sc, ny=ey*sc, nz=ez*sc;
+      // flatten the medial (inner) wall so the two halves sit flush along the fissure
+      if(sign>0){ if(nx<0.25) nx=0.25+(nx-0.25)*0.18; }
+      else      { if(nx>-0.25) nx=-0.25+(nx+0.25)*0.18; }
+      p.setXYZ(i,nx,ny,nz);
     }
-  ]
-  </script>
-
-  <!-- ============ Three.js ============ -->
-  <script type="importmap">
-  { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
-  </script>
-
-  <script type="module">
-  import * as THREE from 'three';
-
-  // ---- Config -------------------------------------------------------------
-  const VIDEOS = ['videos/v1.mp4','videos/v2.mp4','videos/v3.mp4','videos/v4.mp4','videos/v5.mp4'];
-  const PAGE_VH  = 100;   // scroll height of each page "hold" (in vh)
-  const VIDEO_VH = 140;   // scroll height of each video scrub (in vh)
-  const pages = JSON.parse(document.getElementById('page-data').textContent);
-
-  // ---- Build the scroll timeline: page, video, page, video, ... -----------
-  // Each block has {type, start, h, ...}. Positions are filled after layout.
-  const blocks = [];
-  pages.forEach((p, i) => {
-    blocks.push({ type:'page', page:i });
-    if (i < pages.length - 1) blocks.push({ type:'video', vid:i });
-  });
-
-  // ---- Build sidebar + panels DOM -----------------------------------------
-  const sidebar = document.getElementById('sidebar');
-  const panelsEl = document.getElementById('panels');
-  const panelNodes = [];
-  pages.forEach((p, i) => {
-    const btn = document.createElement('button');
-    btn.innerHTML = `<span class="dot"></span>${p.nav}`;
-    btn.addEventListener('click', () => goToPage(i));
-    sidebar.appendChild(btn);
-
-    const sec = document.createElement('section');
-    sec.className = 'panel';
-    sec.innerHTML = `
-      <div class="card">
-        <p class="eyebrow">${p.eyebrow}</p>
-        ${i===0 ? `<h1>${p.title}</h1>` : `<h2>${p.title}</h2>`}
-        <p>${p.body}</p>
-        <div class="pills">${p.pills.map(x=>`<span class="pill">${x}</span>`).join('')}</div>
-        <a class="cta" data-cta="${i}" href="${p.href || '#'}">${p.cta}</a>
-      </div>`;
-    panelsEl.appendChild(sec);
-    panelNodes.push(sec);
-  });
-  const navButtons = [...sidebar.querySelectorAll('button')];
-
-  // Map page id -> index, for resolving internal "#section" CTA links
-  const idToIndex = {};
-  pages.forEach((p, i) => idToIndex[p.id] = i);
-
-  // CTA clicks: "#section" -> animated internal jump; mailto/http -> normal link
-  panelsEl.addEventListener('click', (e) => {
-    const a = e.target.closest('a.cta');
-    if (!a) return;
-    const href = a.getAttribute('href') || '';
-    if (href.startsWith('#')) {
-      const target = idToIndex[href.slice(1)];
-      if (target !== undefined) { e.preventDefault(); goToPage(target); }
-    } else if (/^https?:/i.test(href)) {
-      a.target = '_blank'; a.rel = 'noopener'; // external -> new tab, keep the experience open
-    }
-    // mailto: falls through to default behavior
-  });
-
-  // Brand logo -> scroll home
-  document.getElementById('brand').style.cursor = 'pointer';
-  document.getElementById('brand').addEventListener('click', () => goToPage(0));
-
-  // ---- Layout: compute pixel positions & total document height ------------
-  let totalPx = 0;
-  function layout(){
-    const vh = window.innerHeight;
-    let y = 0;
-    for (const b of blocks){
-      b.h = (b.type === 'page' ? PAGE_VH : VIDEO_VH) / 100 * vh;
-      b.start = y;
-      y += b.h;
-    }
-    totalPx = y;
-    document.getElementById('scroll-space').style.height = totalPx + 'px';
+    g.computeVertexNormals();
+    return g;
   }
 
-  // Scroll position that parks a given page hold centered in the viewport
-  function pageScrollTarget(pageIndex){
-    const b = blocks.find(b => b.type==='page' && b.page===pageIndex);
-    // park so the page hold is centered in view
-    return b.start + (b.h - window.innerHeight)/2;
+  // METALLIC navy-silver material
+  function metal(col,em){return new THREE.MeshStandardMaterial({color:col,emissive:em||0x0a1626,emissiveIntensity:.35,roughness:.38,metalness:.82,transparent:true,opacity:1,side:THREE.FrontSide});}
+
+  var matL=metal(0x35506f,0x0e2238), matR=metal(0x324c6a,0x0d2034);
+  var gL=hemisphere(1,0), gR=hemisphere(-1,53);
+  var mL=new THREE.Mesh(gL,matL); mL.position.x=-0.55;
+  var mR=new THREE.Mesh(gR,matR); mR.position.x=0.55;
+  brain.add(mL,mR);
+
+  // thin brushed-silver wire overlay for the "scanned" hi-tech read
+  var wire=new THREE.MeshBasicMaterial({color:0x9fb6cc,wireframe:true,transparent:true,opacity:.06});
+  var wL=new THREE.Mesh(gL,wire);wL.position.copy(mL.position);
+  var wR=new THREE.Mesh(gR,wire);wR.position.copy(mR.position);
+  brain.add(wL,wR);
+
+  // cerebellum (folded, at lower-back)
+  var gC=new THREE.SphereGeometry(1.9,Math.floor(DETAIL*.6),Math.floor(DETAIL*.6)),pc=gC.attributes.position;
+  for(var i=0;i<pc.count;i++){var x=pc.getX(i),y=pc.getY(i),z=pc.getZ(i);
+    var rib=Math.abs(Math.sin(y*5.0))*0.18; // horizontal cerebellar ribs
+    var f=fbm(x*1.6+71,y*1.6,z*1.6)*0.3;
+    var len=Math.sqrt(x*x+y*y+z*z)||1,sc=1+(rib+f)/len;
+    pc.setXYZ(i,x*sc,y*sc,z*sc);}
+  gC.computeVertexNormals();
+  var cere=new THREE.Mesh(gC,metal(0x2a4360,0x0b1c30));
+  cere.position.set(0,-2.7,-3.4);cere.scale.set(1.5,.82,1.05);brain.add(cere);
+
+  // brain stem
+  var stem=new THREE.Mesh(new THREE.CylinderGeometry(.5,.28,3.2,20,1),metal(0x2e4866));
+  stem.position.set(0,-4.6,-1.6);stem.rotation.x=.35;brain.add(stem);
+
+  // longitudinal fissure: a dark recessed slab between hemispheres
+  var fis=new THREE.Mesh(new THREE.BoxGeometry(.16,8.6,9.2),new THREE.MeshBasicMaterial({color:0x040810,transparent:true,opacity:.55}));
+  brain.add(fis);
+
+  /* ---------- inner neural network (glows brighter as you enter) ---------- */
+  var neural=new THREE.Group();brain.add(neural);
+  var nodes=[];
+  for(var i=0;i<NODES;i++){var x,y,z,d;do{x=(Math.random()-.5)*8.4;y=(Math.random()-.5)*8.0;z=(Math.random()-.5)*9.0;d=Math.sqrt(x*x*1.6+y*y+z*z*.8);}while(d>4.3);nodes.push(new THREE.Vector3(x,y,z));}
+  var edges=[],seg=[];
+  for(var i=0;i<NODES;i++){var cc=0;for(var j=i+1;j<NODES&&cc<3;j++){if(nodes[i].distanceTo(nodes[j])<1.65&&Math.random()>.45){edges.push([i,j]);cc++;seg.push(nodes[i].x,nodes[i].y,nodes[i].z,nodes[j].x,nodes[j].y,nodes[j].z);}}}
+  var sgeo=new THREE.BufferGeometry();sgeo.setAttribute("position",new THREE.BufferAttribute(new Float32Array(seg),3));
+  var axon=new THREE.LineBasicMaterial({color:0x6fb6e6,transparent:true,opacity:.18});
+  neural.add(new THREE.LineSegments(sgeo,axon));
+  var synArr=[];for(var i=0;i<nodes.length;i++){synArr.push(nodes[i].x,nodes[i].y,nodes[i].z);}
+  var syng=new THREE.BufferGeometry();syng.setAttribute("position",new THREE.BufferAttribute(new Float32Array(synArr),3));
+  var synM=new THREE.PointsMaterial({color:0x9ad8f4,size:.07,transparent:true,opacity:.5});
+  neural.add(new THREE.Points(syng,synM));
+
+  // electric pulses
+  var pulses=[],pg=new THREE.SphereGeometry(.06,6,6);
+  for(var i=0;i<(LOW?20:36);i++){var m=new THREE.Mesh(pg,new THREE.MeshBasicMaterial({color:0xbfeBff,transparent:true,opacity:0}));brain.add(m);pulses.push({m:m,e:Math.floor(Math.random()*edges.length),t:Math.random(),sp:.005+Math.random()*.012});}
+
+  /* ---------- neural corridor (real-looking branching tubes) ---------- */
+  var corridor=new THREE.Group();scene.add(corridor);
+  // main spine curve going straight into -Z, gently meandering
+  var spinePts=[];
+  for(var i=0;i<48;i++){var t=i/47;spinePts.push(new THREE.Vector3(Math.sin(t*6.0)*1.6*t, Math.cos(t*5.0)*1.4*t, -i*2.3));}
+  var spine=new THREE.CatmullRomCurve3(spinePts);
+  // glowing tube material (navy-silver)
+  var tubeMat=new THREE.MeshStandardMaterial({color:0x3a5f86,emissive:0x1d4a72,emissiveIntensity:.7,roughness:.3,metalness:.6,transparent:true,opacity:.9,side:THREE.DoubleSide});
+  var innerWire=new THREE.MeshBasicMaterial({color:0x8fd0f0,wireframe:true,transparent:true,opacity:.16});
+  // build several parallel/branching tubes around the spine
+  for(var s=0;s<TUBES;s++){
+    var ang=(s/TUBES)*Math.PI*2, rad=2.0+Math.random()*1.4;
+    var pts=[];
+    for(var i=0;i<48;i++){var t=i/47;var base=spine.getPoint(t);
+      var wob=Math.sin(t*10+s)*0.5;
+      pts.push(new THREE.Vector3(base.x+Math.cos(ang+t*3)*(rad+wob), base.y+Math.sin(ang+t*3)*(rad+wob), base.z));}
+    var c=new THREE.CatmullRomCurve3(pts);
+    var tg=new THREE.TubeGeometry(c,40,0.10+Math.random()*0.08,7,false);
+    corridor.add(new THREE.Mesh(tg,tubeMat));
   }
-
-  // ---- Three.js scene: fullscreen video plane with object-fit:cover -------
-  const canvas = document.getElementById('bg');
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  const scene = new THREE.Scene();
-  const camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
-
-  // Load videos as paused, seekable textures
-  const videoEls = [];
-  const textures = [];
-  VIDEOS.forEach(src => {
-    const v = document.createElement('video');
-    v.src = src; v.muted = true; v.loop = false; v.playsInline = true;
-    v.preload = 'auto'; v.crossOrigin = 'anonymous';
-    v.setAttribute('webkit-playsinline','');
-    // nudge the browser to decode the first frame
-    v.addEventListener('loadeddata', () => { try{ v.currentTime = 0.001; }catch(e){} });
-    const t = new THREE.VideoTexture(v);
-    t.minFilter = THREE.LinearFilter; t.magFilter = THREE.LinearFilter;
-    videoEls.push(v); textures.push(t);
-  });
-
-  const uniforms = {
-    uTex:      { value: textures[0] },
-    uCanvas:   { value: new THREE.Vector2(1,1) },
-    uMedia:    { value: new THREE.Vector2(16,9) },
-    uDim:      { value: 0.0 },     // 0 = bright video, 1 = dimmed for reading
-    uTilt:     { value: 0.0 }      // subtle parallax during scrub
-  };
-
-  const material = new THREE.ShaderMaterial({
-    uniforms,
-    vertexShader: `
-      varying vec2 vUv;
-      void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }
-    `,
-    fragmentShader: `
-      precision highp float;
-      varying vec2 vUv;
-      uniform sampler2D uTex;
-      uniform vec2 uCanvas;
-      uniform vec2 uMedia;
-      uniform float uDim;
-      uniform float uTilt;
-      void main(){
-        // object-fit: cover
-        float rs = uCanvas.x / uCanvas.y;
-        float ri = uMedia.x / uMedia.y;
-        vec2 nz = (rs < ri) ? vec2(uMedia.x*uCanvas.y/uMedia.y, uCanvas.y)
-                            : vec2(uCanvas.x, uMedia.y*uCanvas.x/uMedia.x);
-        vec2 off = ((rs < ri) ? vec2((nz.x-uCanvas.x)*0.5, 0.0)
-                              : vec2(0.0,(nz.y-uCanvas.y)*0.5)) / nz;
-        vec2 uv = vUv * uCanvas/nz + off;
-        // subtle parallax push during scrub
-        uv += vec2(0.0, uTilt*0.02);
-        vec3 col = texture2D(uTex, uv).rgb;
-        // dim + slight blue grade toward background for legibility
-        col = mix(col, vec3(0.02,0.03,0.06), uDim);
-        // vignette
-        float d = distance(vUv, vec2(0.5));
-        col *= smoothstep(0.95, 0.35, d) * 0.45 + 0.55;
-        gl_FragColor = vec4(col, 1.0);
-      }
-    `
-  });
-  scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2), material));
-
-  // ---- Active-video switching --------------------------------------------
-  let activeVid = 0;
-  function setActiveVideo(i, time){
-    if (i !== activeVid){ activeVid = i; uniforms.uTex.value = textures[i]; }
-    const v = videoEls[i];
-    const dur = (v.duration && isFinite(v.duration)) ? v.duration : 0;
-    if (dur > 0){
-      const target = Math.max(0, Math.min(dur - 0.01, time));
-      // only seek if meaningfully different (avoids thrashing the decoder)
-      if (Math.abs(v.currentTime - target) > 0.02) { try{ v.currentTime = target; }catch(e){} }
-      uniforms.uMedia.value.set(v.videoWidth||16, v.videoHeight||9);
-    }
+  // a few big vessel tubes with wire interior for depth
+  for(var s=0;s<(LOW?3:6);s++){
+    var ang=Math.random()*Math.PI*2, rad=0.6+Math.random()*1.0;
+    var pts=[];
+    for(var i=0;i<48;i++){var t=i/47;var base=spine.getPoint(t);
+      pts.push(new THREE.Vector3(base.x+Math.cos(ang+t*4+s)*rad, base.y+Math.sin(ang+t*4+s)*rad, base.z));}
+    var c=new THREE.CatmullRomCurve3(pts);
+    var tg=new THREE.TubeGeometry(c,44,0.34,9,false);
+    corridor.add(new THREE.Mesh(tg,tubeMat.clone()));
+    corridor.add(new THREE.Mesh(tg,innerWire));
   }
+  // synapse particles drifting through corridor
+  var corC=LOW?700:1500, corG=new THREE.BufferGeometry(), corP=new Float32Array(corC*3), corBase=new Float32Array(corC);
+  for(var i=0;i<corC;i++){var t=Math.random();corBase[i]=t;var pt=spine.getPoint(t);var a=Math.random()*6.28,r=Math.random()*3.0;
+    corP[i*3]=pt.x+Math.cos(a)*r;corP[i*3+1]=pt.y+Math.sin(a)*r;corP[i*3+2]=pt.z;}
+  corG.setAttribute("position",new THREE.BufferAttribute(corP,3));
+  var corPts=new THREE.Points(corG,new THREE.PointsMaterial({color:0x7fc8ef,size:.06,transparent:true,opacity:.0}));
+  corridor.add(corPts);
+  corridor.visible=false;
 
-  // ---- Scroll → state -----------------------------------------------------
-  let targetScroll = window.scrollY;
-  function smooth(a,b,t){ return a + (b-a)*t; }
+  /* ---------- ambient field ---------- */
+  var fg=new THREE.BufferGeometry(),fp=new Float32Array(FIELD*3);
+  for(var i=0;i<FIELD;i++){var x,y,z,d;do{x=(Math.random()-.5)*30;y=(Math.random()-.5)*30;z=(Math.random()-.5)*30;d=Math.sqrt(x*x+y*y+z*z);}while(d<6||d>15);fp[i*3]=x;fp[i*3+1]=y;fp[i*3+2]=z;}
+  fg.setAttribute("position",new THREE.BufferAttribute(fp,3));
+  var field=new THREE.Points(fg,new THREE.PointsMaterial({color:0x46699a,size:.035,transparent:true,opacity:.45}));
+  scene.add(field);
 
-  function updateFromScroll(){
-    const y = window.scrollY;
+  /* ---------- lights ---------- */
+  scene.add(new THREE.AmbientLight(0x1a3050,.85));
+  var key=new THREE.DirectionalLight(0xbcd4ec,1.5);key.position.set(6,9,8);scene.add(key);
+  var rim=new THREE.DirectionalLight(0x5a93c4,1.2);rim.position.set(-4,3,-9);scene.add(rim);
+  var spec=new THREE.DirectionalLight(0xeaf3ff,.8);spec.position.set(2,-6,5);scene.add(spec); // silver glint
+  var core=new THREE.PointLight(0x66c2f2,2.0,24);brain.add(core);
 
-    // find the block we're in
-    let block = blocks[0];
-    for (const b of blocks){ if (y >= b.start) block = b; }
+  /* ---------- SINGLE STRAIGHT-IN CAMERA ----------
+     One axis of travel: z from far (28) straight to deep inside the
+     corridor. A tiny downward tilt eases in but never reverses.    */
+  var sy=0,mx=0,my=0;
+  addEventListener("scroll",function(){sy=scrollY;},{passive:true});
+  addEventListener("mousemove",function(e){mx=(e.clientX/W-.5)*2;my=(e.clientY/H-.5)*2;});
+  addEventListener("resize",function(){W=innerWidth;H=innerHeight;renderer.setSize(W,H);cam.aspect=W/H;cam.updateProjectionMatrix();});
 
-    let dim = 0.85, tilt = 0;
-    // reset panels
-    panelNodes.forEach(n => { n.style.opacity = 0; });
+  // smoothed scroll value to remove jitter
+  var prog=0, target=0;
+  function frac(){return Math.min(sy/Math.max(document.body.scrollHeight-H,1),1);}
 
-    if (block.type === 'video'){
-      const p = Math.min(1, Math.max(0, (y - block.start) / block.h));
-      const v = videoEls[block.vid];
-      const dur = (v.duration && isFinite(v.duration)) ? v.duration : 1;
-      setActiveVideo(block.vid, p * dur);
-      tilt = (p - 0.5) * 2;
-      dim = 0.0; // show video fully during scrub
+  var cp=new THREE.Vector3(), look=new THREE.Vector3();
+  function easeInOutCubic(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
 
-      // cross-fade the outgoing / incoming page panels at the edges
-      const outPage = block.vid;       // page before this video
-      const inPage  = block.vid + 1;   // page after this video
-      if (p < 0.18) setPanel(outPage, 1 - p/0.18, -40*(p/0.18));
-      if (p > 0.82) setPanel(inPage, (p-0.82)/0.18, 40*(1-(p-0.82)/0.18));
+  function updateCam(){
+    // single monotonic path: 0 -> 1 maps to z 28 -> deep inside corridor
+    var p=easeInOutCubic(prog);
+    // Phase A (0..0.5): approach from z=28 to the cortex surface z~3
+    // Phase B (0.5..1): continue straight through into corridor following spine
+    var z;
+    if(p<0.5){
+      var a=p/0.5;                     // 0..1
+      z = 28 + (3 - 28)*a;             // 28 -> 3, straight in
+      cp.set(mx*1.2*(1-a), -my*0.8*(1-a) - a*0.6, z);
+      look.set(0,-a*0.4,0);
+      corridor.visible=false;
+      var fade=Math.max(0.12, 1-a*0.9);
+      matL.opacity=matR.opacity=fade;
+      wire.opacity=.06+a*.10;
+      axon.opacity=.18+a*.4;
+      synM.opacity=.5+a*.4;
+      core.intensity=2.0+a*2.5;
+      corPts.material.opacity=0;
     } else {
-      // page hold: freeze the appropriate video frame
-      const pageIdx = block.page;
-      if (pageIdx === 0){
-        setActiveVideo(0, 0);                 // first frame of v1
-      } else {
-        const v = videoEls[pageIdx-1];
-        const dur = (v.duration && isFinite(v.duration)) ? v.duration : 0;
-        setActiveVideo(pageIdx-1, dur);       // last frame of previous video
-      }
-      // fade panel in/out within the hold
-      const p = (y - block.start) / block.h;  // 0..1 across the hold
-      const vis = Math.min(1, Math.min(p, 1-p) / 0.18);
-      setPanel(pageIdx, Math.max(0, vis), (0.5 - p) * 30);
-      dim = 0.78;
+      var b=(p-0.5)/0.5;               // 0..1 along corridor
+      corridor.visible=true;
+      matL.opacity=matR.opacity=0.10;
+      var ct=Math.min(b*0.95,0.95);
+      var pos=spine.getPoint(ct);
+      var ahead=spine.getPoint(Math.min(ct+0.04,1));
+      cp.copy(pos); cp.x+=mx*0.6; cp.y+=-my*0.6;
+      look.copy(ahead);
+      scene.fog.density=.020+b*.045;
+      core.intensity=4.5+Math.sin(performance.now()*.002)*1.0;
+      corPts.material.opacity=.55;
+      axon.opacity=.6; synM.opacity=.9;
     }
-
-    uniforms.uDim.value  = smooth(uniforms.uDim.value, dim, 0.15);
-    uniforms.uTilt.value = smooth(uniforms.uTilt.value, tilt, 0.15);
-
-    // progress bar + active nav
-    document.getElementById('progress').style.width = (y/(totalPx-window.innerHeight)*100)+'%';
-    let nearest = 0, best = Infinity;
-    pages.forEach((_, i) => {
-      const c = pageScrollTarget(i);
-      const d = Math.abs(c - y);
-      if (d < best){ best = d; nearest = i; }
-    });
-    navButtons.forEach((b,i)=> b.classList.toggle('active', i===nearest));
-    document.getElementById('hint').style.opacity = y > 40 ? 0 : 1;
+    cam.position.copy(cp);
+    cam.lookAt(look);
   }
 
-  function setPanel(i, opacity, dy){
-    const n = panelNodes[i]; if (!n) return;
-    n.style.opacity = Math.max(0, Math.min(1, opacity));
-    n.style.transform = `translateY(${dy}px)`;
-  }
+  var last=0;
+  function loop(ts){
+    var dt=Math.min((ts-last)*.001,.05);last=ts;
+    // smooth scroll easing toward target -> buttery feel
+    target=frac();
+    prog += (target-prog)*Math.min(dt*4.5,1);
 
-  // ---- Sidebar click → animated scroll (scrubs videos on the way) ---------
-  let tweening = false;
-  function goToPage(i){
-    const start = window.scrollY;
-    const end = pageScrollTarget(i);
-    const dist = Math.abs(end - start);
-    const dur = Math.min(2600, Math.max(700, dist / 2.2));
-    const t0 = performance.now();
-    tweening = true;
-    function step(now){
-      const p = Math.min(1, (now - t0) / dur);
-      const e = p < 0.5 ? 2*p*p : 1 - Math.pow(-2*p+2, 2)/2; // easeInOutQuad
-      window.scrollTo(0, start + (end - start)*e);
-      if (p < 1) requestAnimationFrame(step); else tweening = false;
-    }
-    requestAnimationFrame(step);
-  }
+    // idle rotation only in the approach half, slows as you near
+    if(prog<0.5) brain.rotation.y += dt*0.05*(1-prog*2);
+    neural.rotation.y=brain.rotation.y;
 
-  // ---- Resize / render loop ----------------------------------------------
-  function resize(){
-    const w = window.innerWidth, h = window.innerHeight;
-    renderer.setSize(w, h, false);
-    uniforms.uCanvas.value.set(w, h);
-    layout();
-    updateFromScroll();
-  }
-  window.addEventListener('resize', resize);
-  window.addEventListener('scroll', updateFromScroll, { passive:true });
+    for(var k=0;k<pulses.length;k++){var pu=pulses[k];pu.t+=pu.sp;if(pu.t>=1){pu.t=0;pu.e=Math.floor(Math.random()*edges.length);}var e=edges[pu.e];if(!e)continue;pu.m.position.lerpVectors(nodes[e[0]],nodes[e[1]],pu.t);var br=Math.sin(pu.t*Math.PI);pu.m.material.opacity=br*.85;pu.m.scale.setScalar(.5+br);}
 
-  function animate(){
-    requestAnimationFrame(animate);
-    // VideoTextures are paused, so refresh the active one manually
-    textures[activeVid].needsUpdate = true;
-    renderer.render(scene, camera);
-  }
+    if(corridor.visible){var a=corG.attributes.position.array;for(var i=0;i<corC;i++){a[i*3+2]+=dt*3.0;}corG.attributes.position.needsUpdate=true;}
 
-  layout();
-  resize();
-  updateFromScroll();
-  animate();
-  </script>
+    field.rotation.y+=dt*.015;
+    core.color.setHSL(.56+Math.sin(ts*.0003)*.04,.85,.6);
+
+    updateCam();
+    renderer.render(scene,cam);
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+ }catch(err){}
+}
+</script>
+
+<script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/246155394.js"></script>
+<script src="//code.tidio.co/klvwo76ujoxjv906k2w3rrkff2agkhpr.js" async></script>
 </body>
 </html>
