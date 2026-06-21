@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Silven Yoder — Resume</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Georgia', serif;
+    font-size: 11pt;
+    color: #1a1a1a;
+    background: #fff;
+    padding: 0.6in 0.7in;
+    max-width: 8.5in;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 18px; }
+  .header h1 {
+    font-family: 'Georgia', serif;
+    font-size: 26pt;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #111;
+    margin-bottom: 6px;
+  }
+  .contact-line {
+    font-size: 10pt;
+    color: #444;
+    letter-spacing: 0.5px;
+  }
+  .contact-line span { margin: 0 8px; }
+  .contact-line span:first-child { margin-left: 0; }
+
+  /* Divider */
+  .divider {
+    border: none;
+    border-top: 2px solid #111;
+    margin: 12px 0 6px;
+  }
+  .divider-thin {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 8px 0;
+  }
+
+  /* Section */
+  .section { margin-bottom: 16px; }
+  .section-title {
+    font-family: 'Georgia', serif;
+    font-size: 10pt;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #111;
+    margin-bottom: 8px;
+  }
+
+  /* Summary */
+  .summary p {
+    font-size: 10.5pt;
+    color: #222;
+    line-height: 1.65;
+  }
+
+  /* Job */
+  .job { margin-bottom: 14px; }
+  .job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2px;
+  }
+  .job-title {
+    font-weight: bold;
+    font-size: 11pt;
+    color: #111;
+  }
+  .job-date {
+    font-size: 10pt;
+    color: #555;
+    white-space: nowrap;
+  }
+  .job-company {
+    font-size: 10.5pt;
+    color: #333;
+    font-style: italic;
+    margin-bottom: 5px;
+  }
+  .job ul {
+    padding-left: 18px;
+    margin-top: 4px;
+  }
+  .job ul li {
+    font-size: 10.5pt;
+    color: #222;
+    margin-bottom: 3px;
+    line-height: 1.55;
+  }
+
+  /* Skills grid */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 4px 20px;
+  }
+  .skill-item {
+    font-size: 10.5pt;
+    color: #222;
+    padding: 2px 0;
+  }
+  .skill-item::before {
+    content: "▸ ";
+    color: #555;
+    font-size: 9pt;
+  }
+
+  /* Training */
+  .training-item { margin-bottom: 8px; }
+  .training-name {
+    font-weight: bold;
+    font-size: 10.5pt;
+    color: #111;
+  }
+  .training-desc {
+    font-size: 10pt;
+    color: #444;
+    margin-top: 2px;
+    line-height: 1.5;
+  }
+
+  /* Print */
+  @media print {
+    body { padding: 0.5in 0.6in; }
+    @page { margin: 0; size: letter; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Silven Yoder</h1>
+  <div class="contact-line">
+    <span>Salyer, CA</span>
+    <span>|</span>
+    <span>(707) 499-9169</span>
+    <span>|</span>
+    <span>itz.silven@gmail.com</span>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- SUMMARY -->
+<div class="section summary">
+  <div class="section-title">Professional Summary</div>
+  <p>
+    Results-driven sales professional and entrepreneur with demonstrated ability to close high-value conversations, build instant rapport, and move prospects to confident decisions. Founder of Apex Standard, an AI-powered growth agency, where I manage the full sales cycle from outreach through onboarding. Formally trained in high-ticket sales methodology through Impact Teams VIP. Known for the rare combination of elite communication, buyer psychology instincts, and the relentless discipline to execute every day — regardless of circumstances.
+  </p>
+</div>
+
+<hr class="divider-thin">
+
+<!-- EXPERIENCE -->
+<div class="section">
+  <div class="section-title">Experience</div>
+
+  <div class="job">
+    <div class="job-header">
+      <span class="job-title">Founder & CEO</span>
+      <span class="job-date">2025 – Present</span>
+    </div>
+    <div class="job-company">Apex Standard · Remote</div>
+    <ul>
+      <li>Founded and operate an AI-powered growth agency helping small businesses scale revenue through lead generation, sales conversion, and customer retention systems</li>
+      <li>Own the full sales cycle: prospecting, discovery calls, proposal, objection handling, and close — 100% self-generated pipeline</li>
+      <li>Designed the agency's offer structure, pricing, and positioning from scratch using Hormozi acquisition frameworks</li>
+      <li>Built all client-facing brand assets including website, copy, and service packaging with zero outside budget</li>
+      <li>Research and implement Claude AI and automation tools to deliver measurable client outcomes</li>
+    </ul>
+  </div>
+
+  <div class="job">
+    <div class="job-header">
+      <span class="job-title">Landscape Technician</span>
+      <span class="job-date">May 2025 – Present</span>
+    </div>
+    <div class="job-company">Michael Harding Landscaping · Salyer, CA</div>
+    <ul>
+      <li>Deliver consistent, high-quality results across residential and commercial job sites in a physically demanding environment</li>
+      <li>Operate independently and as part of a team, demonstrating reliability and accountability daily</li>
+      <li>Maintain strong client-facing professionalism on every site visit</li>
+    </ul>
+  </div>
+</div>
+
+<hr class="divider-thin">
+
+<!-- SALES TRAINING -->
+<div class="section">
+  <div class="section-title">Sales Training & Certifications</div>
+
+  <div class="training-item">
+    <div class="training-name">Impact Teams VIP — High-Ticket Sales Mastery <span style="font-weight:normal;color:#555;font-size:10pt;">· Completed 2025</span></div>
+    <div class="training-desc">Comprehensive professional sales training covering consultative selling, discovery frameworks, objection handling, buyer psychology, and high-ticket closing strategies for premium offers.</div>
+  </div>
+
+  <div class="training-item">
+    <div class="training-name">Independent Study — Hormozi Acquisition Framework & Tony Robbins Sales Psychology <span style="font-weight:normal;color:#555;font-size:10pt;">· Ongoing</span></div>
+    <div class="training-desc">Deep study of offer construction, value framing, lead generation, and human psychology as applied to sales and business growth.</div>
+  </div>
+</div>
+
+<hr class="divider-thin">
+
+<!-- SKILLS -->
+<div class="section">
+  <div class="section-title">Core Sales Skills</div>
+  <div class="skills-grid">
+    <div class="skill-item">High-Ticket Closing</div>
+    <div class="skill-item">Discovery Calls</div>
+    <div class="skill-item">Objection Handling</div>
+    <div class="skill-item">Consultative Selling</div>
+    <div class="skill-item">Rapport Building</div>
+    <div class="skill-item">Buyer Psychology</div>
+    <div class="skill-item">Outbound Prospecting</div>
+    <div class="skill-item">Pipeline Management</div>
+    <div class="skill-item">Offer Construction</div>
+    <div class="skill-item">Lead Generation</div>
+    <div class="skill-item">Cold Outreach</div>
+    <div class="skill-item">AI Sales Tools</div>
+    <div class="skill-item">B2B Sales</div>
+    <div class="skill-item">Client Onboarding</div>
+    <div class="skill-item">Value Proposition Design</div>
+  </div>
+</div>
+
+<hr class="divider-thin">
+
+<!-- ABOUT -->
+<div class="section">
+  <div class="section-title">Additional</div>
+  <p style="font-size:10.5pt;color:#222;line-height:1.6;">
+    Committed to daily discipline: morning training, structured study, and intentional skill-building in sales and AI. I pursue commission-based roles specifically because I believe in earning based on performance. I don't need hand-holding — give me the offer, the calls, and I'll close.
+  </p>
+</div>
+
+</body>
+</html>
