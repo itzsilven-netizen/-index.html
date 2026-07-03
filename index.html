@@ -7,19 +7,23 @@
 <meta name="description" content="Apex Standard installs AI lead recovery for local businesses. Every missed call gets an instant text back, gets booked, and gets counted. You see the money.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#EAF0F8;
-  --ink-dim:#9FB0C7;
-  --navy-deep:#070D18;
-  --navy:#0B1526;
-  --steel:#3E5C89;
-  --silver:#C9D2E0;
-  --signal:#4ADE80;     /* the text-back green */
-  --signal-dim:#1E4D33;
-  --card:rgba(255,255,255,0.04);
-  --card-line:rgba(201,210,224,0.12);
+  /* — Apex light palette: Google's four hues, matured —
+     cobalt (blue), vermilion (red), amber (yellow), emerald (green) */
+  --ink:#101828;
+  --ink-soft:#475467;
+  --ink-faint:#98A2B3;
+  --paper:#FDFDFE;
+  --cobalt:#2049C7;
+  --cobalt-deep:#16308F;
+  --vermilion:#D93B2B;
+  --amber:#E8A511;
+  --emerald:#0C8A5F;
+  --emerald-deep:#0A6E4C;
+  --card:#FFFFFF;
+  --line:#E7EAF0;
   --radius:18px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -27,52 +31,49 @@ html{scroll-behavior:smooth}
 body{
   font-family:'Inter',system-ui,sans-serif;
   color:var(--ink);
-  background:var(--navy-deep);
+  background:var(--paper);
   overflow-x:hidden;
   line-height:1.6;
 }
-/* ---------- THE TRANSFORMING SKY ---------- */
+::selection{background:rgba(32,73,199,.15)}
+
+/* ---------- THE TRANSFORMING WASH ---------- */
 #sky{
   position:fixed;inset:0;z-index:-2;
   background:linear-gradient(180deg,
     hsl(var(--h1) var(--s1) var(--l1)) 0%,
     hsl(var(--h2) var(--s2) var(--l2)) 55%,
     hsl(var(--h3) var(--s3) var(--l3)) 100%);
-  transition:none;
 }
 #glow{
   position:fixed;z-index:-1;pointer-events:none;
-  width:70vmax;height:70vmax;border-radius:50%;
-  left:50%;top:20%;transform:translate(-50%,-50%);
-  background:radial-gradient(circle, hsla(var(--gh) 70% 60% / var(--ga)) 0%, transparent 60%);
-  filter:blur(40px);
-}
-.grain{
-  position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.05;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  width:80vmax;height:80vmax;border-radius:50%;
+  left:50%;top:18%;transform:translate(-50%,-50%);
+  background:radial-gradient(circle, hsla(var(--gh) 80% 62% / var(--ga)) 0%, transparent 62%);
+  filter:blur(60px);
 }
 
 /* ---------- NAV ---------- */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
   display:flex;align-items:center;justify-content:space-between;
-  padding:18px clamp(20px,5vw,64px);
-  backdrop-filter:blur(14px);
-  background:rgba(7,13,24,.55);
-  border-bottom:1px solid rgba(201,210,224,.07);
+  padding:16px clamp(20px,5vw,64px);
+  backdrop-filter:blur(16px);
+  background:rgba(253,253,254,.78);
+  border-bottom:1px solid var(--line);
 }
 .logo{display:flex;align-items:center;gap:12px;text-decoration:none}
 .logo-mark{
-  width:38px;height:38px;border-radius:9px;
-  background:linear-gradient(135deg,var(--steel),var(--navy));
-  border:1px solid rgba(201,210,224,.25);
+  width:38px;height:38px;border-radius:10px;
+  background:linear-gradient(135deg,var(--cobalt),var(--cobalt-deep));
   display:grid;place-items:center;
-  font-family:'Space Grotesk';font-weight:700;font-size:15px;color:var(--silver);
+  font-family:'Space Grotesk';font-weight:700;font-size:15px;color:#fff;
   letter-spacing:.5px;
+  box-shadow:0 4px 14px rgba(32,73,199,.28);
 }
 .logo-name{font-family:'Space Grotesk';font-weight:600;font-size:16px;color:var(--ink);letter-spacing:.06em}
 .nav-links{display:flex;gap:28px;align-items:center}
-.nav-links a{color:var(--ink-dim);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
+.nav-links a{color:var(--ink-soft);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
 .nav-links a:hover{color:var(--ink)}
 .btn{
   display:inline-block;padding:13px 26px;border-radius:12px;
@@ -82,13 +83,19 @@ nav{
 }
 .btn:hover{transform:translateY(-2px)}
 .btn-primary{
-  background:linear-gradient(135deg,#4ADE80,#22B563);color:#04140A;
-  box-shadow:0 8px 30px rgba(74,222,128,.25);
+  background:linear-gradient(135deg,var(--cobalt),var(--cobalt-deep));color:#fff;
+  box-shadow:0 8px 24px rgba(32,73,199,.3);
 }
-.btn-primary:hover{box-shadow:0 12px 40px rgba(74,222,128,.4)}
+.btn-primary:hover{box-shadow:0 12px 34px rgba(32,73,199,.42)}
+.btn-green{
+  background:linear-gradient(135deg,var(--emerald),var(--emerald-deep));color:#fff;
+  box-shadow:0 8px 24px rgba(12,138,95,.28);
+}
+.btn-green:hover{box-shadow:0 12px 34px rgba(12,138,95,.4)}
 .btn-ghost{
-  background:transparent;color:var(--ink);
-  border:1px solid rgba(201,210,224,.25);
+  background:#fff;color:var(--ink);
+  border:1px solid var(--line);
+  box-shadow:0 2px 8px rgba(16,24,40,.05);
 }
 .btn-nav{padding:10px 20px;font-size:14px}
 @media(max-width:720px){.nav-links a:not(.btn){display:none}}
@@ -102,10 +109,13 @@ section{
 }
 .wrap{max-width:1120px;margin:0 auto;width:100%}
 .eyebrow{
-  font-family:'Space Grotesk';font-size:13px;font-weight:600;
-  letter-spacing:.22em;text-transform:uppercase;color:var(--signal);
-  margin-bottom:18px;
+  font-family:'Space Grotesk';font-size:12.5px;font-weight:600;
+  letter-spacing:.22em;text-transform:uppercase;
+  margin-bottom:18px;display:flex;align-items:center;gap:10px;
 }
+.eyebrow::before{content:'';width:26px;height:3px;border-radius:2px;background:currentColor}
+.eb-blue{color:var(--cobalt)} .eb-red{color:var(--vermilion)}
+.eb-green{color:var(--emerald)} .eb-amber{color:#B97F06}
 h1{
   font-family:'Space Grotesk';font-weight:700;
   font-size:clamp(40px,6.5vw,76px);line-height:1.04;
@@ -116,7 +126,7 @@ h2{
   font-size:clamp(30px,4.5vw,52px);line-height:1.08;
   letter-spacing:-0.015em;margin-bottom:20px;
 }
-.sub{font-size:clamp(16px,1.6vw,19px);color:var(--ink-dim);max-width:560px}
+.sub{font-size:clamp(16px,1.6vw,19px);color:var(--ink-soft);max-width:580px}
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease}
 .reveal.in{opacity:1;transform:none}
 
@@ -124,43 +134,45 @@ h2{
 #hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center}
 @media(max-width:900px){#hero .wrap{grid-template-columns:1fr;gap:48px}}
 .hero-ctas{display:flex;gap:16px;margin-top:36px;flex-wrap:wrap}
-.hero-note{margin-top:22px;font-size:13.5px;color:var(--ink-dim)}
-.hero-note strong{color:var(--silver)}
+.hero-note{margin-top:22px;font-size:13.5px;color:var(--ink-faint)}
+.hero-note strong{color:var(--ink-soft)}
+.hl-green{color:var(--emerald)}
+.hl-red{color:var(--vermilion)}
 
-/* phone */
+/* phone — stays dark: the one deliberate contrast object on the page */
 .phone{
   width:300px;max-width:82vw;margin:0 auto;
-  background:#0D1420;border-radius:38px;
-  border:1px solid rgba(201,210,224,.18);
-  box-shadow:0 30px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06);
+  background:#101828;border-radius:38px;
+  border:1px solid #2A3648;
+  box-shadow:0 40px 90px rgba(16,24,40,.35), inset 0 1px 0 rgba(255,255,255,.07);
   padding:16px 14px 22px;position:relative;
 }
-.phone-notch{width:110px;height:22px;background:#070D18;border-radius:12px;margin:0 auto 14px}
+.phone-notch{width:110px;height:22px;background:#0A101C;border-radius:12px;margin:0 auto 14px}
 .phone-screen{min-height:400px;display:flex;flex-direction:column;gap:12px;padding:6px 4px}
 .pcard{
-  border-radius:16px;padding:14px 16px;font-size:13.5px;
+  border-radius:16px;padding:14px 16px;font-size:13.5px;color:#E5EAF3;
   opacity:0;transform:translateY(14px) scale(.97);
   animation-fill-mode:forwards;
 }
-.pcard .t{font-size:11px;color:var(--ink-dim);margin-bottom:4px;letter-spacing:.04em}
-.call-card{background:rgba(255,255,255,.06);border:1px solid rgba(201,210,224,.14)}
-.call-card .who{font-weight:600;font-size:15px}
-.missed{color:#F87171;font-weight:600;font-size:12.5px;margin-top:6px;display:flex;align-items:center;gap:6px}
-.missed::before{content:'';width:7px;height:7px;border-radius:50%;background:#F87171}
+.pcard .t{font-size:11px;color:#8B98AD;margin-bottom:4px;letter-spacing:.04em}
+.call-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}
+.call-card .who{font-weight:600;font-size:15px;color:#fff}
+.missed{color:#FF7A6B;font-weight:600;font-size:12.5px;margin-top:6px;display:flex;align-items:center;gap:6px}
+.missed::before{content:'';width:7px;height:7px;border-radius:50%;background:#FF7A6B}
 .sms{
-  background:linear-gradient(135deg,#1E9E54,#178043);
-  color:#F0FFF6;max-width:92%;
+  background:linear-gradient(135deg,#11A873,#0C8A5F);
+  color:#F0FFF8;max-width:92%;
   border-bottom-left-radius:5px;
-  box-shadow:0 8px 24px rgba(34,181,99,.25);
+  box-shadow:0 8px 24px rgba(12,138,95,.35);
 }
-.sms .t{color:rgba(240,255,246,.75)}
+.sms .t{color:rgba(240,255,248,.75)}
 .reply{
-  background:rgba(255,255,255,.09);border:1px solid rgba(201,210,224,.12);
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);
   align-self:flex-end;max-width:80%;border-bottom-right-radius:5px;
 }
 .booked{
-  background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.4);
-  color:var(--signal);font-family:'Space Grotesk';font-weight:600;
+  background:rgba(17,168,115,.16);border:1px solid rgba(17,168,115,.5);
+  color:#4BE3A8;font-family:'Space Grotesk';font-weight:600;
   text-align:center;letter-spacing:.03em;
 }
 @keyframes popIn{to{opacity:1;transform:none}}
@@ -168,136 +180,156 @@ h2{
 .anim .pcard:nth-child(2){animation:popIn .5s ease 1.6s forwards}
 .anim .pcard:nth-child(3){animation:popIn .5s ease 3.1s forwards}
 .anim .pcard:nth-child(4){animation:popIn .5s ease 4.6s forwards}
-.phone-caption{text-align:center;font-size:12.5px;color:var(--ink-dim);margin-top:16px}
+.phone-caption{text-align:center;font-size:12.5px;color:var(--ink-faint);margin-top:16px}
 
 /* ---------- LEAK / STATS ---------- */
 .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:56px}
 @media(max-width:820px){.stat-row{grid-template-columns:1fr}}
 .stat{
-  background:var(--card);border:1px solid var(--card-line);
+  background:var(--card);border:1px solid var(--line);
   border-radius:var(--radius);padding:32px 28px;
+  box-shadow:0 4px 20px rgba(16,24,40,.05);
+  border-top:4px solid var(--line);
 }
+.stat.b1{border-top-color:var(--vermilion)}
+.stat.b2{border-top-color:var(--emerald)}
+.stat.b3{border-top-color:var(--cobalt)}
 .stat .num{
   font-family:'Space Grotesk';font-weight:700;
   font-size:clamp(38px,4vw,54px);color:var(--ink);line-height:1;
 }
-.stat .num em{color:var(--signal);font-style:normal}
-.stat p{color:var(--ink-dim);font-size:14.5px;margin-top:12px}
+.stat.b1 .num em{color:var(--vermilion)}
+.stat.b2 .num em{color:var(--emerald)}
+.stat.b3 .num em{color:var(--cobalt)}
+.stat .num em{font-style:normal}
+.stat p{color:var(--ink-soft);font-size:14.5px;margin-top:12px}
 
 /* ---------- HOW ---------- */
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:56px}
 @media(max-width:820px){.steps{grid-template-columns:1fr}}
 .step{
-  background:var(--card);border:1px solid var(--card-line);
+  background:var(--card);border:1px solid var(--line);
   border-radius:var(--radius);padding:34px 28px;position:relative;
-  transition:transform .25s ease,border-color .25s ease;
+  box-shadow:0 4px 20px rgba(16,24,40,.05);
+  transition:transform .25s ease,box-shadow .25s ease;
 }
-.step:hover{transform:translateY(-6px);border-color:rgba(74,222,128,.35)}
+.step:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(16,24,40,.1)}
 .step .k{
-  font-family:'Space Grotesk';font-weight:700;font-size:13px;
-  color:var(--signal);letter-spacing:.18em;margin-bottom:16px;
+  font-family:'Space Grotesk';font-weight:700;font-size:12.5px;
+  letter-spacing:.18em;margin-bottom:16px;
+  display:inline-block;padding:6px 12px;border-radius:100px;
 }
+.step:nth-child(1) .k{color:var(--vermilion);background:rgba(217,59,43,.08)}
+.step:nth-child(2) .k{color:var(--emerald);background:rgba(12,138,95,.08)}
+.step:nth-child(3) .k{color:var(--cobalt);background:rgba(32,73,199,.08)}
 .step h3{font-family:'Space Grotesk';font-size:20px;font-weight:600;margin-bottom:10px}
-.step p{color:var(--ink-dim);font-size:14.5px}
+.step p{color:var(--ink-soft);font-size:14.5px}
 
 /* ---------- CALC ---------- */
 .calc{
-  background:rgba(7,13,24,.5);border:1px solid var(--card-line);
+  background:#fff;border:1px solid var(--line);
   border-radius:24px;padding:clamp(28px,4vw,52px);margin-top:48px;
-  backdrop-filter:blur(8px);
+  box-shadow:0 20px 60px rgba(16,24,40,.08);
   display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;
 }
 @media(max-width:820px){.calc{grid-template-columns:1fr}}
 .field{margin-bottom:26px}
-.field label{display:block;font-size:13.5px;color:var(--ink-dim);margin-bottom:10px;font-weight:500}
+.field label{display:block;font-size:13.5px;color:var(--ink-soft);margin-bottom:10px;font-weight:500}
 .slider-row{display:flex;align-items:center;gap:18px}
 input[type=range]{
-  flex:1;appearance:none;height:5px;border-radius:3px;
-  background:rgba(201,210,224,.18);outline:none;
+  flex:1;appearance:none;height:6px;border-radius:3px;
+  background:#EDF0F5;outline:none;
 }
 input[type=range]::-webkit-slider-thumb{
   appearance:none;width:22px;height:22px;border-radius:50%;
-  background:var(--signal);cursor:pointer;
-  box-shadow:0 0 0 5px rgba(74,222,128,.18);
+  background:var(--cobalt);cursor:pointer;border:3px solid #fff;
+  box-shadow:0 2px 10px rgba(32,73,199,.4);
 }
 .slider-val{
   font-family:'Space Grotesk';font-weight:700;font-size:20px;
   min-width:88px;text-align:right;color:var(--ink);
 }
 .calc-out{text-align:center}
-.calc-out .lbl{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-dim)}
+.calc-out .lbl{font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint)}
 .calc-out .big{
   font-family:'Space Grotesk';font-weight:700;
-  font-size:clamp(44px,5.5vw,72px);color:#F87171;line-height:1.05;
+  font-size:clamp(44px,5.5vw,72px);color:var(--vermilion);line-height:1.05;
   margin:12px 0 6px;
 }
-.calc-out .yr{font-size:15px;color:var(--ink-dim)}
-.calc-out .yr strong{color:#F87171}
-.calc-out .fix{margin-top:26px;font-size:14.5px;color:var(--ink-dim)}
-.calc-out .fix strong{color:var(--signal)}
+.calc-out .yr{font-size:15px;color:var(--ink-soft)}
+.calc-out .yr strong{color:var(--vermilion)}
+.calc-out .fix{margin-top:26px;font-size:14.5px;color:var(--ink-soft)}
+.calc-out .fix strong{color:var(--emerald)}
 
 /* ---------- SERVICES ---------- */
 .svc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:56px}
 @media(max-width:820px){.svc-grid{grid-template-columns:1fr}}
 .svc{
-  background:var(--card);border:1px solid var(--card-line);
+  background:var(--card);border:1px solid var(--line);
   border-radius:var(--radius);padding:36px 30px;
-  transition:transform .25s ease,border-color .25s ease;
+  box-shadow:0 4px 20px rgba(16,24,40,.05);
+  transition:transform .25s ease,box-shadow .25s ease;
 }
-.svc:hover{transform:translateY(-6px)}
-.svc.core{border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.05)}
+.svc:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(16,24,40,.1)}
+.svc.core{border:2px solid var(--emerald);box-shadow:0 12px 40px rgba(12,138,95,.12)}
 .svc .tag{
   display:inline-block;font-size:11px;font-weight:600;letter-spacing:.14em;
-  text-transform:uppercase;padding:5px 12px;border-radius:100px;margin-bottom:18px;
+  text-transform:uppercase;padding:6px 13px;border-radius:100px;margin-bottom:18px;
 }
-.tag.g{background:rgba(74,222,128,.14);color:var(--signal);border:1px solid rgba(74,222,128,.3)}
-.tag.s{background:rgba(201,210,224,.08);color:var(--silver);border:1px solid rgba(201,210,224,.18)}
+.tag.g{background:rgba(12,138,95,.09);color:var(--emerald)}
+.tag.b{background:rgba(32,73,199,.08);color:var(--cobalt)}
+.tag.a{background:rgba(232,165,17,.12);color:#9A6B05}
 .svc h3{font-family:'Space Grotesk';font-size:22px;font-weight:600;margin-bottom:12px}
-.svc p{color:var(--ink-dim);font-size:14.5px;margin-bottom:16px}
+.svc p{color:var(--ink-soft);font-size:14.5px;margin-bottom:16px}
 .svc ul{list-style:none}
-.svc li{
-  font-size:14px;color:var(--silver);padding:7px 0 7px 26px;position:relative;
-}
-.svc li::before{content:'→';position:absolute;left:0;color:var(--signal);font-weight:600}
+.svc li{font-size:14px;color:var(--ink-soft);padding:7px 0 7px 26px;position:relative}
+.svc li::before{content:'→';position:absolute;left:0;color:var(--emerald);font-weight:600}
+.svc.core li{color:var(--ink)}
 
 /* ---------- PROOF/REPORT ---------- */
 .report{
-  background:rgba(7,13,24,.55);border:1px solid var(--card-line);
+  background:#fff;border:1px solid var(--line);
   border-radius:24px;padding:clamp(28px,4vw,48px);margin-top:48px;
-  max-width:560px;backdrop-filter:blur(8px);
+  max-width:560px;box-shadow:0 20px 60px rgba(16,24,40,.09);
 }
 .report .r-head{
   display:flex;justify-content:space-between;align-items:center;
-  padding-bottom:18px;border-bottom:1px solid var(--card-line);margin-bottom:8px;
+  padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:8px;
 }
 .report .r-head span{font-family:'Space Grotesk';font-weight:600;font-size:15px}
-.report .r-head em{font-style:normal;font-size:12px;color:var(--ink-dim)}
+.report .r-head em{font-style:normal;font-size:12px;color:var(--ink-faint)}
 .r-line{
   display:flex;justify-content:space-between;padding:15px 0;
-  border-bottom:1px solid rgba(201,210,224,.07);font-size:14.5px;
+  border-bottom:1px solid #F1F3F7;font-size:14.5px;
 }
-.r-line span{color:var(--ink-dim)}
+.r-line span{color:var(--ink-soft)}
 .r-line strong{font-family:'Space Grotesk';color:var(--ink)}
-.r-line.hero-line strong{color:var(--signal);font-size:17px}
+.r-line.hero-line strong{color:var(--emerald);font-size:17px}
 
 /* ---------- PRICING ---------- */
-.price-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:56px;max-width:860px}
+.price-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:56px;max-width:880px}
 @media(max-width:820px){.price-grid{grid-template-columns:1fr}}
 .price{
-  background:var(--card);border:1px solid var(--card-line);
+  background:var(--card);border:1px solid var(--line);
   border-radius:var(--radius);padding:40px 34px;
+  box-shadow:0 4px 20px rgba(16,24,40,.05);
 }
-.price.feat{border-color:rgba(74,222,128,.45);background:rgba(74,222,128,.05);position:relative}
+.price.feat{border:2px solid var(--cobalt);box-shadow:0 16px 50px rgba(32,73,199,.14);position:relative}
+.price.feat::before{
+  content:'MOST POPULAR';position:absolute;top:-13px;left:34px;
+  font-family:'Space Grotesk';font-size:11px;font-weight:700;letter-spacing:.14em;
+  background:var(--cobalt);color:#fff;padding:5px 14px;border-radius:100px;
+}
 .price .p-name{font-family:'Space Grotesk';font-weight:600;font-size:19px;margin-bottom:6px}
-.price .p-for{font-size:13.5px;color:var(--ink-dim);margin-bottom:24px}
+.price .p-for{font-size:13.5px;color:var(--ink-soft);margin-bottom:24px}
 .price .p-amt{font-family:'Space Grotesk';font-weight:700;font-size:44px;line-height:1}
-.price .p-amt small{font-size:16px;font-weight:500;color:var(--ink-dim)}
-.price .p-setup{font-size:13px;color:var(--ink-dim);margin:8px 0 26px}
+.price .p-amt small{font-size:16px;font-weight:500;color:var(--ink-faint)}
+.price .p-setup{font-size:13px;color:var(--ink-faint);margin:8px 0 26px}
 .price ul{list-style:none;margin-bottom:30px}
-.price li{font-size:14px;color:var(--silver);padding:7px 0 7px 26px;position:relative}
-.price li::before{content:'✓';position:absolute;left:0;color:var(--signal);font-weight:700}
-.guarantee{margin-top:34px;font-size:14px;color:var(--ink-dim);max-width:640px}
-.guarantee strong{color:var(--silver)}
+.price li{font-size:14px;color:var(--ink-soft);padding:7px 0 7px 26px;position:relative}
+.price li::before{content:'✓';position:absolute;left:0;color:var(--emerald);font-weight:700}
+.guarantee{margin-top:34px;font-size:14px;color:var(--ink-soft);max-width:640px}
+.guarantee strong{color:var(--ink)}
 
 /* ---------- FINAL CTA ---------- */
 #close{text-align:center}
@@ -307,13 +339,13 @@ input[type=range]::-webkit-slider-thumb{
 /* ---------- FOOTER ---------- */
 footer{
   padding:44px clamp(20px,6vw,80px);
-  border-top:1px solid rgba(201,210,224,.08);
+  border-top:1px solid var(--line);
   display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;
-  background:rgba(7,13,24,.6);
+  background:#fff;
 }
-footer p{font-size:13px;color:var(--ink-dim)}
+footer p{font-size:13px;color:var(--ink-faint)}
 footer .f-links{display:flex;gap:22px}
-footer a{color:var(--ink-dim);font-size:13px;text-decoration:none}
+footer a{color:var(--ink-soft);font-size:13px;text-decoration:none}
 footer a:hover{color:var(--ink)}
 
 @media (prefers-reduced-motion: reduce){
@@ -327,7 +359,6 @@ footer a:hover{color:var(--ink)}
 
 <div id="sky"></div>
 <div id="glow"></div>
-<div class="grain"></div>
 
 <nav>
   <a class="logo" href="#hero">
@@ -343,12 +374,12 @@ footer a:hover{color:var(--ink)}
   </div>
 </nav>
 
-<!-- ============ HERO — MIDNIGHT: the missed call ============ -->
-<section id="hero" data-scene="night">
+<!-- ============ HERO — clean cool white ============ -->
+<section id="hero" data-scene="open">
   <div class="wrap">
     <div class="reveal">
-      <div class="eyebrow">AI Lead Recovery for Local Business</div>
-      <h1>Your phone rang.<br>Nobody answered.<br><span style="color:var(--signal)">We just saved that job.</span></h1>
+      <div class="eyebrow eb-blue">AI Lead Recovery for Local Business</div>
+      <h1>Your phone rang.<br>Nobody answered.<br><span class="hl-green">We just saved that job.</span></h1>
       <p class="sub">Most local businesses lose 60&ndash;80% of the callers who hit voicemail — they just dial the next name on Google. Apex Standard texts every missed caller back within seconds, answers their questions, and books them into your calendar. Automatically. 24/7.</p>
       <div class="hero-ctas">
         <a class="btn btn-primary" href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" rel="noopener">Book a Free 15-Min Demo</a>
@@ -380,24 +411,24 @@ footer a:hover{color:var(--ink)}
   </div>
 </section>
 
-<!-- ============ THE LEAK — DEEP NAVY ============ -->
-<section id="leak" data-scene="deep">
+<!-- ============ THE LEAK — cool red-tinted wash ============ -->
+<section id="leak" data-scene="leak">
   <div class="wrap">
     <div class="reveal">
-      <div class="eyebrow">The Leak</div>
+      <div class="eyebrow eb-red">The Leak</div>
       <h2>You're not losing jobs to competitors.<br>You're losing them to voicemail.</h2>
       <p class="sub">You're up a ladder, mid-appointment, or it's Sunday night. The phone rings. And the person on the other end doesn't leave a message — they call the next business on the list.</p>
     </div>
     <div class="stat-row">
-      <div class="stat reveal">
+      <div class="stat b1 reveal">
         <div class="num">60<em>–</em>80<em>%</em></div>
         <p>of callers who hit voicemail never call back. They just dial your competitor.</p>
       </div>
-      <div class="stat reveal">
+      <div class="stat b2 reveal">
         <div class="num"><em>~</em>9 sec</div>
         <p>is how fast our recovery text reaches a missed caller — before they've even opened Google again.</p>
       </div>
-      <div class="stat reveal">
+      <div class="stat b3 reveal">
         <div class="num">24<em>/</em>7</div>
         <p>nights, weekends, holidays. The moments you can't answer are the moments this earns its keep.</p>
       </div>
@@ -405,12 +436,12 @@ footer a:hover{color:var(--ink)}
   </div>
 </section>
 
-<!-- ============ CALCULATOR — STEEL: the cost, in their numbers ============ -->
-<section id="calc" data-scene="steel">
+<!-- ============ CALCULATOR — amber warning wash ============ -->
+<section id="calc" data-scene="cost">
   <div class="wrap">
     <div class="reveal">
-      <div class="eyebrow">Do the Math</div>
-      <h2>What is the leak costing <em style="font-style:normal;color:var(--signal)">you</em>?</h2>
+      <div class="eyebrow eb-amber">Do the Math</div>
+      <h2>What is the leak costing <span class="hl-red">you</span>?</h2>
       <p class="sub">Drag the sliders. This is your money, not a hypothetical.</p>
     </div>
     <div class="calc reveal">
@@ -442,17 +473,17 @@ footer a:hover{color:var(--ink)}
         <div class="big" id="monthly">$8,300</div>
         <div class="yr">That's <strong id="yearly">$99,600</strong> a year in lost jobs.</div>
         <p class="fix">Recovering even a fraction pays for this system many times over. <strong>That's the whole pitch.</strong></p>
-        <a class="btn btn-primary" style="margin-top:22px" href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" rel="noopener">Plug the Leak</a>
+        <a class="btn btn-green" style="margin-top:22px" href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" rel="noopener">Plug the Leak</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ HOW IT WORKS — DAWN: recovery in motion ============ -->
-<section id="how" data-scene="dawn">
+<!-- ============ HOW IT WORKS — emerald recovery wash ============ -->
+<section id="how" data-scene="recover">
   <div class="wrap">
     <div class="reveal">
-      <div class="eyebrow">How It Works</div>
+      <div class="eyebrow eb-green">How It Works</div>
       <h2>From missed call to booked job.<br>Without you lifting a finger.</h2>
     </div>
     <div class="steps">
@@ -475,11 +506,11 @@ footer a:hover{color:var(--ink)}
   </div>
 </section>
 
-<!-- ============ SERVICES — LIGHT STEEL ============ -->
-<section id="services" data-scene="light">
+<!-- ============ SERVICES — clean blue wash ============ -->
+<section id="services" data-scene="build">
   <div class="wrap">
     <div class="reveal">
-      <div class="eyebrow">What We Install</div>
+      <div class="eyebrow eb-blue">What We Install</div>
       <h2>One system. Every leak plugged.</h2>
       <p class="sub">Built, installed, and maintained for you. Live within 3 days of signup. You don't touch a thing.</p>
     </div>
@@ -508,7 +539,7 @@ footer a:hover{color:var(--ink)}
         </ul>
       </div>
       <div class="svc reveal">
-        <span class="tag s">Premium Add-On</span>
+        <span class="tag b">Premium Add-On</span>
         <h3>AI Voice Agent</h3>
         <p>Goes beyond texting — answers the phone in a natural voice, handles questions, and books the appointment live. Your 24/7 front desk.</p>
         <ul>
@@ -518,7 +549,7 @@ footer a:hover{color:var(--ink)}
         </ul>
       </div>
       <div class="svc reveal">
-        <span class="tag s">Add-On for Salons & Studios</span>
+        <span class="tag a">Add-On for Salons & Studios</span>
         <h3>Social Autopilot</h3>
         <p>For businesses whose Instagram is their storefront. Consistent, on-brand posts without you touching the app.</p>
         <ul>
@@ -531,11 +562,11 @@ footer a:hover{color:var(--ink)}
   </div>
 </section>
 
-<!-- ============ PROOF — WARM LIGHT: the report ============ -->
-<section id="proof" data-scene="warm">
+<!-- ============ PROOF — warm neutral wash ============ -->
+<section id="proof" data-scene="proof">
   <div class="wrap">
     <div class="reveal">
-      <div class="eyebrow">No Guesswork</div>
+      <div class="eyebrow eb-green">No Guesswork</div>
       <h2>Every month, you see exactly<br>what we saved you.</h2>
       <p class="sub">Most marketing asks you to trust it. Ours shows receipts. This is the report every client gets — real numbers from your real phone line.</p>
     </div>
@@ -551,11 +582,11 @@ footer a:hover{color:var(--ink)}
   </div>
 </section>
 
-<!-- ============ PRICING — RESOLVE BACK TO CONFIDENT NAVY ============ -->
-<section id="pricing" data-scene="resolve">
+<!-- ============ PRICING — settle to crisp white ============ -->
+<section id="pricing" data-scene="decide">
   <div class="wrap">
     <div class="reveal">
-      <div class="eyebrow">Simple Pricing</div>
+      <div class="eyebrow eb-blue">Simple Pricing</div>
       <h2>It pays for itself the moment<br>it saves one job.</h2>
       <p class="sub">One-time setup, flat monthly, no contracts. If the report doesn't prove its worth, cancel.</p>
     </div>
@@ -596,10 +627,10 @@ footer a:hover{color:var(--ink)}
 <!-- ============ FINAL CTA ============ -->
 <section id="close" data-scene="final">
   <div class="wrap reveal">
-    <div class="eyebrow">15 Minutes. Live. On Your Number.</div>
+    <div class="eyebrow eb-green" style="justify-content:center">15 Minutes. Live. On Your Number.</div>
     <h2>Call your own business.<br>Watch nobody answer.<br>Watch us save the lead anyway.</h2>
     <p class="sub" style="margin-bottom:36px">That's the whole demo. You'll see the recovery text hit your own phone in real time — then decide for yourself.</p>
-    <a class="btn btn-primary" style="font-size:17px;padding:17px 38px" href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" rel="noopener">Book the Free Demo</a>
+    <a class="btn btn-green" style="font-size:17px;padding:17px 38px" href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" rel="noopener">Book the Free Demo</a>
   </div>
 </section>
 
@@ -613,21 +644,22 @@ footer a:hover{color:var(--ink)}
 </footer>
 
 <script>
-/* ================= SCROLL-DRIVEN SKY TRANSFORMATION =================
-   The background journeys through the life of a missed call:
-   night (missed) → deep → steel → dawn (recovery) → light → warm (proof) → resolve → final
-   Each scene = 3 HSL stops for the gradient + a glow hue/alpha.        */
+/* ================= SCROLL-DRIVEN COLOR WASH =================
+   Light mode: the page journeys through the story in tinted washes —
+   open (cool white) → leak (red tint) → cost (amber) → recover (emerald)
+   → build (blue) → proof (warm emerald) → decide (crisp) → final (green resolve)
+   Very high lightness keeps text readable everywhere.                */
 const SCENES = {
-  night:  {a:[218,62,5],  b:[220,55,9],  c:[222,48,13], g:[218,.10]},
-  deep:   {a:[219,58,7],  b:[221,50,12], c:[224,42,17], g:[220,.14]},
-  steel:  {a:[220,50,10], b:[218,44,18], c:[214,38,26], g:[214,.18]},
-  dawn:   {a:[218,44,14], b:[205,40,26], c:[150,30,30], g:[150,.22]},
-  light:  {a:[212,40,18], b:[200,34,30], c:[190,28,38], g:[190,.20]},
-  warm:   {a:[210,38,16], b:[160,28,26], c:[145,32,30], g:[148,.24]},
-  resolve:{a:[219,52,9],  b:[220,46,14], c:[222,40,19], g:[220,.14]},
-  final:  {a:[220,58,6],  b:[219,50,10], c:[150,35,16], g:[148,.20]}
+  open:   {a:[222,60,99], b:[220,50,98], c:[218,45,96], g:[222,.10]},
+  leak:   {a:[220,45,98], b:[12,55,97],  c:[10,50,95],  g:[10,.12]},
+  cost:   {a:[14,50,97],  b:[40,70,96],  c:[42,65,94],  g:[42,.16]},
+  recover:{a:[40,55,97],  b:[158,45,96], c:[160,42,94], g:[158,.15]},
+  build:  {a:[160,40,97], b:[222,55,97], c:[224,50,95], g:[222,.13]},
+  proof:  {a:[222,45,98], b:[150,38,96], c:[152,36,95], g:[152,.13]},
+  decide: {a:[220,40,99], b:[221,35,98], c:[222,32,97], g:[222,.08]},
+  final:  {a:[220,40,98], b:[158,40,96], c:[160,45,93], g:[158,.16]}
 };
-const order = ['night','deep','steel','dawn','light','warm','resolve','final'];
+const order = ['open','leak','cost','recover','build','proof','decide','final'];
 const sections = order.map(k => document.querySelector(`[data-scene="${k}"]`));
 const root = document.documentElement;
 const lerp = (x,y,t)=>x+(y-x)*t;
@@ -657,11 +689,10 @@ function onScroll(){
   const s1 = SCENES[order[i]];
   const s2 = SCENES[order[Math.min(i+1,order.length-1)]];
   setScene(s1,s2,t);
-  // glow drifts down the page slightly
   const p = window.scrollY / Math.max(1,(document.body.scrollHeight - window.innerHeight));
-  document.getElementById('glow').style.top = (18 + p*50) + '%';
+  document.getElementById('glow').style.top = (16 + p*55) + '%';
 }
-if(reduceMotion){ setScene(SCENES.deep,SCENES.deep,0); }
+if(reduceMotion){ setScene(SCENES.open,SCENES.open,0); }
 else{
   let ticking=false;
   window.addEventListener('scroll',()=>{ if(!ticking){requestAnimationFrame(()=>{onScroll();ticking=false});ticking=true;}},{passive:true});
@@ -679,7 +710,7 @@ const screen = document.getElementById('phoneScreen');
 if(!reduceMotion){
   setInterval(()=>{
     screen.classList.remove('anim');
-    void screen.offsetWidth; // reflow to restart animations
+    void screen.offsetWidth;
     screen.classList.add('anim');
   }, 9000);
 }
