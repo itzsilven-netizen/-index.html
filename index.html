@@ -3,911 +3,706 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Apex Standard — Collect leads. Build reputation. Stay consistent.</title>
+<title>Apex Standard — Never Lose Another Lead</title>
+<meta name="description" content="Apex Standard installs AI lead recovery for local businesses. Every missed call gets an instant text back, gets booked, and gets counted. You see the money.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* logo-derived palette */
-  --ink:#08090c;          /* near black */
-  --char:#0d1117;         /* charcoal */
-  --char-2:#11161f;
-  --navy:#1a2536;         /* logo navy */
-  --navy-2:#22324a;
-  --line:rgba(255,255,255,.07);
-  --line-2:rgba(255,255,255,.13);
-  --txt:#f3f5f7;
-  --muted:#9aa3ad;
-  --muted-2:#646e79;
-  --silver:#c7ccd1;
-  --accent:#aeb8c4;       /* cool silver accent */
-  --accent-2:#5b6b80;     /* steel navy */
-  --grad:linear-gradient(135deg,#cdd4dc 0%,#7e8b9c 50%,#3c4a5e 100%);
-  --grad-soft:linear-gradient(135deg,rgba(174,184,196,.12),rgba(91,107,128,.10));
-  --r:16px;
-  --sb:248px;             /* sidebar width */
-}
-[data-theme="light"]{
-  --ink:#eef1f4;--char:#f6f8fa;--char-2:#ffffff;--navy:#dfe5ec;--navy-2:#cdd6e0;
-  --line:rgba(10,20,35,.10);--line-2:rgba(10,20,35,.16);
-  --txt:#10151c;--muted:#4a5560;--muted-2:#74808c;--silver:#2a3340;
-  --accent:#48566a;--accent-2:#6b7a8f;
-  --grad:linear-gradient(135deg,#3c4a5e 0%,#5b6b80 50%,#8995a4 100%);
-  --grad-soft:linear-gradient(135deg,rgba(60,74,94,.10),rgba(91,107,128,.08));
+  --ink:#EAF0F8;
+  --ink-dim:#9FB0C7;
+  --navy-deep:#070D18;
+  --navy:#0B1526;
+  --steel:#3E5C89;
+  --silver:#C9D2E0;
+  --signal:#4ADE80;     /* the text-back green */
+  --signal-dim:#1E4D33;
+  --card:rgba(255,255,255,0.04);
+  --card-line:rgba(201,210,224,0.12);
+  --radius:18px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
-  background:var(--ink);color:var(--txt);
-  font-family:'Inter',system-ui,sans-serif;line-height:1.5;
-  -webkit-font-smoothing:antialiased;overflow-x:hidden;
-  transition:background .5s ease,color .5s ease;
+  font-family:'Inter',system-ui,sans-serif;
+  color:var(--ink);
+  background:var(--navy-deep);
+  overflow-x:hidden;
+  line-height:1.6;
 }
-a{color:inherit;text-decoration:none}
-.serif{font-family:'Cormorant Garamond',Georgia,serif}
-.grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+/* ---------- THE TRANSFORMING SKY ---------- */
+#sky{
+  position:fixed;inset:0;z-index:-2;
+  background:linear-gradient(180deg,
+    hsl(var(--h1) var(--s1) var(--l1)) 0%,
+    hsl(var(--h2) var(--s2) var(--l2)) 55%,
+    hsl(var(--h3) var(--s3) var(--l3)) 100%);
+  transition:none;
+}
+#glow{
+  position:fixed;z-index:-1;pointer-events:none;
+  width:70vmax;height:70vmax;border-radius:50%;
+  left:50%;top:20%;transform:translate(-50%,-50%);
+  background:radial-gradient(circle, hsla(var(--gh) 70% 60% / var(--ga)) 0%, transparent 60%);
+  filter:blur(40px);
+}
+.grain{
+  position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 
-/* ---- buttons ---- */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;
-  font-weight:600;font-size:15px;border-radius:999px;padding:13px 24px;cursor:pointer;
-  border:1px solid transparent;white-space:nowrap;
-  transition:transform .18s,box-shadow .25s,background .2s,border-color .2s,color .2s;}
-.btn-primary{background:var(--grad);color:#0a0f16;box-shadow:0 10px 34px rgba(91,107,128,.32)}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 46px rgba(174,184,196,.4)}
-.btn-ghost{background:transparent;color:var(--txt);border-color:var(--line-2)}
-.btn-ghost:hover{border-color:var(--accent);background:rgba(174,184,196,.06)}
-.btn-lg{padding:16px 32px;font-size:16px}
-.btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+/* ---------- NAV ---------- */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px clamp(20px,5vw,64px);
+  backdrop-filter:blur(14px);
+  background:rgba(7,13,24,.55);
+  border-bottom:1px solid rgba(201,210,224,.07);
+}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.logo-mark{
+  width:38px;height:38px;border-radius:9px;
+  background:linear-gradient(135deg,var(--steel),var(--navy));
+  border:1px solid rgba(201,210,224,.25);
+  display:grid;place-items:center;
+  font-family:'Space Grotesk';font-weight:700;font-size:15px;color:var(--silver);
+  letter-spacing:.5px;
+}
+.logo-name{font-family:'Space Grotesk';font-weight:600;font-size:16px;color:var(--ink);letter-spacing:.06em}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{color:var(--ink-dim);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--ink)}
+.btn{
+  display:inline-block;padding:13px 26px;border-radius:12px;
+  font-family:'Space Grotesk';font-weight:600;font-size:15px;
+  text-decoration:none;cursor:pointer;border:none;
+  transition:transform .15s ease, box-shadow .2s ease;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{
+  background:linear-gradient(135deg,#4ADE80,#22B563);color:#04140A;
+  box-shadow:0 8px 30px rgba(74,222,128,.25);
+}
+.btn-primary:hover{box-shadow:0 12px 40px rgba(74,222,128,.4)}
+.btn-ghost{
+  background:transparent;color:var(--ink);
+  border:1px solid rgba(201,210,224,.25);
+}
+.btn-nav{padding:10px 20px;font-size:14px}
+@media(max-width:720px){.nav-links a:not(.btn){display:none}}
 
-/* ---- sidebar ---- */
-.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sb);z-index:90;
-  background:linear-gradient(180deg,var(--char),var(--ink));
-  border-right:1px solid var(--line);display:flex;flex-direction:column;
-  padding:26px 18px;transition:transform .35s ease,background .5s;}
-.sb-brand{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 8px 24px;border-bottom:1px solid var(--line);margin-bottom:18px}
-.sb-mark{width:100%;max-width:170px;height:auto;object-fit:contain;display:block;margin:0 auto;filter:drop-shadow(0 2px 10px rgba(0,0,0,.5)) brightness(1.15)}
-[data-theme="light"] .sb-mark{filter:invert(.86) drop-shadow(0 1px 3px rgba(0,0,0,.25))}
-.sb-name{font-weight:800;font-size:16px;letter-spacing:-.01em;line-height:1.15}
-.sb-name small{display:block;font-weight:500;font-size:10px;letter-spacing:.22em;color:var(--muted-2);margin-top:3px}
-.sb-nav{display:flex;flex-direction:column;gap:3px;flex:1}
-.sb-link{display:flex;align-items:center;gap:13px;padding:11px 13px;border-radius:11px;
-  font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;
-  transition:background .2s,color .2s;position:relative}
-.sb-link svg{width:18px;height:18px;stroke:currentColor;flex-shrink:0;opacity:.85}
-.sb-link:hover{background:rgba(255,255,255,.04);color:var(--txt)}
-.sb-link.active{background:var(--grad-soft);color:var(--txt);border:1px solid var(--line)}
-.sb-link.active::before{content:"";position:absolute;left:-18px;top:50%;transform:translateY(-50%);
-  width:3px;height:22px;border-radius:3px;background:var(--grad)}
-.sb-foot{border-top:1px solid var(--line);padding-top:14px;margin-top:10px;display:flex;flex-direction:column;gap:3px}
-.sb-toggle{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border-radius:11px;
-  font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;transition:.2s}
-.sb-toggle:hover{background:rgba(255,255,255,.04);color:var(--txt)}
-.tog-track{width:42px;height:23px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid var(--line-2);position:relative;transition:background .3s}
-.tog-knob{position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:var(--accent);transition:left .3s,background .3s}
-[data-theme="light"] .tog-knob{left:21px;background:var(--navy)}
-
-/* mobile sidebar */
-.sb-burger{display:none;position:fixed;top:16px;left:16px;z-index:95;width:44px;height:44px;
-  border-radius:12px;background:var(--char);border:1px solid var(--line);align-items:center;justify-content:center;cursor:pointer}
-.sb-burger span{width:18px;height:2px;background:var(--txt);position:relative;display:block}
-.sb-burger span::before,.sb-burger span::after{content:"";position:absolute;left:0;width:18px;height:2px;background:var(--txt)}
-.sb-burger span::before{top:-6px}.sb-burger span::after{top:6px}
-.sb-scrim{display:none;position:fixed;inset:0;z-index:88;background:rgba(0,0,0,.5);backdrop-filter:blur(3px)}
-
-/* ---- main shell ---- */
-.main{margin-left:var(--sb);transition:margin .35s}
-.wrap{max-width:1120px;margin:0 auto;padding:0 40px}
-section{position:relative}
-
-/* top bar (book demo, right) */
-.topbar{position:fixed;top:0;left:var(--sb);right:0;height:0;z-index:80;pointer-events:none}
-.topbar .tb-in{position:absolute;top:22px;right:40px;pointer-events:auto;display:flex;gap:12px;align-items:center}
-.tb-signin{font-size:14px;font-weight:600;color:var(--muted);padding:10px 8px}
-.tb-signin:hover{color:var(--txt)}
-
-/* ---- hero ---- */
-.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:120px 40px 80px;overflow:visible;background:transparent}
-#bg3d{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.9}
-.hero>*{position:relative;z-index:2}
-.pill{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line-2);border-radius:999px;
-  padding:8px 18px;font-size:13px;color:var(--muted);margin-bottom:30px;background:rgba(255,255,255,.02);
-  backdrop-filter:blur(6px)}
-.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
-h1.hero-h{font-size:clamp(44px,7vw,88px);font-weight:900;line-height:.98;letter-spacing:-.04em;max-width:15ch;margin:0 auto 26px}
-.hero-sub{font-size:clamp(17px,2vw,21px);color:var(--muted);max-width:40ch;margin:0 auto 36px;line-height:1.5}
-.hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-.hero-note{margin-top:20px;font-size:13px;color:var(--muted-2)}
-.scroll-cue{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--muted-2);font-size:11px;letter-spacing:.2em;text-transform:uppercase}
-.scroll-cue .mouse{width:22px;height:34px;border:1.5px solid var(--muted-2);border-radius:12px;position:relative}
-.scroll-cue .mouse::after{content:"";position:absolute;top:6px;left:50%;transform:translateX(-50%);width:3px;height:7px;border-radius:2px;background:var(--muted);animation:scrolldot 1.6s ease infinite}
-@keyframes scrolldot{0%{opacity:0;top:6px}30%{opacity:1}60%{opacity:1;top:16px}100%{opacity:0;top:18px}}
-
-/* ---- section scaffolding ---- */
-.block{padding:130px 0;position:relative;z-index:2;background:transparent}
-.block.alt{background:transparent}
-.eyebrow{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
-.h2{font-size:clamp(32px,4.6vw,52px);font-weight:800;letter-spacing:-.035em;line-height:1.06}
-.lead{color:var(--muted);font-size:18px;max-width:54ch;margin-top:20px;line-height:1.55}
-.sec-head{margin-bottom:60px}
-.sec-head.center{text-align:center}
-.sec-head.center .lead{margin-left:auto;margin-right:auto}
-
-/* reveal animation */
-.reveal{opacity:0;transform:translateY(36px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
+/* ---------- SECTIONS ---------- */
+section{
+  min-height:100vh;
+  display:flex;align-items:center;
+  padding:110px clamp(20px,6vw,80px) 80px;
+  position:relative;
+}
+.wrap{max-width:1120px;margin:0 auto;width:100%}
+.eyebrow{
+  font-family:'Space Grotesk';font-size:13px;font-weight:600;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--signal);
+  margin-bottom:18px;
+}
+h1{
+  font-family:'Space Grotesk';font-weight:700;
+  font-size:clamp(40px,6.5vw,76px);line-height:1.04;
+  letter-spacing:-0.02em;margin-bottom:24px;
+}
+h2{
+  font-family:'Space Grotesk';font-weight:700;
+  font-size:clamp(30px,4.5vw,52px);line-height:1.08;
+  letter-spacing:-0.015em;margin-bottom:20px;
+}
+.sub{font-size:clamp(16px,1.6vw,19px);color:var(--ink-dim);max-width:560px}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease}
 .reveal.in{opacity:1;transform:none}
-.reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}.reveal.d3{transition-delay:.24s}.reveal.d4{transition-delay:.32s}
 
-/* ---- what we do (feature cards) ---- */
-.features{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
-.fcard{border:1px solid var(--line);border-radius:20px;padding:34px;
-  background:linear-gradient(180deg,var(--char-2),var(--char));position:relative;overflow:hidden;
-  transition:transform .3s,border-color .3s,box-shadow .3s}
-.fcard::after{content:"";position:absolute;inset:0;background:var(--grad-soft);opacity:0;transition:opacity .3s}
-.fcard:hover{transform:translateY(-6px);border-color:var(--line-2);box-shadow:0 30px 70px rgba(0,0,0,.4)}
-.fcard:hover::after{opacity:1}
-.fcard>*{position:relative;z-index:2}
-.fnum{font-family:'Cormorant Garamond',serif;font-size:14px;letter-spacing:.1em;color:var(--muted-2);margin-bottom:18px}
-.fic{width:52px;height:52px;border-radius:14px;background:var(--grad-soft);border:1px solid var(--line-2);display:grid;place-items:center;margin-bottom:22px}
-.fic svg{width:24px;height:24px;stroke:var(--accent)}
-.fcard h3{font-size:21px;font-weight:700;margin-bottom:11px;letter-spacing:-.02em}
-.fcard p{font-size:15px;color:var(--muted);line-height:1.6}
-.fprice{margin-top:20px;display:inline-block;font-size:13px;color:var(--silver);font-weight:600;border:1px solid var(--line);border-radius:999px;padding:6px 14px;background:rgba(255,255,255,.02)}
+/* ---------- HERO ---------- */
+#hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center}
+@media(max-width:900px){#hero .wrap{grid-template-columns:1fr;gap:48px}}
+.hero-ctas{display:flex;gap:16px;margin-top:36px;flex-wrap:wrap}
+.hero-note{margin-top:22px;font-size:13.5px;color:var(--ink-dim)}
+.hero-note strong{color:var(--silver)}
 
-/* ---- what it is ---- */
-.what-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:64px;align-items:center}
-.what-list{margin-top:32px;display:flex;flex-direction:column;gap:18px}
-.what-item{display:flex;gap:15px;align-items:flex-start}
-.what-item .ck{flex-shrink:0;width:26px;height:26px;border-radius:8px;background:var(--grad-soft);border:1px solid var(--line-2);display:grid;place-items:center}
-.what-item .ck svg{width:14px;height:14px;stroke:var(--accent)}
-.what-item p{font-size:15px;color:var(--muted);line-height:1.55}.what-item p b{color:var(--txt);font-weight:600}
-.ui-mock{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--char-2);box-shadow:0 40px 90px rgba(0,0,0,.5)}
-.um-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
-.um-head .t{font-weight:700;font-size:14px}
-.um-head .b{font-size:11px;color:var(--accent);border:1px solid var(--line-2);border-radius:999px;padding:4px 12px;background:var(--grad-soft);display:flex;align-items:center;gap:6px}
-.um-head .b::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
-.um-chat{padding:24px;display:flex;flex-direction:column;gap:15px}
-.bubble{max-width:80%;padding:13px 17px;border-radius:16px;font-size:14px;line-height:1.45}
-.bubble.bot{background:var(--char);border:1px solid var(--line);border-bottom-left-radius:5px}
-.bubble.user{align-self:flex-end;background:var(--grad);color:#0a0f16;font-weight:500;border-bottom-right-radius:5px}
-.um-typing{display:flex;gap:5px;padding:6px 2px}
-.um-typing span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blink 1.4s infinite both}
-.um-typing span:nth-child(2){animation-delay:.2s}.um-typing span:nth-child(3){animation-delay:.4s}
-@keyframes blink{0%,60%,100%{opacity:.25}30%{opacity:1}}
-
-/* ---- capabilities tabs ---- */
-.tabs-head{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:44px;border:1px solid var(--line);border-radius:999px;padding:6px;width:fit-content;margin-left:auto;margin-right:auto;background:var(--char-2)}
-.tab-btn{border:none;background:transparent;color:var(--muted);font-family:inherit;font-weight:600;font-size:15px;padding:12px 26px;border-radius:999px;cursor:pointer;transition:.25s}
-.tab-btn.active{background:var(--grad);color:#0a0f16;box-shadow:0 8px 22px rgba(91,107,128,.3)}
-.tab-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.tab-panel{display:none}
-.tab-panel.active{display:block;animation:fade .5s ease}
-@keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-.tab-grid{display:grid;grid-template-columns:1fr 1fr;gap:54px;align-items:center;border:1px solid var(--line);border-radius:24px;padding:52px;background:linear-gradient(135deg,var(--char-2),var(--char))}
-.tab-grid .tp h3{font-size:32px;font-weight:800;letter-spacing:-.03em;margin-bottom:10px}
-.tab-grid .price{display:inline-block;font-size:14px;color:var(--silver);font-weight:600;margin-bottom:20px;border:1px solid var(--line-2);border-radius:999px;padding:6px 15px;background:var(--grad-soft)}
-.tab-grid .tp p{color:var(--muted);font-size:16px;margin-bottom:24px;line-height:1.55}
-.tab-feats{display:flex;flex-direction:column;gap:13px}
-.tab-feats li{list-style:none;display:flex;gap:12px;align-items:center;font-size:15px}
-.tab-feats li svg{width:18px;height:18px;stroke:var(--accent);flex-shrink:0}
-.tab-vis{border:1px solid var(--line);border-radius:18px;background:var(--char);padding:26px;min-height:290px;display:flex;flex-direction:column;gap:14px;justify-content:center}
-.vis-row{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--char-2);transition:transform .2s}
-.vis-row:hover{transform:translateX(4px)}
-.vis-row .vi{width:36px;height:36px;border-radius:10px;background:var(--grad-soft);border:1px solid var(--line-2);display:grid;place-items:center;flex-shrink:0}
-.vis-row .vi svg{width:17px;height:17px;stroke:var(--accent)}
-.vis-row .vt{font-size:13px;font-weight:600}
-.vis-row .vs{font-size:11px;color:var(--muted-2);margin-top:2px}
-.vis-row .vb{margin-left:auto;font-size:11px;color:var(--accent);font-weight:600}
-
-/* ---- why us ---- */
-.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.why-card{border:1px solid var(--line);border-radius:20px;padding:34px;background:linear-gradient(180deg,var(--char-2),var(--char));transition:transform .3s,border-color .3s}
-.why-card:hover{transform:translateY(-5px);border-color:var(--line-2)}
-.why-big{font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:700;line-height:1;letter-spacing:-.02em;margin-bottom:16px;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.why-card h3{font-size:18px;font-weight:700;margin-bottom:10px;letter-spacing:-.01em}
-.why-card p{font-size:14px;color:var(--muted);line-height:1.6}
-
-/* ---- industries ---- */
-.serv-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-.serv-col{border:1px solid var(--line);border-radius:20px;padding:36px;background:var(--char-2)}
-.serv-col h4{font-size:12px;text-transform:uppercase;letter-spacing:.18em;color:var(--accent);margin-bottom:24px;font-weight:700}
-.serv-col ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:15px}
-.serv-col li{display:flex;gap:10px;align-items:center;font-size:15px;color:var(--muted)}
-.serv-col li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--grad);flex-shrink:0}
-
-/* ---- resources ---- */
-.res-row{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-.rcard{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--char-2);cursor:pointer;transition:transform .3s,border-color .3s}
-.rcard:hover{transform:translateY(-6px);border-color:var(--line-2)}
-.rcard .rtop{height:130px;background:linear-gradient(135deg,var(--navy),var(--char));position:relative;overflow:hidden}
-.rcard .rtop::after{content:"";position:absolute;inset:0;background:var(--grad-soft);opacity:.5}
-.rcard .rtop .ri{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;opacity:.9}
-.rcard .rtop .ri svg{width:38px;height:38px;stroke:var(--accent)}
-.rcard .rbody{padding:22px}
-.rcard .rlabel{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:11px}
-.rcard h4{font-size:15px;font-weight:700;line-height:1.35;letter-spacing:-.01em}
-.rcard .rmeta{margin-top:15px;font-size:12px;color:var(--muted-2)}
-
-/* ---- final cta ---- */
-.final{text-align:center;padding:140px 40px;position:relative;z-index:2;overflow:hidden;background:transparent}
-.final h2{font-size:clamp(36px,5.4vw,64px);font-weight:900;letter-spacing:-.04em;line-height:1.02;max-width:20ch;margin:0 auto 24px}
-.final p{color:var(--muted);font-size:18px;margin-bottom:38px}
-.final-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-
-/* ---- footer ---- */
-footer{border-top:1px solid var(--line);padding:60px 0 40px;background:linear-gradient(180deg,rgba(8,9,12,0),rgba(8,9,12,.92) 40%);position:relative;z-index:2;backdrop-filter:blur(4px)}
-.foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
-.foot-brand .fb-top{display:flex;align-items:center;gap:11px;margin-bottom:16px}
-.foot-brand img{width:30px;height:34px;object-fit:contain}
-[data-theme="light"] .foot-brand img{filter:invert(.86)}
-.foot-brand .fb-name{font-weight:800;font-size:17px}
-.foot-brand p{font-size:14px;color:var(--muted);max-width:32ch;line-height:1.6}
-.foot-col h5{font-size:13px;font-weight:700;margin-bottom:16px}
-.foot-col a{display:block;font-size:14px;color:var(--muted);margin-bottom:11px;cursor:pointer;transition:color .15s}
-.foot-col a:hover{color:var(--accent)}
-.foot-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid var(--line);flex-wrap:wrap;gap:14px}
-.foot-bottom p{font-size:13px;color:var(--muted-2)}
-.foot-social{display:flex;gap:12px}
-.foot-social a{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);cursor:pointer;transition:.2s}
-.foot-social a:hover{border-color:var(--accent);color:var(--accent)}
-.foot-social svg{width:16px;height:16px}
-
-/* ---- responsive ---- */
-@media(max-width:1080px){
-  .what-grid{grid-template-columns:1fr;gap:44px}
-  .tab-grid{grid-template-columns:1fr;gap:38px;padding:36px}
-  .why-grid{grid-template-columns:1fr}
-  .res-row{grid-template-columns:repeat(2,1fr)}
+/* phone */
+.phone{
+  width:300px;max-width:82vw;margin:0 auto;
+  background:#0D1420;border-radius:38px;
+  border:1px solid rgba(201,210,224,.18);
+  box-shadow:0 30px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06);
+  padding:16px 14px 22px;position:relative;
 }
-@media(max-width:860px){
-  :root{--sb:0px}
-  .sidebar{transform:translateX(-100%);width:264px}
-  .sidebar.open{transform:none;box-shadow:0 0 60px rgba(0,0,0,.6)}
-  .sb-burger{display:flex}
-  .sb-scrim.show{display:block}
-  .topbar{left:0}
-  .topbar .tb-in{right:16px;top:16px}
-  .tb-signin{display:none}
-  .wrap{padding:0 22px}
-  .features,.serv-grid{grid-template-columns:1fr}
-  .serv-col ul{grid-template-columns:1fr 1fr}
-  .res-row{grid-template-columns:1fr}
-  .block{padding:84px 0}
-  .hero{padding:100px 22px 80px}
+.phone-notch{width:110px;height:22px;background:#070D18;border-radius:12px;margin:0 auto 14px}
+.phone-screen{min-height:400px;display:flex;flex-direction:column;gap:12px;padding:6px 4px}
+.pcard{
+  border-radius:16px;padding:14px 16px;font-size:13.5px;
+  opacity:0;transform:translateY(14px) scale(.97);
+  animation-fill-mode:forwards;
 }
-@media(prefers-reduced-motion:reduce){
-  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-  .reveal{opacity:1;transform:none}
+.pcard .t{font-size:11px;color:var(--ink-dim);margin-bottom:4px;letter-spacing:.04em}
+.call-card{background:rgba(255,255,255,.06);border:1px solid rgba(201,210,224,.14)}
+.call-card .who{font-weight:600;font-size:15px}
+.missed{color:#F87171;font-weight:600;font-size:12.5px;margin-top:6px;display:flex;align-items:center;gap:6px}
+.missed::before{content:'';width:7px;height:7px;border-radius:50%;background:#F87171}
+.sms{
+  background:linear-gradient(135deg,#1E9E54,#178043);
+  color:#F0FFF6;max-width:92%;
+  border-bottom-left-radius:5px;
+  box-shadow:0 8px 24px rgba(34,181,99,.25);
 }
-
-/* glass legibility over live brain */
-.fcard,.why-card,.serv-col,.ui-mock,.tab-grid,.tab-vis,.rcard,.tabs-head{
-  background-color:rgba(13,17,23,.62)!important;backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);
+.sms .t{color:rgba(240,255,246,.75)}
+.reply{
+  background:rgba(255,255,255,.09);border:1px solid rgba(201,210,224,.12);
+  align-self:flex-end;max-width:80%;border-bottom-right-radius:5px;
 }
-[data-theme="light"] .fcard,[data-theme="light"] .why-card,[data-theme="light"] .serv-col,
-[data-theme="light"] .ui-mock,[data-theme="light"] .tab-grid,[data-theme="light"] .tab-vis,
-[data-theme="light"] .rcard,[data-theme="light"] .tabs-head{
-  background-color:rgba(246,248,250,.7)!important;
+.booked{
+  background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.4);
+  color:var(--signal);font-family:'Space Grotesk';font-weight:600;
+  text-align:center;letter-spacing:.03em;
 }
-.sec-head .h2,.hero-h{text-shadow:0 2px 30px rgba(0,0,0,.55)}
-.lead,.hero-sub{text-shadow:0 1px 18px rgba(0,0,0,.5)}
-/* darken zone directly behind text blocks via radial vignette layers handled by canvas; keep body pure */
-#bg3d{opacity:1}
+@keyframes popIn{to{opacity:1;transform:none}}
+.anim .pcard:nth-child(1){animation:popIn .5s ease .4s forwards}
+.anim .pcard:nth-child(2){animation:popIn .5s ease 1.6s forwards}
+.anim .pcard:nth-child(3){animation:popIn .5s ease 3.1s forwards}
+.anim .pcard:nth-child(4){animation:popIn .5s ease 4.6s forwards}
+.phone-caption{text-align:center;font-size:12.5px;color:var(--ink-dim);margin-top:16px}
 
+/* ---------- LEAK / STATS ---------- */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:56px}
+@media(max-width:820px){.stat-row{grid-template-columns:1fr}}
+.stat{
+  background:var(--card);border:1px solid var(--card-line);
+  border-radius:var(--radius);padding:32px 28px;
+}
+.stat .num{
+  font-family:'Space Grotesk';font-weight:700;
+  font-size:clamp(38px,4vw,54px);color:var(--ink);line-height:1;
+}
+.stat .num em{color:var(--signal);font-style:normal}
+.stat p{color:var(--ink-dim);font-size:14.5px;margin-top:12px}
 
-.sb-logo{width:100%;max-width:150px}
-.sb-logo .mono{font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:600;fill:var(--txt)}
-.sb-logo .word{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;letter-spacing:.18em;fill:var(--txt)}
-.sb-logo .sub{font-family:'Inter',sans-serif;font-size:5.2px;font-weight:600;letter-spacing:.18em;fill:var(--muted-2)}
-.sb-logo .ln{stroke:var(--muted);stroke-width:1}
+/* ---------- HOW ---------- */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:56px}
+@media(max-width:820px){.steps{grid-template-columns:1fr}}
+.step{
+  background:var(--card);border:1px solid var(--card-line);
+  border-radius:var(--radius);padding:34px 28px;position:relative;
+  transition:transform .25s ease,border-color .25s ease;
+}
+.step:hover{transform:translateY(-6px);border-color:rgba(74,222,128,.35)}
+.step .k{
+  font-family:'Space Grotesk';font-weight:700;font-size:13px;
+  color:var(--signal);letter-spacing:.18em;margin-bottom:16px;
+}
+.step h3{font-family:'Space Grotesk';font-size:20px;font-weight:600;margin-bottom:10px}
+.step p{color:var(--ink-dim);font-size:14.5px}
 
+/* ---------- CALC ---------- */
+.calc{
+  background:rgba(7,13,24,.5);border:1px solid var(--card-line);
+  border-radius:24px;padding:clamp(28px,4vw,52px);margin-top:48px;
+  backdrop-filter:blur(8px);
+  display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;
+}
+@media(max-width:820px){.calc{grid-template-columns:1fr}}
+.field{margin-bottom:26px}
+.field label{display:block;font-size:13.5px;color:var(--ink-dim);margin-bottom:10px;font-weight:500}
+.slider-row{display:flex;align-items:center;gap:18px}
+input[type=range]{
+  flex:1;appearance:none;height:5px;border-radius:3px;
+  background:rgba(201,210,224,.18);outline:none;
+}
+input[type=range]::-webkit-slider-thumb{
+  appearance:none;width:22px;height:22px;border-radius:50%;
+  background:var(--signal);cursor:pointer;
+  box-shadow:0 0 0 5px rgba(74,222,128,.18);
+}
+.slider-val{
+  font-family:'Space Grotesk';font-weight:700;font-size:20px;
+  min-width:88px;text-align:right;color:var(--ink);
+}
+.calc-out{text-align:center}
+.calc-out .lbl{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-dim)}
+.calc-out .big{
+  font-family:'Space Grotesk';font-weight:700;
+  font-size:clamp(44px,5.5vw,72px);color:#F87171;line-height:1.05;
+  margin:12px 0 6px;
+}
+.calc-out .yr{font-size:15px;color:var(--ink-dim)}
+.calc-out .yr strong{color:#F87171}
+.calc-out .fix{margin-top:26px;font-size:14.5px;color:var(--ink-dim)}
+.calc-out .fix strong{color:var(--signal)}
+
+/* ---------- SERVICES ---------- */
+.svc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:56px}
+@media(max-width:820px){.svc-grid{grid-template-columns:1fr}}
+.svc{
+  background:var(--card);border:1px solid var(--card-line);
+  border-radius:var(--radius);padding:36px 30px;
+  transition:transform .25s ease,border-color .25s ease;
+}
+.svc:hover{transform:translateY(-6px)}
+.svc.core{border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.05)}
+.svc .tag{
+  display:inline-block;font-size:11px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;padding:5px 12px;border-radius:100px;margin-bottom:18px;
+}
+.tag.g{background:rgba(74,222,128,.14);color:var(--signal);border:1px solid rgba(74,222,128,.3)}
+.tag.s{background:rgba(201,210,224,.08);color:var(--silver);border:1px solid rgba(201,210,224,.18)}
+.svc h3{font-family:'Space Grotesk';font-size:22px;font-weight:600;margin-bottom:12px}
+.svc p{color:var(--ink-dim);font-size:14.5px;margin-bottom:16px}
+.svc ul{list-style:none}
+.svc li{
+  font-size:14px;color:var(--silver);padding:7px 0 7px 26px;position:relative;
+}
+.svc li::before{content:'→';position:absolute;left:0;color:var(--signal);font-weight:600}
+
+/* ---------- PROOF/REPORT ---------- */
+.report{
+  background:rgba(7,13,24,.55);border:1px solid var(--card-line);
+  border-radius:24px;padding:clamp(28px,4vw,48px);margin-top:48px;
+  max-width:560px;backdrop-filter:blur(8px);
+}
+.report .r-head{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-bottom:18px;border-bottom:1px solid var(--card-line);margin-bottom:8px;
+}
+.report .r-head span{font-family:'Space Grotesk';font-weight:600;font-size:15px}
+.report .r-head em{font-style:normal;font-size:12px;color:var(--ink-dim)}
+.r-line{
+  display:flex;justify-content:space-between;padding:15px 0;
+  border-bottom:1px solid rgba(201,210,224,.07);font-size:14.5px;
+}
+.r-line span{color:var(--ink-dim)}
+.r-line strong{font-family:'Space Grotesk';color:var(--ink)}
+.r-line.hero-line strong{color:var(--signal);font-size:17px}
+
+/* ---------- PRICING ---------- */
+.price-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:56px;max-width:860px}
+@media(max-width:820px){.price-grid{grid-template-columns:1fr}}
+.price{
+  background:var(--card);border:1px solid var(--card-line);
+  border-radius:var(--radius);padding:40px 34px;
+}
+.price.feat{border-color:rgba(74,222,128,.45);background:rgba(74,222,128,.05);position:relative}
+.price .p-name{font-family:'Space Grotesk';font-weight:600;font-size:19px;margin-bottom:6px}
+.price .p-for{font-size:13.5px;color:var(--ink-dim);margin-bottom:24px}
+.price .p-amt{font-family:'Space Grotesk';font-weight:700;font-size:44px;line-height:1}
+.price .p-amt small{font-size:16px;font-weight:500;color:var(--ink-dim)}
+.price .p-setup{font-size:13px;color:var(--ink-dim);margin:8px 0 26px}
+.price ul{list-style:none;margin-bottom:30px}
+.price li{font-size:14px;color:var(--silver);padding:7px 0 7px 26px;position:relative}
+.price li::before{content:'✓';position:absolute;left:0;color:var(--signal);font-weight:700}
+.guarantee{margin-top:34px;font-size:14px;color:var(--ink-dim);max-width:640px}
+.guarantee strong{color:var(--silver)}
+
+/* ---------- FINAL CTA ---------- */
+#close{text-align:center}
+#close .wrap{max-width:760px}
+#close .sub{margin:0 auto}
+
+/* ---------- FOOTER ---------- */
+footer{
+  padding:44px clamp(20px,6vw,80px);
+  border-top:1px solid rgba(201,210,224,.08);
+  display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;
+  background:rgba(7,13,24,.6);
+}
+footer p{font-size:13px;color:var(--ink-dim)}
+footer .f-links{display:flex;gap:22px}
+footer a{color:var(--ink-dim);font-size:13px;text-decoration:none}
+footer a:hover{color:var(--ink)}
+
+@media (prefers-reduced-motion: reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+  .anim .pcard{animation-duration:.01s !important;animation-delay:0s !important;opacity:1;transform:none}
+  html{scroll-behavior:auto}
+}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/gsap.min.js"></script>
 </head>
 <body>
 
-<!-- SIDEBAR -->
-<div class="sb-burger" id="burger" aria-label="Open menu"><span></span></div>
-<div class="sb-scrim" id="scrim"></div>
-<aside class="sidebar" id="sidebar">
-  <div class="sb-brand">
-    <svg class="sb-logo" viewBox="0 0 150 95">
-      <text class="mono" x="75" y="42" text-anchor="middle">AS</text>
-      <text class="word" x="75" y="68" text-anchor="middle">APEX</text>
-      <line class="ln" x1="20" y1="78" x2="48" y2="78"/>
-      <text class="word" x="75" y="82" text-anchor="middle" style="font-size:13px;letter-spacing:.3em">STANDARD</text>
-      <line class="ln" x1="102" y1="78" x2="130" y2="78"/>
-      <text class="sub" x="75" y="92" text-anchor="middle">ELEVATING BUSINESSES</text>
-    </svg>
+<div id="sky"></div>
+<div id="glow"></div>
+<div class="grain"></div>
+
+<nav>
+  <a class="logo" href="#hero">
+    <span class="logo-mark">AS</span>
+    <span class="logo-name">APEX STANDARD</span>
+  </a>
+  <div class="nav-links">
+    <a href="#leak">The Leak</a>
+    <a href="#how">How It Works</a>
+    <a href="#services">Services</a>
+    <a href="#pricing">Pricing</a>
+    <a class="btn btn-primary btn-nav" href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" rel="noopener">Book Free Demo</a>
   </div>
-  <nav class="sb-nav">
-    <a class="sb-link active" data-sec="home"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</a>
-    <a class="sb-link" data-sec="what-we-do"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>What We Do</a>
-    <a class="sb-link" data-sec="what-it-is"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>What It Is</a>
-    <a class="sb-link" data-sec="capabilities"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>Capabilities</a>
-    <a class="sb-link" data-sec="why-us"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><path d="m12 2 2.6 6.6L21 9.2l-5 4.5L17.6 21 12 17.3 6.4 21 8 13.7 3 9.2l6.4-.6z"/></svg>Why Us</a>
-    <a class="sb-link" data-sec="resources"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M14 3v5h5"/></svg>Resources</a>
-  </nav>
-  <div class="sb-foot">
-    <a class="sb-link" id="accountBtn"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Sign In / Create Account</a>
-    <div class="sb-toggle" id="themeToggle" role="button" tabindex="0" aria-label="Toggle theme">
-      <span style="display:flex;align-items:center;gap:13px"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/></svg>Theme</span>
-      <span class="tog-track"><span class="tog-knob"></span></span>
-    </div>
-  </div>
-</aside>
+</nav>
 
-<!-- TOP BAR -->
-<div class="topbar"><div class="tb-in">
-  <a class="tb-signin" id="topSignin">Sign In</a>
-  <a class="btn btn-primary book">Book Demo</a>
-</div></div>
-
-<canvas id="bg3d"></canvas>
-
-<div class="main">
-
-<!-- HOME / HERO -->
-<section class="hero" id="home">
-  <span class="pill reveal in"><span class="dot"></span>AI growth systems for local business</span>
-  <h1 class="hero-h reveal in d1">Collect leads. Build reputation. <span class="grad-text">Stay consistent.</span> Repeat.</h1>
-  <p class="hero-sub reveal in d2">One system that captures every lead, grows your star rating, and keeps your social feed alive — without you lifting a finger.</p>
-  <div class="hero-cta reveal in d3">
-    <a class="btn btn-primary btn-lg book">Book a 30-min demo</a>
-    <a class="btn btn-ghost btn-lg nav-to" data-sec="what-it-is">See how it works</a>
-  </div>
-  <p class="hero-note reveal in d4">No contracts • Setup in days • Cancel anytime</p>
-  <div class="scroll-cue"><span class="mouse"></span>Scroll</div>
-</section>
-
-<!-- WHAT WE DO -->
-<section class="block alt" id="what-we-do">
+<!-- ============ HERO — MIDNIGHT: the missed call ============ -->
+<section id="hero" data-scene="night">
   <div class="wrap">
-    <div class="sec-head center reveal">
-      <span class="eyebrow">What we do</span>
-      <h2 class="h2">Three systems. One standard.</h2>
-      <p class="lead">Each one runs the follow-up your front desk never has time for — and they're even stronger together.</p>
+    <div class="reveal">
+      <div class="eyebrow">AI Lead Recovery for Local Business</div>
+      <h1>Your phone rang.<br>Nobody answered.<br><span style="color:var(--signal)">We just saved that job.</span></h1>
+      <p class="sub">Most local businesses lose 60&ndash;80% of the callers who hit voicemail — they just dial the next name on Google. Apex Standard texts every missed caller back within seconds, answers their questions, and books them into your calendar. Automatically. 24/7.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" rel="noopener">Book a Free 15-Min Demo</a>
+        <a class="btn btn-ghost" href="#calc">See What You're Losing →</a>
+      </div>
+      <p class="hero-note">On the demo, you'll call your own number and <strong>watch the recovery text land on your phone live.</strong> No slides. No pitch deck.</p>
     </div>
-    <div class="features">
-      <div class="fcard reveal">
-        <div class="fnum">01</div>
-        <div class="fic"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-        <h3>AI Lead Capture Chatbot</h3>
-        <p>A trained assistant on your site that answers visitors around the clock, books appointments, and drops every contact into your inbox.</p>
-        <span class="fprice">$100/mo + $250 setup</span>
-      </div>
-      <div class="fcard reveal d1">
-        <div class="fnum">02</div>
-        <div class="fic"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9 16 14 18 21 12 17 6 21 8 14 2 9 9 9"/></svg></div>
-        <h3>Review &amp; Reputation Management</h3>
-        <p>Turn happy customers into 5-star reviews automatically, and catch unhappy ones privately before they ever go public.</p>
-        <span class="fprice">$100/mo + $150 setup</span>
-      </div>
-      <div class="fcard reveal d2">
-        <div class="fnum">03</div>
-        <div class="fic"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="3.5"/><circle cx="17" cy="7" r="1.2" fill="currentColor"/></svg></div>
-        <h3>Social Media Automation</h3>
-        <p>A steady stream of branded posts created, scheduled, and published for you so your feed never goes quiet between busy weeks.</p>
-        <span class="fprice">$100/mo + $450 setup</span>
-      </div>
-      <div class="fcard reveal d3">
-        <div class="fnum">04</div>
-        <div class="fic"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></div>
-        <h3>Run all three together</h3>
-        <p>Bundle the full system and every lead, review, and post works off one connected standard — at a price built for local business.</p>
-        <span class="fprice">Bundle pricing available</span>
+    <div class="reveal">
+      <div class="phone" id="phoneDemo">
+        <div class="phone-notch"></div>
+        <div class="phone-screen anim" id="phoneScreen">
+          <div class="pcard call-card">
+            <div class="t">Incoming call · 7:42 PM</div>
+            <div class="who">(707) 555-0119</div>
+            <div class="missed">Missed call — after hours</div>
+          </div>
+          <div class="pcard sms">
+            <div class="t">Auto-text · 7:42 PM — 9 seconds later</div>
+            Hey, sorry we missed you! This is Apex Electric. Did you need a hand with something? We can get you booked in right here.
+          </div>
+          <div class="pcard reply">
+            Yes — half my kitchen outlets just died. Can someone come tomorrow?
+          </div>
+          <div class="pcard booked">✓ Booked — Tomorrow 9:00 AM · $480 job saved</div>
+        </div>
+        <div class="phone-caption">This exact sequence runs on your number.</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- WHAT IT IS -->
-<section class="block" id="what-it-is">
+<!-- ============ THE LEAK — DEEP NAVY ============ -->
+<section id="leak" data-scene="deep">
   <div class="wrap">
-    <div class="what-grid">
-      <div class="reveal">
-        <span class="eyebrow">What it is</span>
-        <h2 class="h2">A growth engine that runs while you work the chair</h2>
-        <p class="lead">Apex Standard plugs into your website and Google profile, then quietly does the follow-up your team never has time for.</p>
-        <div class="what-list">
-          <div class="what-item"><span class="ck"><svg fill="none" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><p><b>Captures</b> every website visitor with a chatbot that books and qualifies in real time.</p></div>
-          <div class="what-item"><span class="ck"><svg fill="none" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><p><b>Requests reviews</b> by text and email at the right moment after each visit.</p></div>
-          <div class="what-item"><span class="ck"><svg fill="none" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><p><b>Publishes social posts</b> on a schedule you approve once and forget.</p></div>
-        </div>
+    <div class="reveal">
+      <div class="eyebrow">The Leak</div>
+      <h2>You're not losing jobs to competitors.<br>You're losing them to voicemail.</h2>
+      <p class="sub">You're up a ladder, mid-appointment, or it's Sunday night. The phone rings. And the person on the other end doesn't leave a message — they call the next business on the list.</p>
+    </div>
+    <div class="stat-row">
+      <div class="stat reveal">
+        <div class="num">60<em>–</em>80<em>%</em></div>
+        <p>of callers who hit voicemail never call back. They just dial your competitor.</p>
       </div>
-      <div class="ui-mock reveal d2">
-        <div class="um-head"><span class="t">Lead Capture Chatbot</span><span class="b">Live</span></div>
-        <div class="um-chat">
-          <div class="bubble bot">Hi! 👋 Looking to book an appointment or have a question?</div>
-          <div class="bubble user">Do you have any openings this Saturday?</div>
-          <div class="bubble bot">We do! I have 11:30 AM and 2:00 PM open. Want me to hold one for you?</div>
-          <div class="bubble user">2 PM please</div>
-          <div class="um-typing"><span></span><span></span><span></span></div>
-        </div>
+      <div class="stat reveal">
+        <div class="num"><em>~</em>9 sec</div>
+        <p>is how fast our recovery text reaches a missed caller — before they've even opened Google again.</p>
+      </div>
+      <div class="stat reveal">
+        <div class="num">24<em>/</em>7</div>
+        <p>nights, weekends, holidays. The moments you can't answer are the moments this earns its keep.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- CAPABILITIES -->
-<section class="block alt" id="capabilities">
+<!-- ============ CALCULATOR — STEEL: the cost, in their numbers ============ -->
+<section id="calc" data-scene="steel">
   <div class="wrap">
-    <div class="sec-head center reveal">
-      <span class="eyebrow">Capabilities</span>
-      <h2 class="h2">Pick one. Or run all three together.</h2>
+    <div class="reveal">
+      <div class="eyebrow">Do the Math</div>
+      <h2>What is the leak costing <em style="font-style:normal;color:var(--signal)">you</em>?</h2>
+      <p class="sub">Drag the sliders. This is your money, not a hypothetical.</p>
     </div>
-    <div class="tabs-head reveal" role="tablist">
-      <button class="tab-btn active" role="tab" data-tab="t1">AI Chatbot</button>
-      <button class="tab-btn" role="tab" data-tab="t2">Review System</button>
-      <button class="tab-btn" role="tab" data-tab="t3">Social Media</button>
-    </div>
-
-    <div class="tab-panel active" id="t1">
-      <div class="tab-grid">
-        <div class="tp">
-          <h3>AI Lead Capture Chatbot</h3>
-          <span class="price">$100/mo + $250 setup</span>
-          <p>A trained assistant on your site that answers questions, books appointments, and captures contacts around the clock.</p>
-          <ul class="tab-feats">
-            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>24/7 instant replies to visitors</li>
-            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Books straight into your calendar</li>
-            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Every lead logged to your inbox</li>
-          </ul>
+    <div class="calc reveal">
+      <div>
+        <div class="field">
+          <label>Missed calls per week</label>
+          <div class="slider-row">
+            <input type="range" id="calls" min="1" max="40" value="8">
+            <span class="slider-val" id="callsVal">8</span>
+          </div>
         </div>
-        <div class="tab-vis">
-          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><div><div class="vt">New conversation</div><div class="vs">Visitor from Google</div></div><span class="vb">Now</span></div>
-          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg></span><div><div class="vt">Appointment booked</div><div class="vs">Saturday · 2:00 PM</div></div><span class="vb">✓</span></div>
-          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span><div><div class="vt">Lead saved</div><div class="vs">Added to inbox</div></div><span class="vb">✓</span></div>
+        <div class="field">
+          <label>Average value of one customer / job ($)</label>
+          <div class="slider-row">
+            <input type="range" id="value" min="50" max="3000" step="25" value="400">
+            <span class="slider-val" id="valueVal">$400</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Of missed callers who never come back (industry: 60–80%)</label>
+          <div class="slider-row">
+            <input type="range" id="lost" min="30" max="90" value="60">
+            <span class="slider-val" id="lostVal">60%</span>
+          </div>
         </div>
       </div>
-    </div>
-
-    <div class="tab-panel" id="t2">
-      <div class="tab-grid">
-        <div class="tp">
-          <h3>Review &amp; Reputation Management</h3>
-          <span class="price">$100/mo + $150 setup</span>
-          <p>Turn happy customers into 5-star reviews automatically — and catch problems privately before they ever go public.</p>
-          <ul class="tab-feats">
-            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Automated review requests by text &amp; email</li>
-            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Negative feedback routed to you first</li>
-            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Live rating tracking on one dashboard</li>
-          </ul>
-        </div>
-        <div class="tab-vis">
-          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9 16 14 18 21 12 17 6 21 8 14 2 9 9 9"/></svg></span><div><div class="vt">★★★★★ review posted</div><div class="vs">"Best service I've had!"</div></div><span class="vb">+1</span></div>
-          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></span><div><div class="vt">Request sent</div><div class="vs">After each visit</div></div><span class="vb">Sent</span></div>
-          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M22 4 12 14l-3-3"/></svg></span><div><div class="vt">Private feedback caught</div><div class="vs">Routed to you first</div></div><span class="vb">✓</span></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="tab-panel" id="t3">
-      <div class="tab-grid">
-        <div class="tp">
-          <h3>Social Media Automation</h3>
-          <span class="price">$100/mo + $450 setup</span>
-          <p>A steady stream of branded posts created and published for you, so your business always looks active and open.</p>
-          <ul class="tab-feats">
-            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Branded posts written for your business</li>
-            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Scheduled and published automatically</li>
-            <li><svg fill="none" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>You approve the plan once a month</li>
-          </ul>
-        </div>
-        <div class="tab-vis">
-          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="3.5"/></svg></span><div><div class="vt">Post published</div><div class="vs">On brand, on time</div></div><span class="vb">Live</span></div>
-          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg></span><div><div class="vt">Week scheduled</div><div class="vs">Queued in advance</div></div><span class="vb">Queued</span></div>
-          <div class="vis-row"><span class="vi"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.6a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.07a5.5 5.5 0 1 0-7.78 7.78L12 21l8.84-8.62a5.5 5.5 0 0 0 0-7.78z"/></svg></span><div><div class="vt">Approve once</div><div class="vs">You stay in control</div></div><span class="vb">✓</span></div>
-        </div>
+      <div class="calc-out">
+        <div class="lbl">Walking out the door every month</div>
+        <div class="big" id="monthly">$8,300</div>
+        <div class="yr">That's <strong id="yearly">$99,600</strong> a year in lost jobs.</div>
+        <p class="fix">Recovering even a fraction pays for this system many times over. <strong>That's the whole pitch.</strong></p>
+        <a class="btn btn-primary" style="margin-top:22px" href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" rel="noopener">Plug the Leak</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- WHY US -->
-<section class="block" id="why-us">
+<!-- ============ HOW IT WORKS — DAWN: recovery in motion ============ -->
+<section id="how" data-scene="dawn">
   <div class="wrap">
-    <div class="sec-head center reveal">
-      <span class="eyebrow">Why us</span>
-      <h2 class="h2">Built for local business, held to a higher standard</h2>
-      <p class="lead">No bloated agency retainers. No long contracts. Just systems that do the work and pay for themselves.</p>
+    <div class="reveal">
+      <div class="eyebrow">How It Works</div>
+      <h2>From missed call to booked job.<br>Without you lifting a finger.</h2>
     </div>
-    <div class="why-grid">
-      <div class="why-card reveal">
-        <div class="why-big">01</div>
-        <h3>One connected system</h3>
-        <p>Leads, reviews, and social all run off a single standard instead of five disconnected tools you have to babysit.</p>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="k">01 — CATCH</div>
+        <h3>A call slips through</h3>
+        <p>You're on a job, with a client, or closed for the night. The instant a call goes unanswered, our system catches it — no voicemail black hole.</p>
       </div>
-      <div class="why-card reveal d1">
-        <div class="why-big">02</div>
-        <h3>Set up in days, not months</h3>
-        <p>We handle the build and the integrations. You approve it once and it starts working for your business right away.</p>
+      <div class="step reveal">
+        <div class="k">02 — RECOVER</div>
+        <h3>The text fires in seconds</h3>
+        <p>The caller gets a friendly text in your business's name before they can dial a competitor. It answers questions, sends your booking link, and keeps the conversation alive with automatic follow-ups.</p>
       </div>
-      <div class="why-card reveal d2">
-        <div class="why-big">03</div>
-        <h3>Priced for Main Street</h3>
-        <p>Flat monthly pricing built for salons, spas, and trades — no contracts, cancel anytime, keep what works.</p>
+      <div class="step reveal">
+        <div class="k">03 — COUNT</div>
+        <h3>You see the money</h3>
+        <p>Every recovered lead is tracked. Once a month you get a plain-English report: calls caught, jobs booked, dollars saved. You'll know exactly what this is worth.</p>
       </div>
     </div>
-    <div class="serv-grid" style="margin-top:24px">
-      <div class="serv-col reveal">
-        <h4>Beauty &amp; Personal Care</h4>
+  </div>
+</section>
+
+<!-- ============ SERVICES — LIGHT STEEL ============ -->
+<section id="services" data-scene="light">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="eyebrow">What We Install</div>
+      <h2>One system. Every leak plugged.</h2>
+      <p class="sub">Built, installed, and maintained for you. Live within 3 days of signup. You don't touch a thing.</p>
+    </div>
+    <div class="svc-grid">
+      <div class="svc core reveal">
+        <span class="tag g">The Core — Start Here</span>
+        <h3>AI Lead Recovery</h3>
+        <p>The missed-call machine. Nobody who wants to give you money gets ignored again.</p>
         <ul>
-          <li>Nail Salons</li><li>Hair Salons</li>
-          <li>Med Spas</li><li>Lash &amp; Brow Studios</li>
-          <li>Barbershops</li><li>Day Spas</li>
+          <li>Instant text-back on every missed call, 24/7</li>
+          <li>Website chat that captures the ones who won't call</li>
+          <li>Automatic follow-up with leads who didn't book</li>
+          <li>Appointment reminders that kill no-shows</li>
+          <li>Wake-up texts to your old customer list</li>
         </ul>
       </div>
-      <div class="serv-col reveal d1">
-        <h4>Home &amp; Trade Services</h4>
+      <div class="svc reveal">
+        <span class="tag g">Included in Every Plan</span>
+        <h3>Reputation Engine</h3>
+        <p>Reviews decide who gets chosen on Google. We make sure it's you.</p>
         <ul>
-          <li>Electricians</li><li>Lighting Contractors</li>
-          <li>HVAC</li><li>Plumbers</li>
-          <li>Landscapers</li><li>Cleaning Services</li>
+          <li>Automatic review requests after every job</li>
+          <li>Every review answered — good and bad</li>
+          <li>Unhappy customers caught privately, before they post</li>
+          <li>Climb the Google Maps rankings</li>
+        </ul>
+      </div>
+      <div class="svc reveal">
+        <span class="tag s">Premium Add-On</span>
+        <h3>AI Voice Agent</h3>
+        <p>Goes beyond texting — answers the phone in a natural voice, handles questions, and books the appointment live. Your 24/7 front desk.</p>
+        <ul>
+          <li>Answers every call, never on hold</li>
+          <li>Books straight into your calendar</li>
+          <li>Routes true emergencies to your cell</li>
+        </ul>
+      </div>
+      <div class="svc reveal">
+        <span class="tag s">Add-On for Salons & Studios</span>
+        <h3>Social Autopilot</h3>
+        <p>For businesses whose Instagram is their storefront. Consistent, on-brand posts without you touching the app.</p>
+        <ul>
+          <li>Done-for-you content calendar</li>
+          <li>Before/after showcases that sell</li>
+          <li>Your feed stays alive while you work</li>
         </ul>
       </div>
     </div>
   </div>
 </section>
 
-<!-- RESOURCES -->
-<section class="block alt" id="resources">
+<!-- ============ PROOF — WARM LIGHT: the report ============ -->
+<section id="proof" data-scene="warm">
   <div class="wrap">
-    <div class="sec-head center reveal">
-      <span class="eyebrow">Resources</span>
-      <h2 class="h2">Guides to grow your local business</h2>
+    <div class="reveal">
+      <div class="eyebrow">No Guesswork</div>
+      <h2>Every month, you see exactly<br>what we saved you.</h2>
+      <p class="sub">Most marketing asks you to trust it. Ours shows receipts. This is the report every client gets — real numbers from your real phone line.</p>
     </div>
-    <div class="res-row">
-      <a class="rcard reveal book">
-        <div class="rtop"><span class="ri"><svg fill="none" stroke-width="1.6" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span></div>
-        <div class="rbody"><div class="rlabel">Playbook</div><h4>How a chatbot can recover missed bookings</h4><div class="rmeta">5 min read</div></div>
-      </a>
-      <a class="rcard reveal d1 book">
-        <div class="rtop"><span class="ri"><svg fill="none" stroke-width="1.6" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9 16 14 18 21 12 17 6 21 8 14 2 9 9 9"/></svg></span></div>
-        <div class="rbody"><div class="rlabel">Guide</div><h4>A simple roadmap to a stronger star rating</h4><div class="rmeta">7 min read</div></div>
-      </a>
-      <a class="rcard reveal d2 book">
-        <div class="rtop"><span class="ri"><svg fill="none" stroke-width="1.6" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="3.5"/></svg></span></div>
-        <div class="rbody"><div class="rlabel">Template</div><h4>30 days of social posts for salons &amp; spas</h4><div class="rmeta">Free download</div></div>
-      </a>
-      <a class="rcard reveal d3 book">
-        <div class="rtop"><span class="ri"><svg fill="none" stroke-width="1.6" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span></div>
-        <div class="rbody"><div class="rlabel">Guide</div><h4>Why trades win more jobs with after-hours capture</h4><div class="rmeta">4 min read</div></div>
-      </a>
+    <div class="report reveal">
+      <div class="r-head"><span>Monthly Recovery Report</span><em>Sample — Apex Electric</em></div>
+      <div class="r-line"><span>Missed calls caught</span><strong>23</strong></div>
+      <div class="r-line"><span>Conversations recovered by text</span><strong>17</strong></div>
+      <div class="r-line"><span>Jobs booked from recovered leads</span><strong>7</strong></div>
+      <div class="r-line"><span>New 5-star reviews collected</span><strong>11</strong></div>
+      <div class="r-line"><span>Google rating</span><strong>4.3 → 4.6 ★</strong></div>
+      <div class="r-line hero-line"><span>Estimated revenue recovered</span><strong>$3,360</strong></div>
     </div>
   </div>
 </section>
 
-<!-- FINAL CTA -->
-<section class="final">
+<!-- ============ PRICING — RESOLVE BACK TO CONFIDENT NAVY ============ -->
+<section id="pricing" data-scene="resolve">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="eyebrow">Simple Pricing</div>
+      <h2>It pays for itself the moment<br>it saves one job.</h2>
+      <p class="sub">One-time setup, flat monthly, no contracts. If the report doesn't prove its worth, cancel.</p>
+    </div>
+    <div class="price-grid">
+      <div class="price feat reveal">
+        <div class="p-name">Lead Recovery System</div>
+        <div class="p-for">The core — missed-call recovery + reputation engine</div>
+        <div class="p-amt">$597<small>/mo</small></div>
+        <div class="p-setup">+ one-time setup from $500 · live in 3 days</div>
+        <ul>
+          <li>24/7 missed-call text-back on your number</li>
+          <li>Website chat & lead capture</li>
+          <li>Automatic follow-up & appointment reminders</li>
+          <li>Review requests, responses & rating growth</li>
+          <li>Monthly recovery report with dollars saved</li>
+        </ul>
+        <a class="btn btn-primary" href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" rel="noopener">Book Your Demo</a>
+      </div>
+      <div class="price reveal">
+        <div class="p-name">Full Front Desk</div>
+        <div class="p-for">Everything in Lead Recovery + the AI Voice Agent</div>
+        <div class="p-amt">$1,297<small>/mo</small></div>
+        <div class="p-setup">+ one-time setup from $1,000 · live in 5 days</div>
+        <ul>
+          <li>Everything in Lead Recovery System</li>
+          <li>AI voice agent answers every call live</li>
+          <li>Books appointments in real time</li>
+          <li>Emergency routing to your cell</li>
+          <li>Social Autopilot available as add-on</li>
+        </ul>
+        <a class="btn btn-ghost" href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" rel="noopener">Talk It Through</a>
+      </div>
+    </div>
+    <p class="guarantee reveal"><strong>The Apex promise:</strong> your monthly report shows real recovered revenue, in plain numbers. If the system isn't clearly paying for itself, you walk — no contracts, no hard feelings. We keep clients by results, not paperwork.</p>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section id="close" data-scene="final">
   <div class="wrap reveal">
-    <h2>Ready to collect, build, and stay consistent?</h2>
-    <p>Book a 30-minute demo and see your business running on Apex Standard.</p>
-    <div class="final-cta">
-      <a class="btn btn-primary btn-lg book">Book your demo</a>
-      <a class="btn btn-ghost btn-lg" href="mailto:itz.silven@apexstandard.biz">Email us</a>
-    </div>
+    <div class="eyebrow">15 Minutes. Live. On Your Number.</div>
+    <h2>Call your own business.<br>Watch nobody answer.<br>Watch us save the lead anyway.</h2>
+    <p class="sub" style="margin-bottom:36px">That's the whole demo. You'll see the recovery text hit your own phone in real time — then decide for yourself.</p>
+    <a class="btn btn-primary" style="font-size:17px;padding:17px 38px" href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" rel="noopener">Book the Free Demo</a>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
-  <div class="wrap">
-    <div class="foot-grid">
-      <div class="foot-brand"><div class="fb-name">Apex Standard</div><p>AI growth systems that collect leads, build reputation, and keep local businesses consistent.</p></div>
-        <p>AI growth systems that collect leads, build reputation, and keep local businesses consistent.</p>
-      </div>
-      <div class="foot-col">
-        <h5>Services</h5>
-        <a class="nav-to" data-sec="what-we-do">AI Chatbot</a>
-        <a class="nav-to" data-sec="what-we-do">Review System</a>
-        <a class="nav-to" data-sec="what-we-do">Social Media</a>
-        <a class="nav-to" data-sec="capabilities">Capabilities</a>
-      </div>
-      <div class="foot-col">
-        <h5>Company</h5>
-        <a class="nav-to" data-sec="what-it-is">What it is</a>
-        <a class="nav-to" data-sec="why-us">Why us</a>
-        <a class="nav-to" data-sec="resources">Resources</a>
-        <a href="mailto:itz.silven@apexstandard.biz">Contact</a>
-      </div>
-      <div class="foot-col">
-        <h5>Get started</h5>
-        <a class="book">Book a demo</a>
-        <a href="mailto:itz.silven@apexstandard.biz">itz.silven@apexstandard.biz</a>
-      </div>
-    </div>
-    <div class="foot-bottom">
-      <p>© 2026 Apex Standard. Elevating businesses. Driving excellence.</p>
-      <div class="foot-social">
-        <a class="book" aria-label="Instagram"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
-        <a class="book" aria-label="Facebook"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
-        <a href="mailto:itz.silven@apexstandard.biz" aria-label="Email"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></a>
-      </div>
-    </div>
+  <p>© 2026 Apex Standard · AI Lead Recovery for Local Business · Northern California & beyond</p>
+  <div class="f-links">
+    <a href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" rel="noopener">Book a Demo</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#hero">Top ↑</a>
   </div>
 </footer>
 
-</div><!-- /main -->
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-var CALENDLY="https://calendly.com/itz-silven-apexstandard/30min";
-document.querySelectorAll(".book").forEach(function(el){el.style.cursor="pointer";el.onclick=function(e){e.preventDefault();window.open(CALENDLY,"_blank","noopener");};});
-document.getElementById("topSignin").onclick=function(){window.open("mailto:itz.silven@apexstandard.biz");};
-document.getElementById("accountBtn").onclick=function(){window.open("mailto:itz.silven@apexstandard.biz");};
-var links=[].slice.call(document.querySelectorAll(".sb-link[data-sec]"));
-function go(sec){var el=document.getElementById(sec);if(el)el.scrollIntoView({behavior:"smooth"});closeSb();}
-links.forEach(function(l){l.onclick=function(){go(l.dataset.sec);};});
-[].slice.call(document.querySelectorAll(".nav-to")).forEach(function(l){l.onclick=function(e){e.preventDefault();go(l.dataset.sec);};});
-var sb=document.getElementById("sidebar"),scrim=document.getElementById("scrim");
-function openSb(){sb.classList.add("open");scrim.classList.add("show");}
-function closeSb(){sb.classList.remove("open");scrim.classList.remove("show");}
-document.getElementById("burger").onclick=openSb;scrim.onclick=closeSb;
-var tt=document.getElementById("themeToggle"),theme="dark";
-tt.onclick=function(){theme=theme==="dark"?"light":"dark";if(theme==="light")document.documentElement.setAttribute("data-theme","light");else document.documentElement.removeAttribute("data-theme");};
-document.querySelectorAll(".tab-btn").forEach(function(btn){btn.onclick=function(){document.querySelectorAll(".tab-btn").forEach(function(b){b.classList.remove("active");});document.querySelectorAll(".tab-panel").forEach(function(p){p.classList.remove("active");});btn.classList.add("active");document.getElementById(btn.dataset.tab).classList.add("active");};});
-try{var rev=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");rev.unobserve(e.target);}});},{threshold:.12});document.querySelectorAll(".reveal:not(.in)").forEach(function(el){rev.observe(el);});}catch(e){document.querySelectorAll(".reveal").forEach(function(el){el.classList.add("in");});}
-var spy=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var id=e.target.id;links.forEach(function(l){l.classList.toggle("active",l.dataset.sec===id);});}});},{rootMargin:"-45% 0px -50% 0px"});
-["home","what-we-do","what-it-is","capabilities","why-us","resources"].forEach(function(id){var s=document.getElementById(id);if(s)spy.observe(s);});
+/* ================= SCROLL-DRIVEN SKY TRANSFORMATION =================
+   The background journeys through the life of a missed call:
+   night (missed) → deep → steel → dawn (recovery) → light → warm (proof) → resolve → final
+   Each scene = 3 HSL stops for the gradient + a glow hue/alpha.        */
+const SCENES = {
+  night:  {a:[218,62,5],  b:[220,55,9],  c:[222,48,13], g:[218,.10]},
+  deep:   {a:[219,58,7],  b:[221,50,12], c:[224,42,17], g:[220,.14]},
+  steel:  {a:[220,50,10], b:[218,44,18], c:[214,38,26], g:[214,.18]},
+  dawn:   {a:[218,44,14], b:[205,40,26], c:[150,30,30], g:[150,.22]},
+  light:  {a:[212,40,18], b:[200,34,30], c:[190,28,38], g:[190,.20]},
+  warm:   {a:[210,38,16], b:[160,28,26], c:[145,32,30], g:[148,.24]},
+  resolve:{a:[219,52,9],  b:[220,46,14], c:[222,40,19], g:[220,.14]},
+  final:  {a:[220,58,6],  b:[219,50,10], c:[150,35,16], g:[148,.20]}
+};
+const order = ['night','deep','steel','dawn','light','warm','resolve','final'];
+const sections = order.map(k => document.querySelector(`[data-scene="${k}"]`));
+const root = document.documentElement;
+const lerp = (x,y,t)=>x+(y-x)*t;
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ============================================================
-   APEX STANDARD — METALLIC AI BRAIN, STRAIGHT-IN DOLLY
-   Single continuous push: every scroll moves the camera
-   directly toward and into the brain, then through glowing
-   neural corridors. No rise/zoom-out detour.
-   Performance-scaled by device.
-   ============================================================ */
-window.addEventListener("load",function(){
-  if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches)return;
-  var s=document.createElement("script");
-  s.src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
-  s.onload=initBrain;s.onerror=function(){};
-  document.head.appendChild(s);
-});
-
-function initBrain(){
- try{
-  var canvas=document.getElementById("bg3d"),W=innerWidth,H=innerHeight;
-  // ---- performance tier ----
-  var cores=navigator.hardwareConcurrency||4;
-  var small=Math.min(W,H)<760;
-  var LOW=small||cores<=4;
-  var DETAIL=LOW?72:128;          // sphere segments
-  var NODES=LOW?260:460;          // neurons
-  var FIELD=LOW?900:2200;         // ambient particles
-  var TUBES=LOW?14:26;            // corridor strands
-  var PR=Math.min(devicePixelRatio,LOW?1.5:2);
-
-  var renderer=new THREE.WebGLRenderer({canvas:canvas,alpha:true,antialias:true,powerPreference:"high-performance"});
-  renderer.setPixelRatio(PR);renderer.setSize(W,H);
-  renderer.outputEncoding=THREE.sRGBEncoding;
-  var scene=new THREE.Scene();
-  scene.fog=new THREE.FogExp2(0x05080f,.020);
-  var cam=new THREE.PerspectiveCamera(55,W/H,.03,500);
-
-  /* ---------- noise ---------- */
-  function hsh(a,b,c){var h=(a*374761393+b*668265263+c*2147483647)>>>0;h^=h>>>13;h=Math.imul(h,1274126177);h^=h>>>16;return (h>>>0)/4294967296;}
-  function n3(x,y,z){var ix=Math.floor(x),iy=Math.floor(y),iz=Math.floor(z),fx=x-ix,fy=y-iy,fz=z-iz;
-    function sm(t){return t*t*t*(t*(t*6-15)+10);}var ux=sm(fx),uy=sm(fy),uz=sm(fz);
-    function L(a,b,t){return a+(b-a)*t;}function c(dx,dy,dz){return hsh(ix+dx,iy+dy,iz+dz)*2-1;}
-    return L(L(L(c(0,0,0),c(1,0,0),ux),L(c(0,1,0),c(1,1,0),ux),uy),L(L(c(0,0,1),c(1,0,1),ux),L(c(0,1,1),c(1,1,1),ux),uy),uz);}
-  function fbm(x,y,z){return n3(x,y,z)*.6+n3(x*2.1+9,y*2.1,z*2.1)*.3+n3(x*4.4+4,y*4.4,z*4.4)*.18+n3(x*8.7+2,y*8.7,z*8.7)*.09;}
-
-  /* ---------- brain group ---------- */
-  var brain=new THREE.Group();scene.add(brain);
-
-  // anatomically-shaped hemisphere: ellipsoid base + ridged gyri folds,
-  // flattened on the inner (fissure) side, tapered front/back like a real lobe.
-  function hemisphere(sign,seed){
-    var g=new THREE.SphereGeometry(4.6,DETAIL,DETAIL),p=g.attributes.position;
-    for(var i=0;i<p.count;i++){
-      var x=p.getX(i),y=p.getY(i),z=p.getZ(i);
-      // base ellipsoid proportions (longer front-back, narrower side-to-side)
-      var ex=x*0.74, ey=y*0.92, ez=z*1.06;
-      // ridged folds (gyri): sharp valleys via abs of fbm
-      var f1=fbm(ex*.85+seed, ey*.85, ez*.85);
-      var ridge=1.0-Math.abs(fbm(ex*1.7+seed*3, ey*1.7, ez*1.7));
-      var f2=fbm(ex*3.3+seed*5, ey*3.3, ez*3.3)*0.4;
-      var folds=(ridge*0.85 + f1*0.5 + f2)*0.62;
-      var len=Math.sqrt(ex*ex+ey*ey+ez*ez)||1;
-      var sc=1+folds/len;
-      var nx=ex*sc, ny=ey*sc, nz=ez*sc;
-      // flatten the medial (inner) wall so the two halves sit flush along the fissure
-      if(sign>0){ if(nx<0.25) nx=0.25+(nx-0.25)*0.18; }
-      else      { if(nx>-0.25) nx=-0.25+(nx+0.25)*0.18; }
-      p.setXYZ(i,nx,ny,nz);
-    }
-    g.computeVertexNormals();
-    return g;
-  }
-
-  // METALLIC navy-silver material
-  function metal(col,em){return new THREE.MeshStandardMaterial({color:col,emissive:em||0x0a1626,emissiveIntensity:.35,roughness:.38,metalness:.82,transparent:true,opacity:1,side:THREE.FrontSide});}
-
-  var matL=metal(0x35506f,0x0e2238), matR=metal(0x324c6a,0x0d2034);
-  var gL=hemisphere(1,0), gR=hemisphere(-1,53);
-  var mL=new THREE.Mesh(gL,matL); mL.position.x=-0.55;
-  var mR=new THREE.Mesh(gR,matR); mR.position.x=0.55;
-  brain.add(mL,mR);
-
-  // thin brushed-silver wire overlay for the "scanned" hi-tech read
-  var wire=new THREE.MeshBasicMaterial({color:0x9fb6cc,wireframe:true,transparent:true,opacity:.06});
-  var wL=new THREE.Mesh(gL,wire);wL.position.copy(mL.position);
-  var wR=new THREE.Mesh(gR,wire);wR.position.copy(mR.position);
-  brain.add(wL,wR);
-
-  // cerebellum (folded, at lower-back)
-  var gC=new THREE.SphereGeometry(1.9,Math.floor(DETAIL*.6),Math.floor(DETAIL*.6)),pc=gC.attributes.position;
-  for(var i=0;i<pc.count;i++){var x=pc.getX(i),y=pc.getY(i),z=pc.getZ(i);
-    var rib=Math.abs(Math.sin(y*5.0))*0.18; // horizontal cerebellar ribs
-    var f=fbm(x*1.6+71,y*1.6,z*1.6)*0.3;
-    var len=Math.sqrt(x*x+y*y+z*z)||1,sc=1+(rib+f)/len;
-    pc.setXYZ(i,x*sc,y*sc,z*sc);}
-  gC.computeVertexNormals();
-  var cere=new THREE.Mesh(gC,metal(0x2a4360,0x0b1c30));
-  cere.position.set(0,-2.7,-3.4);cere.scale.set(1.5,.82,1.05);brain.add(cere);
-
-  // brain stem
-  var stem=new THREE.Mesh(new THREE.CylinderGeometry(.5,.28,3.2,20,1),metal(0x2e4866));
-  stem.position.set(0,-4.6,-1.6);stem.rotation.x=.35;brain.add(stem);
-
-  // longitudinal fissure: a dark recessed slab between hemispheres
-  var fis=new THREE.Mesh(new THREE.BoxGeometry(.16,8.6,9.2),new THREE.MeshBasicMaterial({color:0x040810,transparent:true,opacity:.55}));
-  brain.add(fis);
-
-  /* ---------- inner neural network (glows brighter as you enter) ---------- */
-  var neural=new THREE.Group();brain.add(neural);
-  var nodes=[];
-  for(var i=0;i<NODES;i++){var x,y,z,d;do{x=(Math.random()-.5)*8.4;y=(Math.random()-.5)*8.0;z=(Math.random()-.5)*9.0;d=Math.sqrt(x*x*1.6+y*y+z*z*.8);}while(d>4.3);nodes.push(new THREE.Vector3(x,y,z));}
-  var edges=[],seg=[];
-  for(var i=0;i<NODES;i++){var cc=0;for(var j=i+1;j<NODES&&cc<3;j++){if(nodes[i].distanceTo(nodes[j])<1.65&&Math.random()>.45){edges.push([i,j]);cc++;seg.push(nodes[i].x,nodes[i].y,nodes[i].z,nodes[j].x,nodes[j].y,nodes[j].z);}}}
-  var sgeo=new THREE.BufferGeometry();sgeo.setAttribute("position",new THREE.BufferAttribute(new Float32Array(seg),3));
-  var axon=new THREE.LineBasicMaterial({color:0x6fb6e6,transparent:true,opacity:.18});
-  neural.add(new THREE.LineSegments(sgeo,axon));
-  var synArr=[];for(var i=0;i<nodes.length;i++){synArr.push(nodes[i].x,nodes[i].y,nodes[i].z);}
-  var syng=new THREE.BufferGeometry();syng.setAttribute("position",new THREE.BufferAttribute(new Float32Array(synArr),3));
-  var synM=new THREE.PointsMaterial({color:0x9ad8f4,size:.07,transparent:true,opacity:.5});
-  neural.add(new THREE.Points(syng,synM));
-
-  // electric pulses
-  var pulses=[],pg=new THREE.SphereGeometry(.06,6,6);
-  for(var i=0;i<(LOW?20:36);i++){var m=new THREE.Mesh(pg,new THREE.MeshBasicMaterial({color:0xbfeBff,transparent:true,opacity:0}));brain.add(m);pulses.push({m:m,e:Math.floor(Math.random()*edges.length),t:Math.random(),sp:.005+Math.random()*.012});}
-
-  /* ---------- neural corridor (real-looking branching tubes) ---------- */
-  var corridor=new THREE.Group();scene.add(corridor);
-  // main spine curve going straight into -Z, gently meandering
-  var spinePts=[];
-  for(var i=0;i<48;i++){var t=i/47;spinePts.push(new THREE.Vector3(Math.sin(t*6.0)*1.6*t, Math.cos(t*5.0)*1.4*t, -i*2.3));}
-  var spine=new THREE.CatmullRomCurve3(spinePts);
-  // glowing tube material (navy-silver)
-  var tubeMat=new THREE.MeshStandardMaterial({color:0x3a5f86,emissive:0x1d4a72,emissiveIntensity:.7,roughness:.3,metalness:.6,transparent:true,opacity:.9,side:THREE.DoubleSide});
-  var innerWire=new THREE.MeshBasicMaterial({color:0x8fd0f0,wireframe:true,transparent:true,opacity:.16});
-  // build several parallel/branching tubes around the spine
-  for(var s=0;s<TUBES;s++){
-    var ang=(s/TUBES)*Math.PI*2, rad=2.0+Math.random()*1.4;
-    var pts=[];
-    for(var i=0;i<48;i++){var t=i/47;var base=spine.getPoint(t);
-      var wob=Math.sin(t*10+s)*0.5;
-      pts.push(new THREE.Vector3(base.x+Math.cos(ang+t*3)*(rad+wob), base.y+Math.sin(ang+t*3)*(rad+wob), base.z));}
-    var c=new THREE.CatmullRomCurve3(pts);
-    var tg=new THREE.TubeGeometry(c,40,0.10+Math.random()*0.08,7,false);
-    corridor.add(new THREE.Mesh(tg,tubeMat));
-  }
-  // a few big vessel tubes with wire interior for depth
-  for(var s=0;s<(LOW?3:6);s++){
-    var ang=Math.random()*Math.PI*2, rad=0.6+Math.random()*1.0;
-    var pts=[];
-    for(var i=0;i<48;i++){var t=i/47;var base=spine.getPoint(t);
-      pts.push(new THREE.Vector3(base.x+Math.cos(ang+t*4+s)*rad, base.y+Math.sin(ang+t*4+s)*rad, base.z));}
-    var c=new THREE.CatmullRomCurve3(pts);
-    var tg=new THREE.TubeGeometry(c,44,0.34,9,false);
-    corridor.add(new THREE.Mesh(tg,tubeMat.clone()));
-    corridor.add(new THREE.Mesh(tg,innerWire));
-  }
-  // synapse particles drifting through corridor
-  var corC=LOW?700:1500, corG=new THREE.BufferGeometry(), corP=new Float32Array(corC*3), corBase=new Float32Array(corC);
-  for(var i=0;i<corC;i++){var t=Math.random();corBase[i]=t;var pt=spine.getPoint(t);var a=Math.random()*6.28,r=Math.random()*3.0;
-    corP[i*3]=pt.x+Math.cos(a)*r;corP[i*3+1]=pt.y+Math.sin(a)*r;corP[i*3+2]=pt.z;}
-  corG.setAttribute("position",new THREE.BufferAttribute(corP,3));
-  var corPts=new THREE.Points(corG,new THREE.PointsMaterial({color:0x7fc8ef,size:.06,transparent:true,opacity:.0}));
-  corridor.add(corPts);
-  corridor.visible=false;
-
-  /* ---------- ambient field ---------- */
-  var fg=new THREE.BufferGeometry(),fp=new Float32Array(FIELD*3);
-  for(var i=0;i<FIELD;i++){var x,y,z,d;do{x=(Math.random()-.5)*30;y=(Math.random()-.5)*30;z=(Math.random()-.5)*30;d=Math.sqrt(x*x+y*y+z*z);}while(d<6||d>15);fp[i*3]=x;fp[i*3+1]=y;fp[i*3+2]=z;}
-  fg.setAttribute("position",new THREE.BufferAttribute(fp,3));
-  var field=new THREE.Points(fg,new THREE.PointsMaterial({color:0x46699a,size:.035,transparent:true,opacity:.45}));
-  scene.add(field);
-
-  /* ---------- lights ---------- */
-  scene.add(new THREE.AmbientLight(0x1a3050,.85));
-  var key=new THREE.DirectionalLight(0xbcd4ec,1.5);key.position.set(6,9,8);scene.add(key);
-  var rim=new THREE.DirectionalLight(0x5a93c4,1.2);rim.position.set(-4,3,-9);scene.add(rim);
-  var spec=new THREE.DirectionalLight(0xeaf3ff,.8);spec.position.set(2,-6,5);scene.add(spec); // silver glint
-  var core=new THREE.PointLight(0x66c2f2,2.0,24);brain.add(core);
-
-  /* ---------- SINGLE STRAIGHT-IN CAMERA ----------
-     One axis of travel: z from far (28) straight to deep inside the
-     corridor. A tiny downward tilt eases in but never reverses.    */
-  var sy=0,mx=0,my=0;
-  addEventListener("scroll",function(){sy=scrollY;},{passive:true});
-  addEventListener("mousemove",function(e){mx=(e.clientX/W-.5)*2;my=(e.clientY/H-.5)*2;});
-  addEventListener("resize",function(){W=innerWidth;H=innerHeight;renderer.setSize(W,H);cam.aspect=W/H;cam.updateProjectionMatrix();});
-
-  // smoothed scroll value to remove jitter
-  var prog=0, target=0;
-  function frac(){return Math.min(sy/Math.max(document.body.scrollHeight-H,1),1);}
-
-  var cp=new THREE.Vector3(), look=new THREE.Vector3();
-  function easeInOutCubic(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
-
-  function updateCam(){
-    // single monotonic path: 0 -> 1 maps to z 28 -> deep inside corridor
-    var p=easeInOutCubic(prog);
-    // Phase A (0..0.5): approach from z=28 to the cortex surface z~3
-    // Phase B (0.5..1): continue straight through into corridor following spine
-    var z;
-    if(p<0.5){
-      var a=p/0.5;                     // 0..1
-      z = 28 + (3 - 28)*a;             // 28 -> 3, straight in
-      cp.set(mx*1.2*(1-a), -my*0.8*(1-a) - a*0.6, z);
-      look.set(0,-a*0.4,0);
-      corridor.visible=false;
-      var fade=Math.max(0.12, 1-a*0.9);
-      matL.opacity=matR.opacity=fade;
-      wire.opacity=.06+a*.10;
-      axon.opacity=.18+a*.4;
-      synM.opacity=.5+a*.4;
-      core.intensity=2.0+a*2.5;
-      corPts.material.opacity=0;
-    } else {
-      var b=(p-0.5)/0.5;               // 0..1 along corridor
-      corridor.visible=true;
-      matL.opacity=matR.opacity=0.10;
-      var ct=Math.min(b*0.95,0.95);
-      var pos=spine.getPoint(ct);
-      var ahead=spine.getPoint(Math.min(ct+0.04,1));
-      cp.copy(pos); cp.x+=mx*0.6; cp.y+=-my*0.6;
-      look.copy(ahead);
-      scene.fog.density=.020+b*.045;
-      core.intensity=4.5+Math.sin(performance.now()*.002)*1.0;
-      corPts.material.opacity=.55;
-      axon.opacity=.6; synM.opacity=.9;
-    }
-    cam.position.copy(cp);
-    cam.lookAt(look);
-  }
-
-  var last=0;
-  function loop(ts){
-    var dt=Math.min((ts-last)*.001,.05);last=ts;
-    // smooth scroll easing toward target -> buttery feel
-    target=frac();
-    prog += (target-prog)*Math.min(dt*4.5,1);
-
-    // idle rotation only in the approach half, slows as you near
-    if(prog<0.5) brain.rotation.y += dt*0.05*(1-prog*2);
-    neural.rotation.y=brain.rotation.y;
-
-    for(var k=0;k<pulses.length;k++){var pu=pulses[k];pu.t+=pu.sp;if(pu.t>=1){pu.t=0;pu.e=Math.floor(Math.random()*edges.length);}var e=edges[pu.e];if(!e)continue;pu.m.position.lerpVectors(nodes[e[0]],nodes[e[1]],pu.t);var br=Math.sin(pu.t*Math.PI);pu.m.material.opacity=br*.85;pu.m.scale.setScalar(.5+br);}
-
-    if(corridor.visible){var a=corG.attributes.position.array;for(var i=0;i<corC;i++){a[i*3+2]+=dt*3.0;}corG.attributes.position.needsUpdate=true;}
-
-    field.rotation.y+=dt*.015;
-    core.color.setHSL(.56+Math.sin(ts*.0003)*.04,.85,.6);
-
-    updateCam();
-    renderer.render(scene,cam);
-    requestAnimationFrame(loop);
-  }
-  requestAnimationFrame(loop);
- }catch(err){}
+function setScene(s1,s2,t){
+  const mix=(p,q)=>[lerp(p[0],q[0],t),lerp(p[1],q[1],t),lerp(p[2],q[2],t)];
+  const A=mix(s1.a,s2.a), B=mix(s1.b,s2.b), C=mix(s1.c,s2.c);
+  root.style.setProperty('--h1',A[0]);root.style.setProperty('--s1',A[1]+'%');root.style.setProperty('--l1',A[2]+'%');
+  root.style.setProperty('--h2',B[0]);root.style.setProperty('--s2',B[1]+'%');root.style.setProperty('--l2',B[2]+'%');
+  root.style.setProperty('--h3',C[0]);root.style.setProperty('--s3',C[1]+'%');root.style.setProperty('--l3',C[2]+'%');
+  root.style.setProperty('--gh',lerp(s1.g[0],s2.g[0],t));
+  root.style.setProperty('--ga',lerp(s1.g[1],s2.g[1],t));
 }
+function onScroll(){
+  const mid = window.scrollY + window.innerHeight*0.5;
+  let i=0;
+  for(let k=0;k<sections.length;k++){
+    if(sections[k] && sections[k].offsetTop <= mid) i=k;
+  }
+  const cur=sections[i], nxt=sections[i+1];
+  let t=0;
+  if(nxt){
+    const span = nxt.offsetTop - cur.offsetTop;
+    t = Math.min(1, Math.max(0,(mid - cur.offsetTop)/span));
+  }
+  const s1 = SCENES[order[i]];
+  const s2 = SCENES[order[Math.min(i+1,order.length-1)]];
+  setScene(s1,s2,t);
+  // glow drifts down the page slightly
+  const p = window.scrollY / Math.max(1,(document.body.scrollHeight - window.innerHeight));
+  document.getElementById('glow').style.top = (18 + p*50) + '%';
+}
+if(reduceMotion){ setScene(SCENES.deep,SCENES.deep,0); }
+else{
+  let ticking=false;
+  window.addEventListener('scroll',()=>{ if(!ticking){requestAnimationFrame(()=>{onScroll();ticking=false});ticking=true;}},{passive:true});
+  onScroll();
+}
+
+/* ================= REVEAL ON SCROLL ================= */
+const io = new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);} });
+},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ================= PHONE DEMO LOOP ================= */
+const screen = document.getElementById('phoneScreen');
+if(!reduceMotion){
+  setInterval(()=>{
+    screen.classList.remove('anim');
+    void screen.offsetWidth; // reflow to restart animations
+    screen.classList.add('anim');
+  }, 9000);
+}
+
+/* ================= ROI CALCULATOR ================= */
+const $=id=>document.getElementById(id);
+const fmt=n=>'$'+Math.round(n).toLocaleString('en-US');
+function calc(){
+  const calls=+$('calls').value, val=+$('value').value, lost=+$('lost').value;
+  $('callsVal').textContent=calls;
+  $('valueVal').textContent=fmt(val);
+  $('lostVal').textContent=lost+'%';
+  const monthly = calls*4.33*val*(lost/100);
+  $('monthly').textContent=fmt(monthly);
+  $('yearly').textContent=fmt(monthly*12);
+}
+['calls','value','lost'].forEach(id=>$(id).addEventListener('input',calc));
+calc();
 </script>
 
-<script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/246155394.js"></script>
+<!-- Tidio live chat -->
 <script src="//code.tidio.co/klvwo76ujoxjv906k2w3rrkff2agkhpr.js" async></script>
+<!-- HubSpot tracking -->
+<script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/246155394.js"></script>
 </body>
 </html>
