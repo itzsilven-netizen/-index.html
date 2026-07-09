@@ -55,7 +55,21 @@ body{background:var(--bg);color:var(--cream);font-family:var(--sans);overflow:hi
   66%{transform:translate3d(-3%,4%,0) scale(1.04);}
 }
 #field{position:fixed;inset:0;z-index:0;pointer-events:none;}
+#streaks{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.9;}
+.dotgrid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(circle, rgba(255,255,255,.055) 1px, transparent 1.4px);background-size:36px 36px;
+  -webkit-mask-image:radial-gradient(120% 90% at 50% 45%, #000 30%, transparent 72%);mask-image:radial-gradient(120% 90% at 50% 45%, #000 30%, transparent 72%);}
 .vignette{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(120% 100% at 50% 42%, transparent 55%, rgba(4,5,12,.72) 100%);}
+/* transition light rig — a soft bloom + expanding shock ring fired on every navigation */
+.bloom{position:fixed;inset:0;z-index:236;pointer-events:none;opacity:0;mix-blend-mode:screen;
+  background:radial-gradient(circle at 50% 47%, rgba(255,224,196,.55), rgba(240,144,106,.16) 26%, transparent 58%);}
+.shock{position:fixed;left:50%;top:47%;width:42px;height:42px;border-radius:50%;z-index:237;pointer-events:none;
+  transform:translate(-50%,-50%) scale(0);opacity:0;border:1.5px solid rgba(247,183,154,.55);
+  box-shadow:0 0 60px rgba(240,144,106,.4),inset 0 0 30px rgba(255,224,196,.3);}
+.topbar{position:fixed;top:0;left:0;right:0;height:2px;z-index:239;background:var(--line);}
+.topbar i{position:absolute;inset:0;transform-origin:left;transform:scaleX(0);
+  background:linear-gradient(90deg,var(--violet),var(--accent) 55%,var(--accent3));box-shadow:0 0 12px rgba(240,144,106,.6);
+  transition:transform .9s var(--ease);}
 .grain{position:fixed;inset:0;z-index:250;pointer-events:none;opacity:.045;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
 
@@ -110,7 +124,7 @@ nav a:hover{color:#fff;background:var(--glass-2);}
 .section{position:absolute;inset:0;display:flex;align-items:center;padding:104px 40px 72px;overflow-y:auto;overflow-x:hidden;
   visibility:hidden;opacity:0;pointer-events:none;z-index:1;will-change:transform,opacity,filter;transform-style:preserve-3d;scrollbar-width:none;}
 .section::-webkit-scrollbar{display:none;}
-.section-inner{width:100%;max-width:1180px;margin:auto;}
+.section-inner{width:100%;max-width:1180px;margin:auto;transform-style:preserve-3d;}
 .section.is-active{visibility:visible;opacity:1;pointer-events:auto;z-index:2;}
 .section.in-flight{visibility:visible;pointer-events:none;}
 
@@ -120,7 +134,10 @@ nav a:hover{color:#fff;background:var(--glass-2);}
   border-radius:40px;background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
 .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);}
 
-h1{font-family:var(--serif);font-size:clamp(34px,5.2vw,64px);line-height:1.06;font-weight:400;letter-spacing:-.02em;perspective:900px;}
+h1{font-family:var(--serif);font-size:clamp(34px,5.2vw,64px);line-height:1.06;font-weight:400;letter-spacing:-.02em;perspective:900px;transform:translateZ(58px);will-change:transform;}
+.eyebrow{will-change:transform;}
+.bento,.plays,.stepper,.calc-grid,.pills,.float-row{transform:translateZ(22px);}
+.lede{transform:translateZ(34px);}
 h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) scale(.94);transform-origin:50% 100%;
   filter:blur(8px);transition:opacity .7s ease, transform .9s var(--ease), filter .7s ease;will-change:transform;}
 .serif-italic .w,.grad .w{background:linear-gradient(96deg,var(--accent),var(--accent2) 55%,var(--accent3));-webkit-background-clip:text;background-clip:text;color:transparent;}
@@ -141,7 +158,8 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
 
 /* glass card base */
 .glass{background:var(--glass);border:1px solid var(--glass-border);border-radius:20px;position:relative;overflow:hidden;
-  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 18px 50px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.05);}
 .glass::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
   background:radial-gradient(600px circle at var(--mx,50%) var(--my,-20%), rgba(240,144,106,.10), transparent 45%);opacity:0;transition:opacity .4s;}
 .glass:hover::before{opacity:1;}
@@ -169,8 +187,8 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
 .btn-secondary:hover{border-color:rgba(240,144,106,.4);background:var(--glass-2);}
 
 /* two column */
-.two-col{display:flex;align-items:center;justify-content:space-between;gap:56px;width:100%;}
-.two-col .left{flex:1;min-width:0;}
+.two-col{display:flex;align-items:center;justify-content:space-between;gap:56px;width:100%;transform-style:preserve-3d;}
+.two-col .left{flex:1;min-width:0;transform-style:preserve-3d;}
 
 /* ── BENTO STAT TILES ── */
 .bento{display:grid;gap:16px;margin-top:44px;}
@@ -320,8 +338,13 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
 <body>
 
 <div class="aurora"></div>
+<div class="dotgrid"></div>
 <canvas id="field"></canvas>
+<canvas id="streaks"></canvas>
 <div class="vignette"></div>
+<div class="topbar"><i id="topProgress"></i></div>
+<div class="bloom" id="bloom"></div>
+<div class="shock" id="shock"></div>
 
 <header>
   <div class="logo">
@@ -741,67 +764,140 @@ function fieldImpulse(strength){
   if (!REDUCED) requestAnimationFrame(fieldTick);
 })();
 
+/* ═══════════ HYPERSPACE STREAK BURST ═══════════
+   Radial light-streaks fired from the optical center on every
+   navigation — the signature "Kling warp." The loop only runs while
+   streaks are alive, then clears itself, so it costs nothing at rest. */
+const streaksC = document.getElementById('streaks');
+const sctx = streaksC.getContext('2d');
+let streakArr = [], streakRAF = 0;
+function streaksResize(){
+  streaksC.width = innerWidth*devicePixelRatio; streaksC.height = innerHeight*devicePixelRatio;
+  streaksC.style.width = innerWidth+'px'; streaksC.style.height = innerHeight+'px';
+}
+streaksResize(); addEventListener('resize', streaksResize);
+function fireStreaks(strength){
+  if (!strength || REDUCED) return;
+  const n = Math.round(42*strength);
+  for (let i=0;i<n;i++){
+    streakArr.push({ ang:Math.random()*Math.PI*2, dist:14+Math.random()*80,
+      speed:(6+Math.random()*15)*strength, len:34+Math.random()*150*strength,
+      life:1, warm:Math.random()<.55, w:.6+Math.random()*1.5 });
+  }
+  if (!streakRAF) streakRAF = requestAnimationFrame(streakTick);
+}
+function streakTick(){
+  sctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  sctx.clearRect(0,0,innerWidth,innerHeight);
+  const cx = innerWidth/2, cy = innerHeight*0.47, diag = Math.hypot(innerWidth,innerHeight);
+  streakArr.forEach(s => { s.dist += s.speed; s.speed *= 1.05; s.life -= .022; });
+  streakArr = streakArr.filter(s => s.life>0 && s.dist<diag);
+  streakArr.forEach(s => {
+    const c = Math.cos(s.ang), sn = Math.sin(s.ang);
+    const x1 = cx+c*s.dist, y1 = cy+sn*s.dist, x2 = cx+c*(s.dist+s.len), y2 = cy+sn*(s.dist+s.len);
+    const g = sctx.createLinearGradient(x1,y1,x2,y2), col = s.warm?'247,183,154':'150,175,255';
+    g.addColorStop(0,'rgba('+col+',0)'); g.addColorStop(1,'rgba('+col+','+(s.life*.5)+')');
+    sctx.strokeStyle = g; sctx.lineWidth = s.w; sctx.lineCap = 'round';
+    sctx.beginPath(); sctx.moveTo(x1,y1); sctx.lineTo(x2,y2); sctx.stroke();
+  });
+  if (streakArr.length) streakRAF = requestAnimationFrame(streakTick);
+  else { sctx.clearRect(0,0,innerWidth,innerHeight); streakRAF = 0; }
+}
+
 /* ═══════════ 3D TRANSITION LIBRARY ═══════════
    Ten slides, ten 3D signatures. Every effect is a multi-phase WAAPI
    timeline on a real perspective stage; reverse navigation plays the
    departing slide's signature backwards. */
+/* Physical easings — accelerate away, decelerate into place (the
+   "settle" that gives AI-rendered video its weight). Each `in` uses
+   per-keyframe easing so motion rushes early and eases long into rest. */
 const EASE = 'cubic-bezier(.16,1,.3,1)', EASE_IO = 'cubic-bezier(.76,0,.24,1)';
+const E_ACC = 'cubic-bezier(.42,0,.82,.38)';   // accelerate out of frame
+const E_MID = 'cubic-bezier(.22,.62,.2,1)';    // carry through
+const E_SET = 'cubic-bezier(.14,1,.28,1)';     // decelerate + micro-overshoot
 const FX = {
-  warp:{ dur:1500, ease:EASE, impulse:.9,
-    in:[{transform:'translateZ(-1600px) scale(1.28)',opacity:0,filter:'blur(32px) brightness(1.7)'},
-        {transform:'translateZ(120px) scale(.99)',opacity:1,filter:'blur(2px)',offset:.68},
+  /* deep-space dolly — camera rushes forward through the slide */
+  warp:{ dur:1650, ease:'linear', impulse:2.2, streak:1.3,
+    in:[{transform:'translateZ(-2100px) scale(1.44) rotateX(7deg)',opacity:0,filter:'blur(40px) brightness(2)',easing:E_ACC},
+        {transform:'translateZ(-430px) scale(1.12)',opacity:1,filter:'blur(15px) brightness(1.35)',offset:.42,easing:E_MID},
+        {transform:'translateZ(96px) scale(.984)',opacity:1,filter:'blur(2px) brightness(1.06)',offset:.78,easing:E_SET},
+        {transform:'none',opacity:1,filter:'blur(0) brightness(1)'}],
+    out:[{transform:'none',opacity:1,filter:'blur(0)',easing:E_ACC},
+         {transform:'translateZ(760px) scale(.95)',opacity:1,filter:'blur(11px)',offset:.5,easing:E_MID},
+         {transform:'translateZ(1500px) scale(.88)',opacity:0,filter:'blur(30px) brightness(1.4)'}] },
+  /* orbital sweep — the slide arcs in around the Y axis */
+  helix:{ dur:1560, ease:'linear', impulse:1.1, streak:.5,
+    in:[{transform:'rotateY(-138deg) translateX(-54vw) translateZ(-540px) scale(1.16)',opacity:0,filter:'blur(20px)',easing:E_ACC},
+        {transform:'rotateY(-40deg) translateX(-15vw) translateZ(-130px)',opacity:1,filter:'blur(7px)',offset:.5,easing:E_MID},
+        {transform:'rotateY(9deg) translateX(1.4vw)',opacity:1,filter:'blur(1.4px)',offset:.82,easing:E_SET},
         {transform:'none',opacity:1,filter:'blur(0)'}],
-    out:[{transform:'none',opacity:1,filter:'blur(0)'},{transform:'translateZ(1100px)',opacity:0,filter:'blur(26px)'}] },
-  helix:{ dur:1450, ease:EASE, impulse:.6,
-    in:[{transform:'rotateY(-120deg) translateX(-46vw) translateZ(-420px)',opacity:0,filter:'blur(14px)'},
-        {transform:'rotateY(12deg) translateX(2vw)',opacity:1,filter:'blur(1px)',offset:.72},
-        {transform:'none',opacity:1,filter:'blur(0)'}],
-    out:[{transform:'none',opacity:1,filter:'blur(0)'},{transform:'rotateY(96deg) translateX(42vw) translateZ(-420px)',opacity:0,filter:'blur(14px)'}] },
-  cube:{ dur:1420, ease:EASE_IO, impulse:.7,
-    in:[{transform:'rotateX(84deg) translateZ(280px) translateY(30vh)',opacity:0,filter:'blur(9px)',transformOrigin:'50% 50%'},
-        {transform:'rotateX(-6deg)',opacity:1,filter:'blur(1px)',offset:.72,transformOrigin:'50% 50%'},
+    out:[{transform:'none',opacity:1,filter:'blur(0)',easing:E_ACC},
+         {transform:'rotateY(50deg) translateX(22vw) translateZ(-220px)',opacity:1,filter:'blur(8px)',offset:.5,easing:E_MID},
+         {transform:'rotateY(110deg) translateX(50vw) translateZ(-540px)',opacity:0,filter:'blur(20px)'}] },
+  /* cube tumble — folds down over the top edge in depth */
+  cube:{ dur:1520, ease:'linear', impulse:1, streak:.5,
+    in:[{transform:'rotateX(94deg) translateY(40vh) translateZ(360px) scale(1.1)',opacity:0,filter:'blur(16px)',transformOrigin:'50% 50%',easing:E_ACC},
+        {transform:'rotateX(30deg) translateY(11vh) translateZ(70px)',opacity:1,filter:'blur(6px)',transformOrigin:'50% 50%',offset:.5,easing:E_MID},
+        {transform:'rotateX(-7deg) translateY(-1vh)',opacity:1,filter:'blur(1px)',transformOrigin:'50% 50%',offset:.82,easing:E_SET},
         {transform:'none',opacity:1,filter:'blur(0)',transformOrigin:'50% 50%'}],
-    out:[{transform:'none',opacity:1,filter:'blur(0)',transformOrigin:'50% 50%'},
-         {transform:'rotateX(-84deg) translateZ(280px) translateY(-30vh)',opacity:0,filter:'blur(9px)',transformOrigin:'50% 50%'}] },
-  blades:{ dur:1340, ease:EASE_IO, impulse:.5, blades:true,
-    in:[{clipPath:'inset(0 0 0 100%)',transform:'translateX(8vw)',filter:'blur(6px)',opacity:1},
+    out:[{transform:'none',opacity:1,filter:'blur(0)',transformOrigin:'50% 50%',easing:E_ACC},
+         {transform:'rotateX(-94deg) translateY(-40vh) translateZ(360px)',opacity:0,filter:'blur(16px)',transformOrigin:'50% 50%'}] },
+  /* shutter — vertical blades wipe across a depth-shifted slide */
+  blades:{ dur:1400, ease:'linear', impulse:.9, streak:.4, blades:true,
+    in:[{clipPath:'inset(0 0 0 100%)',transform:'translateX(11vw) translateZ(-140px)',filter:'blur(9px)',opacity:1,easing:E_MID},
+        {clipPath:'inset(0 0 0 22%)',transform:'translateX(2.4vw)',filter:'blur(2px)',opacity:1,offset:.62,easing:E_SET},
         {clipPath:'inset(0 0 0 0)',transform:'none',filter:'blur(0)',opacity:1}],
-    out:[{clipPath:'inset(0 0 0 0)',transform:'none',filter:'blur(0)',opacity:1},
-         {clipPath:'inset(0 100% 0 0)',transform:'translateX(-8vw)',filter:'blur(6px)',opacity:1}] },
-  hyperdrive:{ dur:1540, ease:EASE, impulse:1.4,
-    in:[{transform:'translateZ(950px) translateY(4vh)',opacity:0,filter:'blur(26px) saturate(1.6)'},
-        {transform:'translateZ(-90px)',opacity:1,filter:'blur(3px)',offset:.62},
-        {transform:'none',opacity:1,filter:'blur(0)'}],
-    out:[{transform:'none',opacity:1,filter:'blur(0)'},{transform:'translateZ(-1300px) translateY(-5vh) scale(1.1)',opacity:0,filter:'blur(24px)'}] },
-  iris:{ dur:1400, ease:EASE_IO, impulse:1.1,
-    in:[{clipPath:'circle(0% at 50% 52%)',transform:'scale(1.12)',opacity:1,filter:'brightness(1.5)'},
-        {clipPath:'circle(75% at 50% 50%)',transform:'scale(1.01)',opacity:1,filter:'brightness(1.05)',offset:.72},
-        {clipPath:'circle(142% at 50% 50%)',transform:'scale(1)',opacity:1,filter:'brightness(1)'}],
-    out:[{clipPath:'circle(142% at 50% 50%)',transform:'scale(1)',opacity:1},{clipPath:'circle(0% at 50% 46%)',transform:'scale(.94)',opacity:1}] },
-  fold:{ dur:1480, ease:EASE, impulse:.7,
-    in:[{transform:'rotateY(90deg) translateZ(120px)',opacity:0,filter:'blur(10px)',transformOrigin:'0% 50%'},
-        {transform:'rotateY(-7deg)',opacity:1,filter:'blur(1px)',offset:.68,transformOrigin:'0% 50%'},
+    out:[{clipPath:'inset(0 0 0 0)',transform:'none',filter:'blur(0)',opacity:1,easing:E_ACC},
+         {clipPath:'inset(0 100% 0 0)',transform:'translateX(-11vw) translateZ(-140px)',filter:'blur(9px)',opacity:1}] },
+  /* hyperdrive — slide punches toward the viewer through light streaks */
+  hyperdrive:{ dur:1720, ease:'linear', impulse:3, streak:1.6,
+    in:[{transform:'translateZ(1200px) translateY(5vh) scale(1.05)',opacity:0,filter:'blur(32px) saturate(1.8) brightness(1.5)',easing:E_ACC},
+        {transform:'translateZ(260px)',opacity:1,filter:'blur(11px) saturate(1.3)',offset:.5,easing:E_MID},
+        {transform:'translateZ(-74px) scale(1.006)',opacity:1,filter:'blur(2px)',offset:.8,easing:E_SET},
+        {transform:'none',opacity:1,filter:'blur(0) saturate(1) brightness(1)'}],
+    out:[{transform:'none',opacity:1,filter:'blur(0)',easing:E_ACC},
+         {transform:'translateZ(-1600px) translateY(-6vh) scale(1.16)',opacity:0,filter:'blur(30px) saturate(1.5)'}] },
+  /* iris — a circular aperture blooms open from the center */
+  iris:{ dur:1500, ease:'linear', impulse:1.4, streak:.7,
+    in:[{clipPath:'circle(0% at 50% 52%)',transform:'scale(1.16)',opacity:1,filter:'brightness(1.7) blur(4px)',easing:E_ACC},
+        {clipPath:'circle(46% at 50% 51%)',transform:'scale(1.06)',opacity:1,filter:'brightness(1.2) blur(1px)',offset:.56,easing:E_MID},
+        {clipPath:'circle(152% at 50% 50%)',transform:'scale(1)',opacity:1,filter:'brightness(1) blur(0)'}],
+    out:[{clipPath:'circle(152% at 50% 50%)',transform:'scale(1)',opacity:1,filter:'brightness(1)',easing:E_ACC},
+         {clipPath:'circle(0% at 50% 46%)',transform:'scale(.9)',opacity:1,filter:'brightness(1.4)'}] },
+  /* door — the slide swings open on its left hinge */
+  fold:{ dur:1560, ease:'linear', impulse:1, streak:.5,
+    in:[{transform:'rotateY(102deg) translateX(-6vw) translateZ(200px)',opacity:0,filter:'blur(14px)',transformOrigin:'0% 50%',easing:E_ACC},
+        {transform:'rotateY(31deg) translateZ(46px)',opacity:1,filter:'blur(5px)',transformOrigin:'0% 50%',offset:.5,easing:E_MID},
+        {transform:'rotateY(-8deg)',opacity:1,filter:'blur(1px)',transformOrigin:'0% 50%',offset:.82,easing:E_SET},
         {transform:'none',opacity:1,filter:'blur(0)',transformOrigin:'0% 50%'}],
-    out:[{transform:'none',opacity:1,filter:'blur(0)',transformOrigin:'100% 50%'},
-         {transform:'rotateY(-76deg) translateZ(80px)',opacity:0,filter:'blur(10px)',transformOrigin:'100% 50%'}] },
-  smear:{ dur:1400, ease:EASE, impulse:.8,
-    in:[{transform:'translateX(58vw) skewX(-16deg) scaleX(1.6)',opacity:0,filter:'blur(22px) contrast(1.3)'},
-        {transform:'translateX(-1.6vw) skewX(2deg) scaleX(1.01)',opacity:1,filter:'blur(2px)',offset:.7},
+    out:[{transform:'none',opacity:1,filter:'blur(0)',transformOrigin:'100% 50%',easing:E_ACC},
+         {transform:'rotateY(-90deg) translateX(6vw) translateZ(160px)',opacity:0,filter:'blur(14px)',transformOrigin:'100% 50%'}] },
+  /* smear — lateral velocity blur, like a fast whip-pan */
+  smear:{ dur:1480, ease:'linear', impulse:1.3, streak:1,
+    in:[{transform:'translateX(66vw) skewX(-20deg) scaleX(1.85)',opacity:0,filter:'blur(28px) contrast(1.4)',easing:E_ACC},
+        {transform:'translateX(12vw) skewX(-6deg) scaleX(1.2)',opacity:1,filter:'blur(9px) contrast(1.15)',offset:.5,easing:E_MID},
+        {transform:'translateX(-1.4vw) skewX(1.4deg) scaleX(1.01)',opacity:1,filter:'blur(1.4px)',offset:.82,easing:E_SET},
+        {transform:'none',opacity:1,filter:'blur(0) contrast(1)'}],
+    out:[{transform:'none',opacity:1,filter:'blur(0)',easing:E_ACC},
+         {transform:'translateX(-66vw) skewX(20deg) scaleX(1.85)',opacity:0,filter:'blur(28px) contrast(1.4)'}] },
+  /* ascension — rises from below the floor plane and levels out */
+  ascension:{ dur:1580, ease:'linear', impulse:1.2, streak:.6,
+    in:[{transform:'translateY(66vh) scale(.55) rotateX(22deg)',opacity:0,filter:'blur(18px)',easing:E_ACC},
+        {transform:'translateY(15vh) scale(.85) rotateX(7deg)',opacity:1,filter:'blur(6px)',offset:.5,easing:E_MID},
+        {transform:'translateY(-2vh) scale(1.012)',opacity:1,filter:'blur(1px)',offset:.82,easing:E_SET},
         {transform:'none',opacity:1,filter:'blur(0)'}],
-    out:[{transform:'none',opacity:1,filter:'blur(0)'},{transform:'translateX(-58vw) skewX(16deg) scaleX(1.6)',opacity:0,filter:'blur(22px) contrast(1.3)'}] },
-  ascension:{ dur:1500, ease:EASE, impulse:1,
-    in:[{transform:'translateY(58vh) scale(.62) rotateX(18deg)',opacity:0,filter:'blur(14px)'},
-        {transform:'translateY(-1.6vh) scale(1.01)',opacity:1,filter:'blur(1px)',offset:.7},
-        {transform:'none',opacity:1,filter:'blur(0)'}],
-    out:[{transform:'none',opacity:1,filter:'blur(0)'},{transform:'translateY(-52vh) scale(.74) rotateX(-14deg)',opacity:0,filter:'blur(12px)'}] },
-  horizon:{ dur:1500, ease:EASE, impulse:.9,
-    in:[{transform:'rotateX(-78deg) translateZ(-160px)',opacity:0,filter:'blur(12px) brightness(.5)',transformOrigin:'50% 100%'},
-        {transform:'rotateX(7deg)',opacity:1,filter:'blur(1px) brightness(1.08)',offset:.7,transformOrigin:'50% 100%'},
+    out:[{transform:'none',opacity:1,filter:'blur(0)',easing:E_ACC},
+         {transform:'translateY(-58vh) scale(.7) rotateX(-16deg)',opacity:0,filter:'blur(16px)'}] },
+  /* horizon — tilts up off the ground like a camera craning to level */
+  horizon:{ dur:1580, ease:'linear', impulse:1.2, streak:.6,
+    in:[{transform:'rotateX(-86deg) translateZ(-230px) translateY(10vh)',opacity:0,filter:'blur(16px) brightness(.4)',transformOrigin:'50% 100%',easing:E_ACC},
+        {transform:'rotateX(-25deg) translateZ(-44px)',opacity:1,filter:'blur(6px) brightness(1.15)',transformOrigin:'50% 100%',offset:.5,easing:E_MID},
+        {transform:'rotateX(6deg)',opacity:1,filter:'blur(1px) brightness(1.05)',transformOrigin:'50% 100%',offset:.82,easing:E_SET},
         {transform:'none',opacity:1,filter:'blur(0) brightness(1)',transformOrigin:'50% 100%'}],
-    out:[{transform:'none',opacity:1,filter:'blur(0)',transformOrigin:'50% 100%'},
-         {transform:'rotateX(58deg) translateY(-14vh) translateZ(-120px)',opacity:0,filter:'blur(12px) brightness(.55)',transformOrigin:'50% 100%'}] }
+    out:[{transform:'none',opacity:1,filter:'blur(0)',transformOrigin:'50% 100%',easing:E_ACC},
+         {transform:'rotateX(64deg) translateY(-16vh) translateZ(-170px)',opacity:0,filter:'blur(16px) brightness(.5)',transformOrigin:'50% 100%'}] }
 };
-const FADE = { dur:500, ease:'ease', impulse:0, in:[{opacity:0},{opacity:1}], out:[{opacity:1},{opacity:0}] };
+const FADE = { dur:500, ease:'ease', impulse:0, streak:0, in:[{opacity:0},{opacity:1}], out:[{opacity:1},{opacity:0}] };
 
 /* ═══════════ SLIDE DECK ═══════════ */
 const deck = document.getElementById('deck');
@@ -811,7 +907,13 @@ const counterCur = document.getElementById('counterCur');
 const counterTot = document.getElementById('counterTot');
 const counterBar = document.getElementById('counterBar');
 const bladesEl = document.getElementById('blades');
+const bloom = document.getElementById('bloom');
+const shock = document.getElementById('shock');
+const topProgress = document.getElementById('topProgress');
 let cur = 0, locked = false, liveAnims = [];
+
+function fireBloom(dur){ if (REDUCED) return; bloom.animate([{opacity:0},{opacity:.5,offset:.38},{opacity:0}],{duration:dur*.9,easing:'ease-out'}); }
+function fireShock(dur){ if (REDUCED) return; shock.animate([{transform:'translate(-50%,-50%) scale(0)',opacity:.65},{transform:'translate(-50%,-50%) scale(26)',opacity:0}],{duration:dur*.85,easing:'cubic-bezier(.16,1,.3,1)'}); }
 
 counterTot.textContent = String(slides.length).padStart(2,'0');
 
@@ -841,6 +943,7 @@ function syncChrome(){
   counterCur.textContent = String(cur+1).padStart(2,'0');
   counterCur.classList.remove('tick'); void counterCur.offsetWidth; counterCur.classList.add('tick');
   counterBar.style.transform = 'scaleX('+((cur+1)/slides.length)+')';
+  topProgress.style.transform = 'scaleX('+((cur+1)/slides.length)+')';
   history.replaceState(null,'','#'+slides[cur].id);
 }
 function runBlades(){ bladesEl.classList.remove('run'); void bladesEl.offsetWidth; bladesEl.classList.add('run'); }
@@ -861,8 +964,13 @@ function goTo(n){
   const aOut = from.animate(forward?fx.out:fx.in, opts(forward?'normal':'reverse'));
   liveAnims = [aIn, aOut];
   if (fx.blades && !REDUCED) runBlades();
-  if (fx.impulse && !REDUCED) fieldImpulse(fx.impulse);
-  if (!REDUCED) deck.animate([{transform:'scale(1)'},{transform:'scale(1.014)',offset:.4},{transform:'scale(1)'}],{duration:fx.dur,easing:'ease-in-out'});
+  if (!REDUCED){
+    fieldImpulse(fx.impulse || .6);
+    fireStreaks(fx.streak);
+    fireBloom(fx.dur);
+    fireShock(fx.dur);
+    deck.animate([{transform:'scale(1)'},{transform:'scale(1.02)',offset:.4},{transform:'scale(1)'}],{duration:fx.dur,easing:'ease-in-out'});
+  }
   syncChrome();
   setTimeout(() => runCounts(to), fx.dur*.45);
   Promise.allSettled([aIn.finished, aOut.finished]).then(() => {
@@ -920,7 +1028,7 @@ document.addEventListener('mousemove', (e) => {
   const x = e.clientX/innerWidth - .5, y = e.clientY/innerHeight - .5;
   slides[cur].querySelectorAll('[data-parallax]').forEach(el => {
     const d = parseFloat(el.dataset.parallax);
-    el.style.transform = 'translate3d('+(x*d*42)+'px,'+(y*d*42)+'px,0)';
+    el.style.transform = 'translate3d('+(x*d*42)+'px,'+(y*d*42)+'px,'+(d*48)+'px)';
   });
 });
 document.querySelectorAll('[data-magnetic]').forEach(el => {
@@ -1025,6 +1133,8 @@ requestAnimationFrame(() => requestAnimationFrame(() => {
     const fx = FX[slides[cur].dataset.effect] || FADE;
     slides[cur].animate(fx.in, { duration:fx.dur, easing:fx.ease, fill:'backwards' });
     fieldImpulse(fx.impulse || .6);
+    fireStreaks((fx.streak || .6) * .7);
+    fireBloom(fx.dur);
   }
   setTimeout(() => runCounts(slides[cur]), 600);
 }));
