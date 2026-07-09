@@ -70,6 +70,17 @@ body{background:var(--bg);color:var(--cream);font-family:var(--sans);overflow:hi
 .topbar i{position:absolute;inset:0;transform-origin:left;transform:scaleX(0);
   background:linear-gradient(90deg,var(--violet),var(--accent) 55%,var(--accent3));box-shadow:0 0 12px rgba(240,144,106,.6);
   transition:transform .9s var(--ease);}
+/* per-slide background worlds — two layers crossfade to a new palette on every scroll */
+.bgstage{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.bgstage > div{position:absolute;inset:-20%;opacity:0;transition:opacity 1.3s ease;filter:blur(30px) saturate(1.1);
+  animation:worldDrift 30s ease-in-out infinite;}
+.bgstage > div.show{opacity:1;}
+@keyframes worldDrift{0%,100%{transform:translate3d(0,0,0) scale(1) rotate(0deg);}50%{transform:translate3d(2%,-2%,0) scale(1.08) rotate(2deg);}}
+/* ── MIRROR-DIMENSION SHATTER ── kaleidoscopic shards that fracture the
+   scene and blow outward in 3D on every navigation (Dr-Strange fold). */
+#shatter{position:fixed;inset:0;z-index:238;pointer-events:none;perspective:1300px;transform-style:preserve-3d;}
+#shatter .shard{position:absolute;inset:0;opacity:0;transform-origin:50% 47%;backface-visibility:hidden;will-change:transform,opacity;
+  filter:drop-shadow(0 0 1px rgba(255,255,255,.6)) drop-shadow(0 0 8px rgba(240,144,106,.3));}
 .grain{position:fixed;inset:0;z-index:250;pointer-events:none;opacity:.045;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
 
@@ -101,16 +112,25 @@ nav a:hover{color:#fff;background:var(--glass-2);}
 .book-demo:hover{box-shadow:0 10px 30px rgba(247,183,154,.28);}
 .book-demo .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);}
 
-.railnav{position:fixed;right:34px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:100;align-items:flex-end;}
-.railnav button{display:flex;align-items:center;gap:10px;background:none;border:none;cursor:pointer;color:var(--muted-dim);
-  font-family:var(--mono);font-size:9px;letter-spacing:.1em;padding:2px 0;transition:color .3s;}
-.railnav .tick{width:22px;height:2px;border-radius:2px;background:var(--muted-dim);transition:all .4s var(--ease);}
+/* ── COMPLEX INDEXED RAIL ── */
+.railnav{position:fixed;right:26px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;z-index:100;padding:8px 0;}
+.railnav .spine{position:absolute;right:9px;top:12px;bottom:12px;width:1px;background:var(--line);}
+.railnav .spine i{position:absolute;left:0;right:0;top:0;height:0;border-radius:2px;
+  background:linear-gradient(var(--violet),var(--accent) 60%,var(--accent3));box-shadow:0 0 10px rgba(240,144,106,.7);transition:height .7s var(--ease);}
+.railnav button{position:relative;display:flex;align-items:center;justify-content:flex-end;gap:11px;background:none;border:none;cursor:pointer;
+  padding:8px 22px 8px 0;color:var(--muted-dim);transition:color .3s;}
+.railnav .rn-num{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;opacity:.55;transition:all .3s;}
+.railnav .rn-lbl{font-size:11.5px;letter-spacing:.01em;opacity:.55;transform:translateX(4px);transition:all .35s var(--ease);white-space:nowrap;}
+.railnav .rn-dot{width:7px;height:7px;border-radius:50%;background:var(--muted-dim);position:relative;z-index:1;flex-shrink:0;
+  box-shadow:0 0 0 4px var(--bg);transition:all .35s var(--ease);}
 .railnav button:hover{color:var(--muted);}
-.railnav button:hover .tick{width:30px;background:var(--accent2);}
+.railnav button:hover .rn-lbl,.railnav button:hover .rn-num{opacity:.9;}
+.railnav button:hover .rn-dot{background:var(--accent2);transform:scale(1.2);}
 .railnav button.active{color:var(--cream);}
-.railnav button.active .tick{width:40px;background:var(--accent);box-shadow:0 0 10px rgba(240,144,106,.7);}
-.railnav .lbl{opacity:0;transform:translateX(6px);transition:all .3s var(--ease);}
-.railnav button:hover .lbl,.railnav button.active .lbl{opacity:1;transform:none;}
+.railnav button.active .rn-num{opacity:1;color:var(--accent2);}
+.railnav button.active .rn-lbl{opacity:1;transform:none;color:var(--cream);}
+.railnav button.active .rn-dot{background:var(--accent);transform:scale(1.5);
+  box-shadow:0 0 0 4px var(--bg),0 0 14px 2px rgba(240,144,106,.85);}
 
 .slide-counter{position:fixed;left:40px;bottom:30px;z-index:100;font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--muted-dim);display:flex;align-items:center;gap:12px;}
 .slide-counter .cur{font-size:14px;color:var(--cream);display:inline-block;min-width:22px;}
@@ -120,11 +140,11 @@ nav a:hover{color:#fff;background:var(--glass-2);}
 .slide-counter .bar i{position:absolute;inset:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transform-origin:left;transition:transform .8s var(--ease);}
 
 /* ── STAGE ── */
-.deck{position:fixed;inset:0;z-index:2;perspective:1600px;perspective-origin:50% 46%;}
+.deck{position:fixed;inset:0;z-index:2;perspective:1600px;perspective-origin:50% 46%;transition:perspective-origin 1.3s var(--ease);}
 .section{position:absolute;inset:0;display:flex;align-items:center;padding:104px 40px 72px;overflow-y:auto;overflow-x:hidden;
   visibility:hidden;opacity:0;pointer-events:none;z-index:1;will-change:transform,opacity,filter;transform-style:preserve-3d;scrollbar-width:none;}
 .section::-webkit-scrollbar{display:none;}
-.section-inner{width:100%;max-width:1180px;margin:auto;transform-style:preserve-3d;}
+.section-inner{width:100%;max-width:1180px;margin:auto;transform-style:preserve-3d;transition:transform 1.2s var(--ease);}
 .section.is-active{visibility:visible;opacity:1;pointer-events:auto;z-index:2;}
 .section.in-flight{visibility:visible;pointer-events:none;}
 
@@ -337,6 +357,7 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
 </head>
 <body>
 
+<div class="bgstage"><div id="bgA"></div><div id="bgB"></div></div>
 <div class="aurora"></div>
 <div class="dotgrid"></div>
 <canvas id="field"></canvas>
@@ -345,6 +366,7 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
 <div class="topbar"><i id="topProgress"></i></div>
 <div class="bloom" id="bloom"></div>
 <div class="shock" id="shock"></div>
+<div id="shatter"></div>
 
 <header>
   <div class="logo">
@@ -915,15 +937,96 @@ let cur = 0, locked = false, liveAnims = [];
 function fireBloom(dur){ if (REDUCED) return; bloom.animate([{opacity:0},{opacity:.5,offset:.38},{opacity:0}],{duration:dur*.9,easing:'ease-out'}); }
 function fireShock(dur){ if (REDUCED) return; shock.animate([{transform:'translate(-50%,-50%) scale(0)',opacity:.65},{transform:'translate(-50%,-50%) scale(26)',opacity:0}],{duration:dur*.85,easing:'cubic-bezier(.16,1,.3,1)'}); }
 
+/* ═══════════ PER-SLIDE WORLDS ═══════════
+   Every slide is its own place in space: a distinct background palette,
+   a distinct shard tint for the shatter, and a distinct camera (where
+   the perspective vanishing-point sits + a resting tilt of the scene). */
+const BG = [
+  'radial-gradient(46% 56% at 24% 30%, rgba(124,112,224,.36), transparent 60%), radial-gradient(50% 52% at 80% 68%, rgba(80,120,220,.26), transparent 62%), #060711',
+  'radial-gradient(52% 56% at 72% 34%, rgba(244,150,86,.32), transparent 62%), radial-gradient(46% 52% at 22% 76%, rgba(222,92,60,.24), transparent 60%), #0b0806',
+  'radial-gradient(56% 60% at 50% 18%, rgba(60,120,210,.30), transparent 64%), radial-gradient(42% 44% at 82% 82%, rgba(72,84,168,.22), transparent 60%), #05070f',
+  'radial-gradient(52% 56% at 30% 40%, rgba(66,190,146,.26), transparent 62%), radial-gradient(46% 50% at 82% 74%, rgba(120,206,120,.18), transparent 60%), #050c0a',
+  'radial-gradient(52% 56% at 72% 40%, rgba(247,164,112,.32), transparent 62%), radial-gradient(46% 50% at 20% 78%, rgba(232,110,70,.22), transparent 60%), #0b0806',
+  'radial-gradient(52% 56% at 40% 30%, rgba(58,196,196,.26), transparent 62%), radial-gradient(46% 50% at 84% 72%, rgba(70,144,206,.20), transparent 60%), #04090c',
+  'radial-gradient(52% 56% at 68% 38%, rgba(206,92,196,.28), transparent 62%), radial-gradient(46% 50% at 22% 76%, rgba(150,82,224,.20), transparent 60%), #0a060d',
+  'radial-gradient(52% 56% at 30% 34%, rgba(112,102,232,.30), transparent 62%), radial-gradient(46% 50% at 82% 74%, rgba(92,124,224,.20), transparent 60%), #07060f',
+  'radial-gradient(58% 62% at 50% 28%, rgba(252,152,72,.30), transparent 64%), radial-gradient(42% 46% at 80% 78%, rgba(242,102,60,.22), transparent 60%), #0b0705',
+  'radial-gradient(52% 56% at 28% 34%, rgba(242,192,112,.26), transparent 62%), radial-gradient(46% 50% at 82% 74%, rgba(232,152,92,.20), transparent 60%), #0a0806'
+];
+const TINT = ['124,112,224','244,150,86','60,120,210','66,190,146','247,164,112','58,196,196','206,92,196','112,102,232','252,152,72','242,192,112'];
+const CAM = [
+  {po:'50% 46%', tilt:''},
+  {po:'30% 40%', tilt:'rotateY(2.5deg)'},
+  {po:'70% 42%', tilt:'rotateY(-3deg)'},
+  {po:'40% 56%', tilt:'rotateX(2deg)'},
+  {po:'64% 40%', tilt:'rotateY(3deg) rotateX(-1deg)'},
+  {po:'34% 50%', tilt:'rotateY(-2.5deg) rotateX(-1.5deg)'},
+  {po:'68% 44%', tilt:'rotateY(-3deg)'},
+  {po:'44% 36%', tilt:'rotateY(2.5deg) rotateX(1deg)'},
+  {po:'50% 58%', tilt:'rotateX(2.5deg)'},
+  {po:'60% 44%', tilt:'rotateY(-2.5deg)'}
+];
+const bgLayers = [document.getElementById('bgA'), document.getElementById('bgB')];
+let bgTop = -1;
+function setWorld(i){
+  const nextIdx = bgTop === 0 ? 1 : 0;
+  const next = bgLayers[nextIdx];
+  next.style.background = BG[i] || BG[0];
+  next.classList.add('show');
+  if (bgTop >= 0) bgLayers[bgTop].classList.remove('show');
+  bgTop = nextIdx;
+  const cam = CAM[i] || CAM[0];
+  deck.style.perspectiveOrigin = cam.po;
+}
+function applyTilt(i){
+  const inner = slides[i].querySelector('.section-inner');
+  if (inner) inner.style.transform = (CAM[i] || CAM[0]).tilt;
+}
+
+/* ═══════════ MIRROR-DIMENSION SHATTER ═══════════
+   A radial mandala of glass shards. On every navigation they briefly
+   fracture the frame, then blow outward with a 3D tumble. */
+const shatterEl = document.getElementById('shatter');
+const SHARD_N = 13, shards = [];
+(function buildShatter(){
+  for (let i=0;i<SHARD_N;i++){
+    const a0 = (i/SHARD_N)*Math.PI*2, a1 = ((i+1)/SHARD_N)*Math.PI*2, j = .2;
+    const b0 = a0 + (Math.random()-.5)*j, b1 = a1 + (Math.random()-.5)*j, R = 138;
+    const pt = ang => (50+R*Math.cos(ang)).toFixed(1)+'% '+(50+R*Math.sin(ang)).toFixed(1)+'%';
+    const sh = document.createElement('div');
+    sh.className = 'shard';
+    sh.style.clipPath = 'polygon(50% 47%, '+pt(b0)+', '+pt((b0*.6+b1*.4))+', '+pt((b0*.4+b1*.6))+', '+pt(b1)+')';
+    sh.dataset.ang = (b0+b1)/2;
+    shatterEl.appendChild(sh); shards.push(sh);
+  }
+})();
+function fireShatter(dur, tint){
+  if (REDUCED) return;
+  const diag = Math.hypot(innerWidth, innerHeight);
+  shards.forEach((sh,i) => {
+    const ang = +sh.dataset.ang;
+    const D = diag*(.34+Math.random()*.5), dx = Math.cos(ang)*D, dy = Math.sin(ang)*D, dz = (Math.random()-.3)*760;
+    const rx = (Math.random()-.5)*130, ry = (Math.random()-.5)*130, rz = (Math.random()-.5)*90;
+    sh.style.background = 'linear-gradient('+(ang*57).toFixed(0)+'deg, rgba('+tint+',.17), rgba(255,255,255,.05))';
+    sh.animate([
+      {opacity:.62, transform:'translate3d(0,0,0) rotate3d(0,0,1,0deg) scale(1)'},
+      {opacity:.52, transform:'translate3d('+(dx*.26)+'px,'+(dy*.26)+'px,'+(dz*.3)+'px) rotate3d('+rx+','+ry+','+rz+',12deg) scale(1.04)', offset:.26},
+      {opacity:0, transform:'translate3d('+dx+'px,'+dy+'px,'+dz+'px) rotate3d('+rx+','+ry+','+rz+',62deg) scale(1.2)'}
+    ], {duration: dur*.95, easing:'cubic-bezier(.2,.72,.2,1)', delay: i*15, fill:'forwards'});
+  });
+}
+
 counterTot.textContent = String(slides.length).padStart(2,'0');
 
+railnav.innerHTML = '<div class="spine"><i id="railFill"></i></div>';
 slides.forEach((s,i) => {
   const b = document.createElement('button');
-  b.innerHTML = '<span class="lbl">'+(s.dataset.label||('0'+(i+1)))+'</span><span class="tick"></span>';
+  b.innerHTML = '<span class="rn-num">'+String(i+1).padStart(2,'0')+'</span><span class="rn-lbl">'+(s.dataset.label||'')+'</span><span class="rn-dot"></span>';
   b.addEventListener('click', () => goTo(i));
   railnav.appendChild(b);
 });
 const railBtns = railnav.querySelectorAll('button');
+const railFill = document.getElementById('railFill');
 
 const counted = new WeakSet();
 function runCounts(slide){
@@ -944,6 +1047,7 @@ function syncChrome(){
   counterCur.classList.remove('tick'); void counterCur.offsetWidth; counterCur.classList.add('tick');
   counterBar.style.transform = 'scaleX('+((cur+1)/slides.length)+')';
   topProgress.style.transform = 'scaleX('+((cur+1)/slides.length)+')';
+  railFill.style.height = (((cur+1)/slides.length)*100)+'%';
   history.replaceState(null,'','#'+slides[cur].id);
 }
 function runBlades(){ bladesEl.classList.remove('run'); void bladesEl.offsetWidth; bladesEl.classList.add('run'); }
@@ -957,8 +1061,10 @@ function goTo(n){
   cur = n;
   liveAnims.forEach(a => a.cancel()); liveAnims = [];
   to.scrollTop = 0;
+  applyTilt(cur);
   from.classList.remove('is-active'); from.classList.add('in-flight');
   to.classList.add('is-active'); to.style.zIndex = 3; from.style.zIndex = 2;
+  setWorld(cur);
   const opts = dir => ({ duration:fx.dur, easing:fx.ease, fill:'both', direction:dir });
   const aIn  = to.animate(forward?fx.in:fx.out, opts(forward?'normal':'reverse'));
   const aOut = from.animate(forward?fx.out:fx.in, opts(forward?'normal':'reverse'));
@@ -969,6 +1075,7 @@ function goTo(n){
     fireStreaks(fx.streak);
     fireBloom(fx.dur);
     fireShock(fx.dur);
+    fireShatter(fx.dur, TINT[cur] || '240,144,106');
     deck.animate([{transform:'scale(1)'},{transform:'scale(1.02)',offset:.4},{transform:'scale(1)'}],{duration:fx.dur,easing:'ease-in-out'});
   }
   syncChrome();
@@ -1127,6 +1234,8 @@ signupForm.addEventListener('submit', async (e) => {
 const hashIdx = slides.findIndex(s => '#'+s.id === location.hash);
 cur = hashIdx>=0 ? hashIdx : 0;
 syncChrome();
+setWorld(cur);
+applyTilt(cur);
 requestAnimationFrame(() => requestAnimationFrame(() => {
   slides[cur].classList.add('is-active');
   if (!REDUCED){
