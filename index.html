@@ -8,17 +8,17 @@
 <link rel="icon" type="image/png" href="logo.png">
 <style>
 /* ═══════════════════════════════════════════════════════════
-   APEX STANDARD — design system
-   Aesthetic reference points: 21st.dev (mono micro-labels, fine
-   1px borders, glass surfaces, bento grids) + dribbble editorial
-   (display serif accents, generous negative space, controlled glow).
+   APEX STANDARD — design system v3
+   One unified warm palette. Each slide gets its own 3D geometry
+   world + its own cinematic transition signature.
    ═══════════════════════════════════════════════════════════ */
 :root{
-  --bg:#060711; --bg2:#0a0c18;
-  --cream:#f4f1ea; --muted:#9096a8; --muted-dim:#5a6076;
+  --bg:#080606; --bg2:#0c0908;
+  --cream:#f4f1ea; --muted:#9a948c; --muted-dim:#5f5a54;
   --accent:#f0906a; --accent2:#f7b79a; --accent3:#ffd9c4;
-  --violet:#7b7ae0; --ice:#8fb4ff;
   --line:rgba(255,255,255,0.08);
+  --geo:rgba(240,144,106,.10);
+  --geo-soft:rgba(240,144,106,.05);
   --glass:rgba(255,255,255,0.028);
   --glass-2:rgba(255,255,255,0.045);
   --glass-border:rgba(255,255,255,0.09);
@@ -35,64 +35,115 @@ body{background:var(--bg);color:var(--cream);font-family:var(--sans);overflow:hi
 ::selection{background:rgba(240,144,106,.32);color:#fff;}
 
 .serif{font-family:var(--serif);font-weight:400;}
-.italic{font-style:italic;}
-.grad{background:linear-gradient(96deg,var(--accent),var(--accent2) 55%,var(--accent3));-webkit-background-clip:text;background-clip:text;color:transparent;}
 .serif-italic{font-family:var(--serif);font-style:italic;background:linear-gradient(96deg,var(--accent),var(--accent2) 55%,var(--accent3));-webkit-background-clip:text;background-clip:text;color:transparent;}
-.grad-gray{font-family:var(--serif);font-style:italic;color:#9aa0b6;}
+.grad-gray{font-family:var(--serif);font-style:italic;color:#a09a92;}
 .mono{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);}
 
-/* ── ATMOSPHERE ── */
-.aurora{position:fixed;inset:-40%;z-index:0;pointer-events:none;filter:blur(70px) saturate(1.15);opacity:.8;
+/* ── ATMOSPHERE — one warm color family, always ── */
+.bgstage{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.bgstage > div{position:absolute;inset:-15%;opacity:0;transition:opacity 1.3s ease;
+  animation:worldDrift 30s ease-in-out infinite;}
+.bgstage > div.show{opacity:1;}
+@keyframes worldDrift{0%,100%{transform:translate3d(0,0,0) scale(1);}50%{transform:translate3d(1.5%,-1.5%,0) scale(1.05);}}
+.aurora{position:fixed;inset:-40%;z-index:0;pointer-events:none;filter:blur(70px) saturate(1.1);opacity:.65;
   background:
-    radial-gradient(38% 42% at 22% 30%, rgba(120,110,224,.30), transparent 60%),
-    radial-gradient(40% 46% at 80% 24%, rgba(143,180,255,.20), transparent 62%),
-    radial-gradient(52% 50% at 68% 80%, rgba(240,120,74,.26), transparent 60%),
-    radial-gradient(45% 45% at 25% 78%, rgba(210,90,60,.18), transparent 60%);
+    radial-gradient(42% 46% at 26% 32%, rgba(240,132,84,.16), transparent 60%),
+    radial-gradient(48% 50% at 74% 74%, rgba(200,90,52,.14), transparent 62%);
   animation:auroraDrift 26s ease-in-out infinite;}
 @keyframes auroraDrift{
   0%,100%{transform:translate3d(0,0,0) scale(1);}
   33%{transform:translate3d(4%,-3%,0) scale(1.08);}
   66%{transform:translate3d(-3%,4%,0) scale(1.04);}
 }
+
+/* ── PER-SLIDE GEOMETRY WORLDS ──
+   Same ember color everywhere; a different 3D structure every slide. */
+.geo{position:fixed;inset:0;z-index:0;pointer-events:none;perspective:1000px;overflow:hidden;}
+.gw{position:absolute;inset:0;opacity:0;transition:opacity 1.15s ease;transform-style:preserve-3d;}
+.gw.show{opacity:1;}
+/* 1 · perspective floor grid */
+.gw-floor{position:absolute;left:-60%;right:-60%;top:54%;height:130%;transform-origin:top center;
+  background:
+    repeating-linear-gradient(0deg, var(--geo-soft) 0 1px, transparent 1px 90px),
+    repeating-linear-gradient(90deg, var(--geo-soft) 0 1px, transparent 1px 90px);
+  -webkit-mask-image:linear-gradient(to bottom, transparent, #000 26%);mask-image:linear-gradient(to bottom, transparent, #000 26%);
+  animation:gridScroll 5s linear infinite;}
+@keyframes gridScroll{from{transform:rotateX(74deg) translateY(0);}to{transform:rotateX(74deg) translateY(90px);}}
+/* 2 · floating wireframe panels */
+.gw-panel{position:absolute;border:1px solid var(--geo);border-radius:14px;background:rgba(240,144,106,.025);
+  animation:panelFloat 9s ease-in-out infinite;}
+.gw-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:16px;border-bottom:1px solid var(--geo-soft);}
+@keyframes panelFloat{0%,100%{transform:var(--t) translateY(0);}50%{transform:var(--t) translateY(-24px);}}
+/* 3 · orbital rings */
+.gw-ring{position:absolute;left:50%;top:50%;border:1px solid var(--geo);border-radius:50%;
+  animation:ringSpin var(--spd,26s) linear infinite;}
+.gw-ring.dashed{border-style:dashed;}
+@keyframes ringSpin{from{transform:translate(-50%,-50%) rotateX(64deg) rotateZ(0deg);}to{transform:translate(-50%,-50%) rotateX(64deg) rotateZ(360deg);}}
+/* 4 · flowing diagonal beams */
+.gw-beam{position:absolute;left:-25%;width:150%;height:1.5px;
+  background:linear-gradient(90deg,transparent,rgba(240,144,106,.30),transparent);
+  animation:beamSlide var(--spd,8s) linear infinite;}
+@keyframes beamSlide{from{transform:rotate(-22deg) translateX(-28%);}to{transform:rotate(-22deg) translateX(28%);}}
+/* 5 · sonar rings (missed call radar) */
+.gw-sonar{position:absolute;left:70%;top:42%;width:90px;height:90px;margin:-45px 0 0 -45px;
+  border:1px solid rgba(240,144,106,.24);border-radius:50%;animation:sonar 4.2s ease-out infinite;}
+@keyframes sonar{from{transform:scale(.25);opacity:.75;}to{transform:scale(6.2);opacity:0;}}
+.gw-sonar-core{position:absolute;left:70%;top:42%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;
+  background:var(--accent);box-shadow:0 0 18px rgba(240,144,106,.8);animation:pulse 2s ease-in-out infinite;}
+/* 6 · rotating wireframe cubes */
+.gw-cube{position:absolute;transform-style:preserve-3d;animation:cubeSpin var(--spd,20s) linear infinite;}
+.gw-cube i{position:absolute;inset:0;border:1px solid var(--geo);}
+@keyframes cubeSpin{from{transform:var(--t) rotateX(-18deg) rotateY(0deg);}to{transform:var(--t) rotateX(-18deg) rotateY(360deg);}}
+/* 7 · ledger lines */
+.gw-line{position:absolute;left:10%;right:10%;height:1px;background:var(--geo-soft);}
+.gw-rise{position:absolute;width:1.5px;top:100%;height:34%;
+  background:linear-gradient(to top,transparent,rgba(240,144,106,.5));animation:riseUp var(--spd,7s) linear infinite;}
+@keyframes riseUp{from{transform:translateY(0);opacity:0;}12%{opacity:1;}to{transform:translateY(-260%);opacity:0;}}
+/* orbs — floating 3D spheres */
+.gw-orb{position:absolute;border-radius:50%;border:1px solid rgba(240,144,106,.07);
+  background:radial-gradient(circle at 32% 28%, rgba(247,183,154,.13), rgba(240,144,106,.03) 58%, transparent 72%);
+  animation:orbFloat var(--spd,11s) ease-in-out infinite;}
+@keyframes orbFloat{0%,100%{transform:translate3d(0,0,0);}50%{transform:translate3d(16px,-36px,0);}}
+/* diamonds — spinning square outlines */
+.gw-diamond{position:absolute;border:1px solid var(--geo);animation:diamondSpin var(--spd,26s) linear infinite;}
+@keyframes diamondSpin{from{transform:rotateZ(45deg) rotateY(0deg);}to{transform:rotateZ(45deg) rotateY(360deg);}}
+/* wave arcs — stacked curved horizons */
+.gw-arc{position:absolute;left:50%;border:1px solid var(--geo);border-radius:50%;
+  clip-path:inset(0 0 52% 0);animation:arcDrift var(--spd,13s) ease-in-out infinite;}
+@keyframes arcDrift{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-47%) translateY(-18px);}}
+/* tunnel — nested breathing squares */
+.gw-sq{position:absolute;left:50%;top:50%;border:1px solid var(--geo);border-radius:20px;
+  animation:sqPulse var(--spd,9s) ease-in-out infinite;}
+@keyframes sqPulse{0%,100%{transform:translate(-50%,-50%) scale(1) rotateZ(0deg);}50%{transform:translate(-50%,-50%) scale(1.09) rotateZ(3deg);}}
+/* 8 · radial rays */
+.gw-rays{position:absolute;inset:-35%;
+  background:repeating-conic-gradient(from 0deg, rgba(240,144,106,.06) 0deg 4deg, transparent 4deg 26deg);
+  -webkit-mask-image:radial-gradient(circle at 50% 50%, #000 12%, transparent 68%);mask-image:radial-gradient(circle at 50% 50%, #000 12%, transparent 68%);
+  animation:raysSpin 80s linear infinite;}
+@keyframes raysSpin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+
 #field{position:fixed;inset:0;z-index:0;pointer-events:none;}
 #streaks{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.9;}
-.dotgrid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
-  background-image:radial-gradient(circle, rgba(255,255,255,.055) 1px, transparent 1.4px);background-size:36px 36px;
+.dotgrid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.25;
+  background-image:radial-gradient(circle, rgba(255,255,255,.05) 1px, transparent 1.4px);background-size:36px 36px;
   -webkit-mask-image:radial-gradient(120% 90% at 50% 45%, #000 30%, transparent 72%);mask-image:radial-gradient(120% 90% at 50% 45%, #000 30%, transparent 72%);}
-.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(120% 100% at 50% 42%, transparent 55%, rgba(4,5,12,.72) 100%);}
-/* transition light rig — a soft bloom + expanding shock ring fired on every navigation */
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(120% 100% at 50% 42%, transparent 55%, rgba(6,4,3,.74) 100%);}
+/* transition light rig */
 .bloom{position:fixed;inset:0;z-index:236;pointer-events:none;opacity:0;mix-blend-mode:screen;
-  background:radial-gradient(circle at 50% 47%, rgba(255,224,196,.55), rgba(240,144,106,.16) 26%, transparent 58%);}
+  background:radial-gradient(circle at 50% 47%, rgba(255,224,196,.5), rgba(240,144,106,.14) 26%, transparent 58%);}
 .shock{position:fixed;left:50%;top:47%;width:42px;height:42px;border-radius:50%;z-index:237;pointer-events:none;
-  transform:translate(-50%,-50%) scale(0);opacity:0;border:1.5px solid rgba(247,183,154,.55);
-  box-shadow:0 0 60px rgba(240,144,106,.4),inset 0 0 30px rgba(255,224,196,.3);}
+  transform:translate(-50%,-50%) scale(0);opacity:0;border:1px solid rgba(247,183,154,.35);
+  box-shadow:0 0 50px rgba(240,144,106,.28);}
 .topbar{position:fixed;top:0;left:0;right:0;height:2px;z-index:239;background:var(--line);}
 .topbar i{position:absolute;inset:0;transform-origin:left;transform:scaleX(0);
-  background:linear-gradient(90deg,var(--violet),var(--accent) 55%,var(--accent3));box-shadow:0 0 12px rgba(240,144,106,.6);
+  background:linear-gradient(90deg,#c05a34,var(--accent) 55%,var(--accent3));box-shadow:0 0 12px rgba(240,144,106,.6);
   transition:transform .9s var(--ease);}
-/* per-slide background worlds — two layers crossfade to a new palette on every scroll */
-.bgstage{position:fixed;inset:0;z-index:0;pointer-events:none;}
-.bgstage > div{position:absolute;inset:-20%;opacity:0;transition:opacity 1.3s ease;filter:blur(30px) saturate(1.1);
-  animation:worldDrift 30s ease-in-out infinite;}
-.bgstage > div.show{opacity:1;}
-@keyframes worldDrift{0%,100%{transform:translate3d(0,0,0) scale(1) rotate(0deg);}50%{transform:translate3d(2%,-2%,0) scale(1.08) rotate(2deg);}}
-/* ── MIRROR-DIMENSION SHATTER ── kaleidoscopic shards that fracture the
-   scene and blow outward in 3D on every navigation (Dr-Strange fold). */
-#shatter{position:fixed;inset:0;z-index:238;pointer-events:none;perspective:1300px;transform-style:preserve-3d;}
-#shatter .shard{position:absolute;inset:0;opacity:0;transform-origin:50% 47%;backface-visibility:hidden;will-change:transform,opacity;
-  filter:drop-shadow(0 0 1px rgba(255,255,255,.6)) drop-shadow(0 0 8px rgba(240,144,106,.3));}
 .grain{position:fixed;inset:0;z-index:250;pointer-events:none;opacity:.045;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
 
-/* ── SHUTTER (transition dressing) ── */
-.blades{position:fixed;inset:0;z-index:240;display:flex;pointer-events:none;}
-.blades span{flex:1;background:linear-gradient(180deg,#0c0e1c,#060711);transform:scaleY(0);transform-origin:50% 0%;}
-.blades.run span{animation:bladeSweep 1s var(--ease-io) both;animation-delay:calc(var(--bi) * 48ms);}
-@keyframes bladeSweep{0%{transform:scaleY(0);transform-origin:50% 0%;}46%,54%{transform:scaleY(1);}100%{transform:scaleY(0);transform-origin:50% 100%;}}
-
 /* ── CHROME ── */
 header{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
-  padding:20px 40px;background:linear-gradient(to bottom, rgba(6,7,17,.82), transparent);}
+  padding:20px 40px;background:linear-gradient(to bottom, rgba(8,6,6,.82), transparent);}
 .logo{display:flex;align-items:center;gap:12px;}
 .logo-icon{width:40px;height:40px;border-radius:12px;overflow:hidden;position:relative;flex-shrink:0;
   border:1px solid var(--glass-border);background:var(--glass-2);}
@@ -101,22 +152,22 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:
 .logo-text .sub{font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--muted-dim);margin-top:2px;}
 nav ul{list-style:none;display:flex;gap:6px;padding:5px;border:1px solid var(--glass-border);border-radius:40px;
   background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);}
-nav a{color:#c3c7d6;text-decoration:none;font-size:13px;padding:8px 15px;border-radius:30px;transition:color .2s,background .3s;cursor:pointer;position:relative;}
+nav a{color:#cfc9c1;text-decoration:none;font-size:13px;padding:8px 14px;border-radius:30px;transition:color .2s,background .3s;cursor:pointer;position:relative;}
 nav a:hover{color:#fff;background:var(--glass-2);}
 .header-right{display:flex;align-items:center;gap:18px;}
-.get-started{color:#c3c7d6;font-size:13.5px;text-decoration:none;cursor:pointer;transition:color .2s;}
+.get-started{color:#cfc9c1;font-size:13.5px;text-decoration:none;cursor:pointer;transition:color .2s;}
 .get-started:hover{color:#fff;}
-.book-demo{display:flex;align-items:center;gap:9px;background:var(--cream);color:#0a0d18;padding:11px 20px;border-radius:40px;
+.book-demo{display:flex;align-items:center;gap:9px;background:var(--cream);color:#180d08;padding:11px 20px;border-radius:40px;
   font-size:13.5px;font-weight:600;text-decoration:none;white-space:nowrap;cursor:pointer;border:none;will-change:transform;
   box-shadow:0 6px 20px rgba(0,0,0,.3);transition:box-shadow .3s;}
 .book-demo:hover{box-shadow:0 10px 30px rgba(247,183,154,.28);}
 .book-demo .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);}
 
-/* ── COMPLEX INDEXED RAIL ── */
+/* ── INDEXED RAIL ── */
 .railnav{position:fixed;right:26px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;z-index:100;padding:8px 0;}
 .railnav .spine{position:absolute;right:9px;top:12px;bottom:12px;width:1px;background:var(--line);}
 .railnav .spine i{position:absolute;left:0;right:0;top:0;height:0;border-radius:2px;
-  background:linear-gradient(var(--violet),var(--accent) 60%,var(--accent3));box-shadow:0 0 10px rgba(240,144,106,.7);transition:height .7s var(--ease);}
+  background:linear-gradient(#c05a34,var(--accent) 60%,var(--accent3));box-shadow:0 0 10px rgba(240,144,106,.7);transition:height .7s var(--ease);}
 .railnav button{position:relative;display:flex;align-items:center;justify-content:flex-end;gap:11px;background:none;border:none;cursor:pointer;
   padding:8px 22px 8px 0;color:var(--muted-dim);transition:color .3s;}
 .railnav .rn-num{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;opacity:.55;transition:all .3s;}
@@ -148,22 +199,21 @@ nav a:hover{color:#fff;background:var(--glass-2);}
 .section.is-active{visibility:visible;opacity:1;pointer-events:auto;z-index:2;}
 .section.in-flight{visibility:visible;pointer-events:none;}
 
-/* ── reusable primitives ── */
+/* ── primitives ── */
 .eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.22em;
-  text-transform:uppercase;color:var(--muted);margin-bottom:24px;padding:7px 14px;border:1px solid var(--glass-border);
-  border-radius:40px;background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+  text-transform:uppercase;color:var(--muted);margin-bottom:22px;padding:7px 14px;border:1px solid var(--glass-border);
+  border-radius:40px;background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);will-change:transform;}
 .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);}
 
 h1{font-family:var(--serif);font-size:clamp(34px,5.2vw,64px);line-height:1.06;font-weight:400;letter-spacing:-.02em;perspective:900px;transform:translateZ(58px);will-change:transform;}
-.eyebrow{will-change:transform;}
-.bento,.plays,.stepper,.calc-grid,.pills,.float-row{transform:translateZ(22px);}
-.lede{transform:translateZ(34px);}
+.svc h1{font-size:clamp(27px,3.7vw,47px);}
+.lede{font-size:16.5px;color:#cbc5bc;max-width:540px;line-height:1.65;margin-top:22px;transform:translateZ(34px);}
+.bento,.pills,.float-row,.calc-grid,.svc-cards,.svc-top,.invest{transform:translateZ(22px);}
 h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) scale(.94);transform-origin:50% 100%;
   filter:blur(8px);transition:opacity .7s ease, transform .9s var(--ease), filter .7s ease;will-change:transform;}
-.serif-italic .w,.grad .w{background:linear-gradient(96deg,var(--accent),var(--accent2) 55%,var(--accent3));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.serif-italic .w{background:linear-gradient(96deg,var(--accent),var(--accent2) 55%,var(--accent3));-webkit-background-clip:text;background-clip:text;color:transparent;}
 .section.is-active h1 .w{opacity:1;transform:none;filter:blur(0);transition-delay:calc(var(--wi) * 55ms + var(--d,0) * 1ms + 280ms);}
 
-.lede{font-size:16.5px;color:#c0c4d2;max-width:540px;line-height:1.65;margin-top:22px;}
 .center{text-align:center;}
 .center .section-inner{display:flex;flex-direction:column;align-items:center;}
 .center .lede{max-width:600px;}
@@ -173,7 +223,8 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
 [data-anim="right"]{transform:translateX(56px);}
 [data-anim="scale"]{transform:scale(.85);}
 [data-anim="tilt"]{transform:translateY(60px) rotate(4deg);}
-.section.is-active [data-anim]{opacity:1;transform:none;transition-delay:calc(var(--d,0) * 1ms + 240ms);}
+[data-anim="rise"]{transform:translateY(70px);filter:blur(10px);}
+.section.is-active [data-anim]{opacity:1;transform:none;filter:blur(0);transition-delay:calc(var(--d,0) * 1ms + 240ms);}
 [data-parallax]{transition:transform 1s var(--ease);will-change:transform;}
 
 /* glass card base */
@@ -186,9 +237,9 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
 .glass::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--glass-hi),transparent);opacity:.6;}
 .tilt-3d{transform-style:preserve-3d;transition:transform .5s var(--ease);will-change:transform;}
 
-/* pill tags */
+/* pills */
 .pills{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:32px;}
-.pill{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:#c3c7d6;padding:8px 15px;border:1px solid var(--glass-border);
+.pill{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:#cfc9c1;padding:8px 15px;border:1px solid var(--glass-border);
   border-radius:40px;background:var(--glass);display:flex;align-items:center;gap:8px;}
 .pill::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--accent);}
 
@@ -210,7 +261,7 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
 .two-col{display:flex;align-items:center;justify-content:space-between;gap:56px;width:100%;transform-style:preserve-3d;}
 .two-col .left{flex:1;min-width:0;transform-style:preserve-3d;}
 
-/* ── BENTO STAT TILES ── */
+/* ── STAT TILES ── */
 .bento{display:grid;gap:16px;margin-top:44px;}
 .bento.cols-3{grid-template-columns:repeat(3,1fr);}
 .stat-tile{padding:28px 30px;}
@@ -226,11 +277,55 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
 .chip .n .u{font-family:var(--mono);font-size:12px;color:var(--muted);margin-left:3px;}
 .chip .c{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--muted-dim);margin-top:8px;}
 
+/* ── SERVICE SLIDES ── */
+.svc-top{display:grid;grid-template-columns:1.12fr .88fr;gap:26px;align-items:center;width:100%;}
+.chart-card{padding:24px 26px;}
+.chart-card .k{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--muted);margin-bottom:14px;display:flex;justify-content:space-between;align-items:baseline;}
+.chart-card .k .hl{color:var(--accent2);letter-spacing:.08em;}
+.chart-card svg{width:100%;height:auto;display:block;}
+.chart-foot{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--muted-dim);margin-top:12px;}
+.svc-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px;width:100%;}
+.svc-card{padding:22px 24px;transition:transform .4s var(--ease),border-color .3s;}
+.svc-card:hover{transform:translateY(-4px);border-color:rgba(240,144,106,.3);}
+.svc-card .k{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--accent2);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.svc-card .k::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);}
+.svc-card p{font-size:13.5px;color:#cfc9c1;line-height:1.62;}
+.svc-card.warn{border-color:rgba(240,144,106,.32);background:linear-gradient(180deg,rgba(240,144,106,.07),var(--glass));}
+.svc-card.warn .k{color:var(--accent);}
+.invest{margin-top:14px;display:flex;align-items:center;gap:18px;padding:17px 24px;flex-wrap:wrap;width:100%;}
+.invest .ik{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--accent2);white-space:nowrap;}
+.invest .it{flex:1;min-width:220px;font-size:13.5px;color:#cfc9c1;line-height:1.5;}
+.invest .il{color:var(--accent2);text-decoration:none;font-size:13.5px;cursor:pointer;white-space:nowrap;font-weight:500;}
+.invest .il:hover{text-decoration:underline;}
+
+/* ── BREAKDOWN FLOW (how it works for you) ── */
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:34px;width:100%;transform:translateZ(22px);}
+.flow-step{padding:26px 26px 24px;position:relative;transition:transform .4s var(--ease),border-color .3s;}
+.flow-step:hover{transform:translateY(-4px);border-color:rgba(240,144,106,.3);}
+.flow-step .idx{font-family:var(--serif);font-style:italic;font-size:44px;line-height:1;color:rgba(240,144,106,.4);}
+.flow-step .fk{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--accent2);margin:14px 0 10px;}
+.flow-step p{font-size:13.5px;color:#cfc9c1;line-height:1.62;}
+.flow-step::after{content:'→';position:absolute;right:-17px;top:50%;transform:translateY(-50%);color:var(--muted-dim);font-size:15px;z-index:2;}
+.flow-step:last-child::after{display:none;}
+
+/* chart draw-in animations */
+svg .cbar,svg .hbar{transform-box:fill-box;}
+.cbar{transform:scaleY(0);transform-origin:bottom;transition:transform .9s var(--ease);}
+.section.is-active .cbar{transform:scaleY(1);transition-delay:calc(var(--ci,0) * 90ms + 620ms);}
+.hbar{transform:scaleX(0);transform-origin:left;transition:transform 1s var(--ease);}
+.section.is-active .hbar{transform:scaleX(1);transition-delay:calc(var(--ci,0) * 140ms + 620ms);}
+.cline{stroke-dasharray:460;stroke-dashoffset:460;transition:stroke-dashoffset 1.7s ease .55s;}
+.section.is-active .cline{stroke-dashoffset:0;}
+.carea,.cdotp{opacity:0;transition:opacity .9s ease 1.35s;}
+.section.is-active .carea,.section.is-active .cdotp{opacity:1;}
+.donut{stroke-dasharray:0 999;transition:stroke-dasharray 1.5s var(--ease) .7s;}
+.section.is-active .donut{stroke-dasharray:var(--arc) 999;}
+
 /* ── CALCULATOR ── */
 .calc-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;margin-top:12px;align-items:stretch;}
 .calc-panel{padding:34px 36px;}
 .slider-group{margin-top:8px;}
-.slider-label{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;color:#c3c7d6;margin-bottom:12px;margin-top:24px;}
+.slider-label{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;color:#cfc9c1;margin-bottom:12px;margin-top:24px;}
 .slider-label .val{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--cream);}
 .slider-label .val .note{font-family:var(--mono);font-style:normal;font-size:9.5px;letter-spacing:.08em;color:var(--muted-dim);margin-left:6px;}
 .slider-wrap{position:relative;padding:6px 0;}
@@ -248,46 +343,6 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
 .calc-card .amt{font-family:var(--serif);font-size:30px;letter-spacing:-.01em;}
 .calc-card.year .amt{color:var(--accent2);font-size:40px;}
 
-/* ── DEVICE MOCKUP ── */
-.device{width:264px;flex-shrink:0;position:relative;}
-.device .frame{background:linear-gradient(180deg,#12141f,#0b0d16);border:1px solid var(--glass-border);border-radius:40px;padding:20px;
-  box-shadow:0 40px 90px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);animation:phoneFloat 6s ease-in-out infinite;}
-@keyframes phoneFloat{0%,100%{transform:translateY(0) rotate(0);}50%{transform:translateY(-14px) rotate(-1deg);}}
-.device .notch{width:60px;height:5px;border-radius:5px;background:rgba(255,255,255,.12);margin:0 auto 18px;}
-.phone-contact{display:flex;align-items:center;gap:11px;margin-bottom:16px;}
-.phone-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--violet),#e86ea0);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;}
-.phone-contact .cname{font-size:13.5px;font-weight:600;}
-.phone-contact .crole{font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--muted);margin-top:2px;}
-.missed{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--accent);margin-bottom:12px;}
-.bubble{background:linear-gradient(180deg,#1a2032,#151a29);border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:15px;font-size:12.5px;line-height:1.55;color:#d5d8e2;margin-bottom:14px;position:relative;}
-.bubble::after{content:'';position:absolute;left:16px;bottom:-6px;width:12px;height:12px;background:#151a29;transform:rotate(45deg);border-right:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05);}
-.book-btn{background:linear-gradient(94deg,rgba(240,144,106,.16),rgba(247,183,154,.08));border:1px solid rgba(240,144,106,.4);color:var(--accent2);font-size:12px;font-weight:600;padding:12px;border-radius:11px;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;}
-.phone-foot{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;color:var(--muted-dim);display:flex;align-items:center;gap:6px;}
-.phone-foot .pulse{width:6px;height:6px;border-radius:50%;background:#4ad07a;box-shadow:0 0 8px #4ad07a;animation:pulse 1.6s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
-
-/* ── STEPPER (how it works) ── */
-.stepper{margin-top:44px;display:flex;flex-direction:column;gap:14px;position:relative;}
-.step{display:flex;align-items:center;gap:24px;padding:26px 30px;transition:transform .4s var(--ease),border-color .3s;}
-.step:hover{transform:translateX(8px);border-color:rgba(240,144,106,.3);}
-.step-idx{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--accent);width:44px;flex-shrink:0;}
-.step-icon{width:48px;height:48px;border-radius:13px;flex-shrink:0;background:linear-gradient(180deg,rgba(120,110,224,.22),rgba(60,80,140,.12));border:1px solid rgba(120,140,200,.22);display:flex;align-items:center;justify-content:center;font-size:19px;}
-.step-body{flex:1;}
-.step-title{font-size:18px;font-weight:500;margin-bottom:6px;}
-.step-desc{color:var(--muted);font-size:13.5px;line-height:1.55;max-width:620px;}
-
-/* ── PLAY CARDS (bento) ── */
-.plays{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:16px;margin-top:44px;}
-.play{padding:30px;display:flex;flex-direction:column;transition:transform .5s var(--ease),border-color .3s;}
-.play.core{border-color:rgba(240,144,106,.35);background:linear-gradient(180deg,rgba(240,144,106,.06),var(--glass));}
-.play .badge{position:absolute;top:0;right:22px;background:linear-gradient(94deg,var(--accent),#ef6f49);color:#120a06;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;padding:6px 12px;border-radius:0 0 8px 8px;}
-.play .tag{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--muted);display:flex;align-items:center;gap:8px;margin-bottom:16px;}
-.play h3{font-size:21px;font-weight:500;margin-bottom:10px;letter-spacing:-.01em;}
-.play p{font-size:13.5px;color:var(--muted);line-height:1.6;}
-.feat-list{list-style:none;margin-top:20px;display:flex;flex-direction:column;gap:11px;}
-.feat-list li{font-size:13px;color:#c3c7d6;padding-left:22px;position:relative;line-height:1.4;}
-.feat-list li::before{content:'✓';position:absolute;left:0;top:0;color:var(--accent);font-size:12px;font-weight:700;}
-
 /* ── REPORT RECEIPT ── */
 .report-card{padding:36px;min-width:400px;}
 .report-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;padding-bottom:22px;border-bottom:1px dashed var(--line);}
@@ -295,7 +350,7 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
 .report-head .vol{font-family:var(--mono);font-size:10px;color:var(--muted-dim);}
 .report-head .title{font-family:var(--serif);font-style:italic;font-size:22px;margin-top:8px;}
 .report-row{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid var(--line);font-size:14px;}
-.report-row .k{color:#c0c4d2;}
+.report-row .k{color:#cbc5bc;}
 .report-row .v{font-family:var(--serif);font-size:19px;}
 .report-foot{margin-top:22px;padding:20px;border-radius:14px;background:linear-gradient(180deg,rgba(240,144,106,.08),rgba(240,144,106,.02));border:1px solid rgba(240,144,106,.22);}
 .report-foot-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--muted);}
@@ -305,11 +360,12 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
 .scroll-hint .line{width:1px;height:36px;background:var(--line);position:relative;overflow:hidden;}
 .scroll-hint .line::after{content:'';position:absolute;top:-100%;left:0;width:1px;height:100%;background:var(--accent);animation:scrollLine 1.8s ease-in-out infinite;}
 @keyframes scrollLine{0%{top:-100%;}55%{top:0;}100%{top:100%;}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
 
 /* ── MODAL ── */
-.modal-overlay{position:fixed;inset:0;z-index:300;background:rgba(6,7,17,.7);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s ease;padding:20px;}
+.modal-overlay{position:fixed;inset:0;z-index:300;background:rgba(8,6,6,.7);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s ease;padding:20px;}
 .modal-overlay.open{opacity:1;pointer-events:auto;}
-.modal-card{width:100%;max-width:470px;max-height:92vh;overflow-y:auto;background:linear-gradient(180deg,#0e1120,#0a0c17);border:1px solid var(--glass-border);border-radius:24px;padding:38px;position:relative;transform:translateY(38px) scale(.96);transition:transform .5s var(--ease);}
+.modal-card{width:100%;max-width:470px;max-height:92vh;overflow-y:auto;background:linear-gradient(180deg,#161009,#0d0907);border:1px solid var(--glass-border);border-radius:24px;padding:38px;position:relative;transform:translateY(38px) scale(.96);transition:transform .5s var(--ease);}
 .modal-overlay.open .modal-card{transform:none;}
 .modal-close{position:absolute;top:18px;right:18px;width:34px;height:34px;border-radius:50%;background:var(--glass);border:1px solid var(--glass-border);color:var(--muted);font-size:15px;cursor:pointer;transition:color .2s,border-color .2s;}
 .modal-close:hover{color:var(--cream);border-color:rgba(240,144,106,.4);}
@@ -319,8 +375,8 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
 .form-field label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--muted);margin-bottom:9px;}
 .form-field input,.form-field select{width:100%;background:var(--glass);border:1px solid var(--glass-border);border-radius:13px;padding:14px 16px;color:var(--cream);font-size:15px;font-family:inherit;outline:none;transition:border-color .25s,box-shadow .25s;}
 .form-field input:focus,.form-field select:focus{border-color:rgba(240,144,106,.55);box-shadow:0 0 0 4px rgba(240,144,106,.1);}
-.form-field select{appearance:none;-webkit-appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238b93a3' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;}
-.form-field select option{background:#0e1120;color:var(--cream);}
+.form-field select{appearance:none;-webkit-appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a39a8b' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;}
+.form-field select option{background:#161009;color:var(--cream);}
 .modal-card .btn-primary{width:100%;justify-content:center;margin-top:10px;}
 .modal-alt{margin-top:18px;text-align:center;font-size:12.5px;color:var(--muted-dim);}
 .modal-alt a{color:var(--accent2);text-decoration:none;}
@@ -336,14 +392,14 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
   nav{display:none;}
   .section{padding:92px 20px 64px;}
   .two-col{flex-direction:column;align-items:flex-start;}
-  .calc-grid{grid-template-columns:1fr;}
-  .bento.cols-3,.plays{grid-template-columns:1fr;}
+  .calc-grid,.svc-top,.svc-cards,.flow{grid-template-columns:1fr;}
+  .flow-step::after{display:none;}
+  .bento.cols-3{grid-template-columns:1fr;}
   .railnav{right:12px;}
-  .railnav .lbl{display:none;}
+  .railnav .rn-lbl{display:none;}
   .slide-counter{left:18px;bottom:18px;}
   .slide-counter .bar{width:70px;}
   .report-card{min-width:0;width:100%;}
-  .device{width:100%;max-width:300px;}
   .book-demo{padding:9px 15px;font-size:12px;}
   .get-started{display:none;}
   .modal-card{padding:28px 22px;}
@@ -357,8 +413,79 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
 </head>
 <body>
 
+<!-- ambient layers: warm glow (one color family) + per-slide geometry world -->
 <div class="bgstage"><div id="bgA"></div><div id="bgB"></div></div>
 <div class="aurora"></div>
+<div class="geo" id="geo">
+  <!-- 1 · HOME — perspective floor grid -->
+  <div class="gw"><div class="gw-floor"></div></div>
+  <!-- 2 · WEBSITE + CHATBOT — floating wireframe panels -->
+  <div class="gw">
+    <div class="gw-panel" style="--t:rotateY(16deg) rotateX(4deg);left:4%;top:16%;width:340px;height:220px;"></div>
+    <div class="gw-panel" style="--t:rotateY(-18deg) rotateX(-3deg);right:5%;bottom:14%;width:300px;height:190px;animation-delay:-4.5s;"></div>
+  </div>
+  <!-- 3 · WEB · HOW IT WORKS — floating orbs -->
+  <div class="gw">
+    <div class="gw-orb" style="left:2%;top:10%;width:320px;height:320px;--spd:14s;"></div>
+    <div class="gw-orb" style="right:4%;bottom:8%;width:260px;height:260px;--spd:11s;animation-delay:-5s;"></div>
+  </div>
+  <!-- 4 · REVIEW ENGINE — orbital rings -->
+  <div class="gw">
+    <div class="gw-ring" style="width:46vmin;height:46vmin;--spd:34s;"></div>
+    <div class="gw-ring dashed" style="width:66vmin;height:66vmin;--spd:52s;animation-direction:reverse;"></div>
+    <div class="gw-ring" style="width:88vmin;height:88vmin;--spd:74s;opacity:.6;"></div>
+  </div>
+  <!-- 5 · REVIEWS · HOW IT WORKS — spinning diamonds -->
+  <div class="gw">
+    <div class="gw-diamond" style="left:4%;top:14%;width:220px;height:220px;--spd:34s;"></div>
+    <div class="gw-diamond" style="right:6%;bottom:12%;width:280px;height:280px;--spd:44s;animation-direction:reverse;opacity:.7;"></div>
+  </div>
+  <!-- 6 · FOLLOW-UP — flowing diagonal beams -->
+  <div class="gw">
+    <div class="gw-beam" style="top:22%;--spd:7s;"></div>
+    <div class="gw-beam" style="top:42%;--spd:9.5s;animation-delay:-3s;opacity:.7;"></div>
+    <div class="gw-beam" style="top:62%;--spd:8s;animation-delay:-5s;"></div>
+    <div class="gw-beam" style="top:80%;--spd:11s;animation-delay:-2s;opacity:.55;"></div>
+  </div>
+  <!-- 7 · FOLLOW-UP · HOW IT WORKS — wave horizons -->
+  <div class="gw">
+    <div class="gw-arc" style="bottom:-46vmin;width:120vmin;height:120vmin;--spd:12s;"></div>
+    <div class="gw-arc" style="bottom:-58vmin;width:150vmin;height:150vmin;--spd:15s;animation-delay:-4s;opacity:.7;"></div>
+    <div class="gw-arc" style="bottom:-72vmin;width:184vmin;height:184vmin;--spd:18s;animation-delay:-8s;opacity:.45;"></div>
+  </div>
+  <!-- 8 · MISSED CALL — sonar radar -->
+  <div class="gw">
+    <div class="gw-sonar"></div>
+    <div class="gw-sonar" style="animation-delay:-1.4s;"></div>
+    <div class="gw-sonar" style="animation-delay:-2.8s;"></div>
+    <div class="gw-sonar-core"></div>
+  </div>
+  <!-- 9 · RECEPTIONIST · HOW IT WORKS — breathing square tunnel -->
+  <div class="gw">
+    <div class="gw-sq" style="width:56vmin;height:56vmin;--spd:9s;opacity:.8;"></div>
+    <div class="gw-sq" style="width:80vmin;height:80vmin;--spd:10s;animation-delay:-3s;opacity:.5;"></div>
+    <div class="gw-sq" style="width:108vmin;height:108vmin;--spd:11s;animation-delay:-6s;opacity:.28;"></div>
+  </div>
+  <!-- 10 · CALCULATOR — wireframe cubes -->
+  <div class="gw">
+    <div class="gw-cube" style="--t:translateZ(0);left:64%;top:18%;width:240px;height:240px;--spd:30s;">
+      <i></i><i style="transform:rotateY(90deg);"></i><i style="transform:rotateY(45deg);"></i><i style="transform:rotateY(-45deg);"></i>
+    </div>
+  </div>
+  <!-- 11 · RECEIPTS — ledger lines -->
+  <div class="gw">
+    <div class="gw-line" style="top:24%;"></div>
+    <div class="gw-line" style="top:38%;left:16%;"></div>
+    <div class="gw-line" style="top:52%;"></div>
+    <div class="gw-line" style="top:66%;right:16%;"></div>
+    <div class="gw-line" style="top:80%;"></div>
+    <div class="gw-rise" style="left:24%;--spd:7s;"></div>
+    <div class="gw-rise" style="left:52%;--spd:9s;animation-delay:-3s;"></div>
+    <div class="gw-rise" style="left:78%;--spd:8s;animation-delay:-5s;"></div>
+  </div>
+  <!-- 12 · BOOK A CALL — radial spotlight rays -->
+  <div class="gw"><div class="gw-rays"></div></div>
+</div>
 <div class="dotgrid"></div>
 <canvas id="field"></canvas>
 <canvas id="streaks"></canvas>
@@ -366,7 +493,6 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
 <div class="topbar"><i id="topProgress"></i></div>
 <div class="bloom" id="bloom"></div>
 <div class="shock" id="shock"></div>
-<div id="shatter"></div>
 
 <header>
   <div class="logo">
@@ -378,12 +504,12 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
   </div>
   <nav>
     <ul>
-      <li><a href="#leak">The Leak</a></li>
+      <li><a href="#svc-web">Website</a></li>
+      <li><a href="#svc-reviews">Reviews</a></li>
+      <li><a href="#svc-followup">Follow-Up</a></li>
+      <li><a href="#svc-reception">Receptionist</a></li>
       <li><a href="#calculator">Calculator</a></li>
-      <li><a href="#how-it-works">How It Works</a></li>
-      <li><a href="#three-plays">Solutions</a></li>
-      <li><a href="#built-fast">Results</a></li>
-      <li><a href="#reporting">Reporting</a></li>
+      <li><a href="#book-call">Book a Call</a></li>
     </ul>
   </nav>
   <div class="header-right">
@@ -397,17 +523,18 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
 <div class="slide-counter">
   <span class="cur" id="counterCur">01</span>
   <span class="bar"><i id="counterBar"></i></span>
-  <span id="counterTot">10</span>
+  <span id="counterTot">12</span>
 </div>
 
 <main class="deck" id="deck">
 
-<!-- 1. HERO -->
-<section class="section center" id="hero" data-effect="warp" data-label="Intro">
+<!-- 1. HOME -->
+<section class="section center" id="home" data-effect="warp" data-label="Home">
   <div class="section-inner">
     <div class="eyebrow" data-anim style="--d:0"><span class="dot"></span>STOP LOSING · START KEEPING</div>
     <h1 class="serif" style="--d:120">It's not more leads.</h1>
     <h1 class="serif-italic" style="--d:320">It's more of the leads you already pay for.</h1>
+    <p class="lede" data-anim style="--d:850">Four systems. One job: make sure nobody who wants to give you money slips through the cracks.</p>
     <div class="float-row">
       <div class="glass chip tilt-3d" data-anim style="--d:1000"><div class="n">60<span class="u">-80%</span></div><div class="c">LOST TO VOICEMAIL</div></div>
       <div class="glass chip tilt-3d" data-anim style="--d:1120"><div class="n">~9<span class="u">SEC</span></div><div class="c">RECOVERY TEXT</div></div>
@@ -420,33 +547,330 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
   <div class="scroll-hint" data-anim style="--d:1600">SCROLL<span class="line"></span></div>
 </section>
 
-<!-- 2. HERO CONT -->
-<section class="section center" id="hero2" data-effect="helix" data-label="The Standard">
+<!-- 2. SERVICE 01 — WEBSITE + CHATBOT -->
+<section class="section svc" id="svc-web" data-effect="wordzoom" data-label="Website + Chatbot">
   <div class="section-inner">
-    <div class="eyebrow" data-anim style="--d:0"><span class="dot"></span>THE APEX STANDARD</div>
-    <h1 class="serif" style="--d:120">More calls answered.</h1>
-    <h1 class="serif" style="--d:300">More jobs booked.</h1>
-    <h1 class="serif-italic" style="--d:480">More revenue kept.</h1>
-    <p class="lede" data-anim style="--d:900" style="text-align:center;">That's the whole promise — and every screen after this shows you the receipts.</p>
-  </div>
-</section>
-
-<!-- 3. THE LEAK -->
-<section class="section" id="leak" data-effect="cube" data-label="The Leak">
-  <div class="section-inner">
-    <div class="eyebrow" data-anim="left" style="--d:0"><span class="dot"></span>THE REAL THREAT</div>
-    <h1 class="serif" style="--d:120">You're not losing jobs<br>to <span class="grad-gray">competitors.</span><br>You're losing them<br>to <span class="serif-italic">voicemail.</span></h1>
-    <p class="lede" data-anim="left" style="--d:700">You're up a ladder, mid-appointment, or it's Sunday night. The phone rings. The person on the other end doesn't leave a message — they call the next business on the list.</p>
-    <div class="bento cols-3">
-      <div class="glass stat-tile tilt-3d" data-anim style="--d:850"><div class="k">CALLERS LOST</div><div class="num"><span data-count="60">60</span><span class="unit">-80%</span></div><div class="cap">Of callers who hit voicemail never call back — they dial the next name on Google.</div></div>
-      <div class="glass stat-tile tilt-3d" data-anim style="--d:990"><div class="k">RESPONSE TIME</div><div class="num">~<span data-count="9">9</span><span class="unit">sec</span></div><div class="cap">How fast our recovery text reaches a missed caller — before they've reopened Google.</div></div>
-      <div class="glass stat-tile tilt-3d" data-anim style="--d:1130"><div class="k">COVERAGE</div><div class="num"><span data-count="24">24</span>/7</div><div class="cap">Nights, weekends, holidays. The moments you can't answer are the moments this earns its keep.</div></div>
+    <div class="svc-top">
+      <div>
+        <div class="eyebrow" data-anim="left" style="--d:0"><span class="dot"></span>SERVICE 01 / 04 · WEBSITE + CHATBOT</div>
+        <h1 class="serif" style="--d:120">A site that sells.<br><span class="serif-italic">A chatbot that never sleeps.</span></h1>
+      </div>
+      <div class="glass chart-card tilt-3d" data-anim="right" style="--d:520">
+        <div class="k"><span>VISITORS TURNED INTO CONVERSATIONS</span><span class="hl">↗ TRENDING</span></div>
+        <svg viewBox="0 0 320 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="webArea" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#f0906a" stop-opacity=".28"/><stop offset="1" stop-color="#f0906a" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="webLine" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#c05a34"/><stop offset="1" stop-color="#ffd9c4"/>
+            </linearGradient>
+          </defs>
+          <g stroke="rgba(255,255,255,.06)"><line x1="0" y1="40" x2="320" y2="40"/><line x1="0" y1="80" x2="320" y2="80"/><line x1="0" y1="120" x2="320" y2="120"/></g>
+          <path class="carea" d="M0,128 C50,124 84,112 122,98 C168,82 214,58 268,40 C288,34 304,30 320,26 L320,160 L0,160 Z" fill="url(#webArea)"/>
+          <path class="cline" d="M0,128 C50,124 84,112 122,98 C168,82 214,58 268,40 C288,34 304,30 320,26" stroke="url(#webLine)" stroke-width="2.5" stroke-linecap="round"/>
+          <circle class="cdotp" cx="320" cy="26" r="4.5" fill="#ffd9c4"/>
+          <circle class="cdotp" cx="320" cy="26" r="9" fill="none" stroke="rgba(255,217,196,.35)"/>
+        </svg>
+        <div class="chart-foot">EVERY VISITOR GREETED · CAPTURED · FOLLOWED UP</div>
+      </div>
+    </div>
+    <div class="svc-cards">
+      <div class="glass svc-card" data-anim="rise" style="--d:760">
+        <div class="k">WHAT IT DOES</div>
+        <p>A clean, fast, mobile-ready website with a built-in assistant that greets every visitor, answers their questions, and captures the ones ready to buy — day or night.</p>
+      </div>
+      <div class="glass svc-card" data-anim="rise" style="--d:880">
+        <div class="k">HOW IT HELPS YOU</div>
+        <p>You look established, you show up credible, and people can reach you 24/7 — even when you're mid-job, with a client, or closed for the night.</p>
+      </div>
+      <div class="glass svc-card warn" data-anim="rise" style="--d:1000">
+        <div class="k">WITHOUT IT</div>
+        <p>Visitors judge you in seconds. If the site looks dated — or there's no way to talk — they bounce to whoever looks more legit. You never even know they came.</p>
+      </div>
+    </div>
+    <div class="glass invest" data-anim style="--d:1150">
+      <span class="ik">INVESTMENT</span>
+      <span class="it">A simple flat rate that pays for itself — sized to your business, not a template.</span>
+      <a class="il" data-open-signup>Get your exact number on the call →</a>
     </div>
   </div>
 </section>
 
-<!-- 4. CALCULATOR -->
-<section class="section" id="calculator" data-effect="blades" data-label="Calculator">
+<!-- 3. WEBSITE + CHATBOT — HOW IT WORKS FOR YOU -->
+<section class="section svc" id="svc-web-flow" data-effect="vortex" data-label="Web · For You">
+  <div class="section-inner">
+    <div class="eyebrow" data-anim style="--d:0"><span class="dot"></span>WEBSITE + CHATBOT · HOW IT WORKS FOR YOU</div>
+    <h1 class="serif" style="--d:120">You approve it.<br><span class="serif-italic">We handle everything else.</span></h1>
+    <div class="flow">
+      <div class="glass flow-step" data-anim="rise" style="--d:640">
+        <div class="idx">01</div>
+        <div class="fk">WE BUILD IT</div>
+        <p>We design and build the whole thing around your business. You tell us what you like — that's your entire job in this step.</p>
+      </div>
+      <div class="glass flow-step" data-anim="rise" style="--d:800">
+        <div class="idx">02</div>
+        <div class="fk">IT CAPTURES</div>
+        <p>The chatbot greets every visitor, handles the common questions, and grabs their info before they can click away to someone else.</p>
+      </div>
+      <div class="glass flow-step" data-anim="rise" style="--d:960">
+        <div class="idx">03</div>
+        <div class="fk">YOU GET THE LEADS</div>
+        <p>Names and numbers land in your hands, ready to book. You keep doing the work you're good at — the site works the front door.</p>
+      </div>
+    </div>
+    <div class="glass invest" data-anim style="--d:1150">
+      <span class="ik">THE RESULT</span>
+      <span class="it">A storefront that never closes — selling for you while you're on the job.</span>
+      <a class="il" data-open-signup>See it live on a call →</a>
+    </div>
+  </div>
+</section>
+
+<!-- 4. SERVICE 02 — GOOGLE REVIEW ENGINE -->
+<section class="section svc" id="svc-reviews" data-effect="helix" data-label="Review Engine">
+  <div class="section-inner">
+    <div class="svc-top">
+      <div>
+        <div class="eyebrow" data-anim="left" style="--d:0"><span class="dot"></span>SERVICE 02 / 04 · GOOGLE REVIEW ENGINE</div>
+        <h1 class="serif" style="--d:120">Reviews decide who gets chosen.<br><span class="serif-italic">We make sure it's you.</span></h1>
+      </div>
+      <div class="glass chart-card tilt-3d" data-anim="right" style="--d:520">
+        <div class="k"><span>NEW 5-STAR REVIEWS / MONTH</span><span class="hl">4.2 → 4.9 ★</span></div>
+        <svg viewBox="0 0 320 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="revBar" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0" stop-color="#c05a34" stop-opacity=".55"/><stop offset="1" stop-color="#f0906a" stop-opacity=".9"/>
+            </linearGradient>
+          </defs>
+          <g stroke="rgba(255,255,255,.06)"><line x1="0" y1="50" x2="320" y2="50"/><line x1="0" y1="100" x2="320" y2="100"/></g>
+          <rect class="cbar" style="--ci:0" x="12"  y="118" width="30" height="34"  rx="4" fill="url(#revBar)" opacity=".55"/>
+          <rect class="cbar" style="--ci:1" x="56"  y="104" width="30" height="48"  rx="4" fill="url(#revBar)" opacity=".62"/>
+          <rect class="cbar" style="--ci:2" x="100" y="88"  width="30" height="64"  rx="4" fill="url(#revBar)" opacity=".7"/>
+          <rect class="cbar" style="--ci:3" x="144" y="70"  width="30" height="82"  rx="4" fill="url(#revBar)" opacity=".78"/>
+          <rect class="cbar" style="--ci:4" x="188" y="50"  width="30" height="102" rx="4" fill="url(#revBar)" opacity=".86"/>
+          <rect class="cbar" style="--ci:5" x="232" y="32"  width="30" height="120" rx="4" fill="url(#revBar)"/>
+          <rect class="cbar" style="--ci:6" x="276" y="14"  width="30" height="138" rx="4" fill="#f7b79a"/>
+          <text x="291" y="8" text-anchor="middle" font-family="monospace" font-size="10" fill="#ffd9c4">★</text>
+        </svg>
+        <div class="chart-foot">ASKED AUTOMATICALLY · ANSWERED AUTOMATICALLY · EVERY JOB</div>
+      </div>
+    </div>
+    <div class="svc-cards">
+      <div class="glass svc-card" data-anim="rise" style="--d:760">
+        <div class="k">WHAT IT DOES</div>
+        <p>Automatically asks every happy customer for a review, replies to every review in your name, and quietly catches the unhappy ones before they ever post.</p>
+      </div>
+      <div class="glass svc-card" data-anim="rise" style="--d:880">
+        <div class="k">HOW IT HELPS YOU</div>
+        <p>More stars, more trust, higher on Google Maps. You get picked over the competition more often — without ever lifting a finger.</p>
+      </div>
+      <div class="glass svc-card warn" data-anim="rise" style="--d:1000">
+        <div class="k">WITHOUT IT</div>
+        <p>The competitor with more reviews takes the calls that should've been yours. And every week you wait, that gap gets wider.</p>
+      </div>
+    </div>
+    <div class="glass invest" data-anim style="--d:1150">
+      <span class="ik">INVESTMENT</span>
+      <span class="it">A small monthly rate — usually covered by the first customer it wins you.</span>
+      <a class="il" data-open-signup>Get your exact number on the call →</a>
+    </div>
+  </div>
+</section>
+
+<!-- 5. REVIEW ENGINE — HOW IT WORKS FOR YOU -->
+<section class="section svc" id="svc-reviews-flow" data-effect="flip" data-label="Reviews · For You">
+  <div class="section-inner">
+    <div class="eyebrow" data-anim style="--d:0"><span class="dot"></span>GOOGLE REVIEW ENGINE · HOW IT WORKS FOR YOU</div>
+    <h1 class="serif" style="--d:120">Set it once.<br><span class="serif-italic">Watch the stars stack up.</span></h1>
+    <div class="flow">
+      <div class="glass flow-step" data-anim="rise" style="--d:640">
+        <div class="idx">01</div>
+        <div class="fk">JOB WRAPS UP</div>
+        <p>The moment a job's done, your customer gets a friendly review ask in your name — automatically, every single time.</p>
+      </div>
+      <div class="glass flow-step" data-anim="rise" style="--d:800">
+        <div class="idx">02</div>
+        <div class="fk">STARS STACK UP</div>
+        <p>Happy customers post publicly. Unhappy ones get caught privately — before anything negative ever hits Google.</p>
+      </div>
+      <div class="glass flow-step" data-anim="rise" style="--d:960">
+        <div class="idx">03</div>
+        <div class="fk">YOU GET CHOSEN</div>
+        <p>Higher rating, more reviews, better spot on the map. When someone compares you to the next guy, you're the obvious pick.</p>
+      </div>
+    </div>
+    <div class="glass invest" data-anim style="--d:1150">
+      <span class="ik">THE RESULT</span>
+      <span class="it">You win the comparison before they ever pick up the phone.</span>
+      <a class="il" data-open-signup>See it live on a call →</a>
+    </div>
+  </div>
+</section>
+
+<!-- 6. SERVICE 03 — LEAD FOLLOW-UP + NURTURE -->
+<section class="section svc" id="svc-followup" data-effect="smear" data-label="Follow-Up + Nurture">
+  <div class="section-inner">
+    <div class="svc-top">
+      <div>
+        <div class="eyebrow" data-anim="left" style="--d:0"><span class="dot"></span>SERVICE 03 / 04 · LEAD FOLLOW-UP + NURTURE</div>
+        <h1 class="serif" style="--d:120">The fortune is in<br><span class="serif-italic">the follow-up.</span></h1>
+      </div>
+      <div class="glass chart-card tilt-3d" data-anim="right" style="--d:520">
+        <div class="k"><span>WHERE DEALS ACTUALLY CLOSE</span><span class="hl">MOST NEED 3+ TOUCHES</span></div>
+        <svg viewBox="0 0 320 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="fuBar" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#c05a34"/><stop offset="1" stop-color="#f7b79a"/>
+            </linearGradient>
+          </defs>
+          <text x="0" y="26" font-family="monospace" font-size="10" letter-spacing="2" fill="#9a948c">1ST TOUCH</text>
+          <rect class="hbar" style="--ci:0" x="0" y="34" width="66" height="14" rx="7" fill="url(#fuBar)" opacity=".55"/>
+          <text x="76" y="45" font-family="monospace" font-size="10" fill="#5f5a54">MOST GIVE UP HERE</text>
+          <text x="0" y="76" font-family="monospace" font-size="10" letter-spacing="2" fill="#9a948c">2ND–3RD TOUCH</text>
+          <rect class="hbar" style="--ci:1" x="0" y="84" width="150" height="14" rx="7" fill="url(#fuBar)" opacity=".78"/>
+          <text x="0" y="126" font-family="monospace" font-size="10" letter-spacing="2" fill="#f7b79a">4TH TOUCH +</text>
+          <rect class="hbar" style="--ci:2" x="0" y="134" width="252" height="14" rx="7" fill="url(#fuBar)"/>
+          <text x="262" y="145" font-family="monospace" font-size="10" fill="#ffd9c4">← THE MONEY</text>
+        </svg>
+        <div class="chart-foot">WE NEVER STOP AT ONE · TEXT + EMAIL · UNTIL THEY BOOK OR SAY NO</div>
+      </div>
+    </div>
+    <div class="svc-cards">
+      <div class="glass svc-card" data-anim="rise" style="--d:760">
+        <div class="k">WHAT IT DOES</div>
+        <p>Every lead gets followed up with automatically — for days, not hours — by text and email, until they book, buy, or tell us no. Old leads get woken back up too.</p>
+      </div>
+      <div class="glass svc-card" data-anim="rise" style="--d:880">
+        <div class="k">HOW IT HELPS YOU</div>
+        <p>Deals you would've forgotten about close on their own. Your pipeline stops leaking, and your calendar fills from leads you already paid for.</p>
+      </div>
+      <div class="glass svc-card warn" data-anim="rise" style="--d:1000">
+        <div class="k">WITHOUT IT</div>
+        <p>Most businesses stop after one touch. Most buyers decide after several. That gap is exactly where your money quietly disappears — every single week.</p>
+      </div>
+    </div>
+    <div class="glass invest" data-anim style="--d:1150">
+      <span class="ik">INVESTMENT</span>
+      <span class="it">One monthly rate. One recovered deal usually pays for months of it.</span>
+      <a class="il" data-open-signup>Get your exact number on the call →</a>
+    </div>
+  </div>
+</section>
+
+<!-- 7. FOLLOW-UP + NURTURE — HOW IT WORKS FOR YOU -->
+<section class="section svc" id="svc-followup-flow" data-effect="pendulum" data-label="Follow-Up · For You">
+  <div class="section-inner">
+    <div class="eyebrow" data-anim style="--d:0"><span class="dot"></span>LEAD FOLLOW-UP + NURTURE · HOW IT WORKS FOR YOU</div>
+    <h1 class="serif" style="--d:120">No lead left behind.<br><span class="serif-italic">Ever.</span></h1>
+    <div class="flow">
+      <div class="glass flow-step" data-anim="rise" style="--d:640">
+        <div class="idx">01</div>
+        <div class="fk">A LEAD COMES IN</div>
+        <p>Every inquiry gets an instant response — then a follow-up rhythm that doesn't quit after one try like everyone else does.</p>
+      </div>
+      <div class="glass flow-step" data-anim="rise" style="--d:800">
+        <div class="idx">02</div>
+        <div class="fk">WE STAY ON IT</div>
+        <p>Texts and emails keep the conversation warm for days. Personal, not spammy — in your business's voice the whole way.</p>
+      </div>
+      <div class="glass flow-step" data-anim="rise" style="--d:960">
+        <div class="idx">03</div>
+        <div class="fk">THEY BOOK</div>
+        <p>When they're ready, they land straight on your calendar. Old, cold leads get woken back up and put through the same system.</p>
+      </div>
+    </div>
+    <div class="glass invest" data-anim style="--d:1150">
+      <span class="ik">THE RESULT</span>
+      <span class="it">Your pipeline stops leaking — deals close that you never would've chased.</span>
+      <a class="il" data-open-signup>See it live on a call →</a>
+    </div>
+  </div>
+</section>
+
+<!-- 8. SERVICE 04 — MISSED CALL RECOVERY + AI RECEPTIONIST -->
+<section class="section svc" id="svc-reception" data-effect="iris" data-label="AI Receptionist">
+  <div class="section-inner">
+    <div class="svc-top">
+      <div>
+        <div class="eyebrow" data-anim="left" style="--d:0"><span class="dot"></span>SERVICE 04 / 04 · MISSED CALL RECOVERY + AI RECEPTIONIST</div>
+        <h1 class="serif" style="--d:120">Your phone rang. Nobody answered.<br><span class="serif-italic">We saved it anyway.</span></h1>
+      </div>
+      <div class="glass chart-card tilt-3d" data-anim="right" style="--d:520">
+        <div class="k"><span>MISSED CALLERS HANDLED</span><span class="hl">24/7 COVERAGE</span></div>
+        <svg viewBox="0 0 320 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="donGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#c05a34"/><stop offset="1" stop-color="#ffd9c4"/>
+            </linearGradient>
+          </defs>
+          <circle cx="90" cy="85" r="58" stroke="rgba(255,255,255,.08)" stroke-width="13" fill="none"/>
+          <circle class="donut" style="--arc:284" cx="90" cy="85" r="58" stroke="url(#donGrad)" stroke-width="13" fill="none" stroke-linecap="round" transform="rotate(-90 90 85)"/>
+          <text x="90" y="80" text-anchor="middle" font-family="Georgia,serif" font-size="30" fill="#f4f1ea">78%</text>
+          <text x="90" y="100" text-anchor="middle" font-family="monospace" font-size="8.5" letter-spacing="2" fill="#9a948c">SAVED</text>
+          <g font-family="monospace" font-size="10" letter-spacing="1.5">
+            <circle cx="188" cy="52" r="4" fill="#f0906a"/><text x="200" y="56" fill="#cfc9c1">TEXTED BACK ~9 SEC</text>
+            <circle cx="188" cy="86" r="4" fill="#f7b79a"/><text x="200" y="90" fill="#cfc9c1">ANSWERED BY AI</text>
+            <circle cx="188" cy="120" r="4" fill="rgba(255,255,255,.18)"/><text x="200" y="124" fill="#5f5a54">LEFT TO VOICEMAIL</text>
+          </g>
+        </svg>
+        <div class="chart-foot">NIGHTS · WEEKENDS · MID-JOB · BOOKED STRAIGHT INTO YOUR CALENDAR</div>
+      </div>
+    </div>
+    <div class="svc-cards">
+      <div class="glass svc-card" data-anim="rise" style="--d:760">
+        <div class="k">WHAT IT DOES</div>
+        <p>Every missed call gets a text back in seconds — and an AI receptionist picks up, answers questions in your business's name, and books the job for you.</p>
+      </div>
+      <div class="glass svc-card" data-anim="rise" style="--d:880">
+        <div class="k">HOW IT HELPS YOU</div>
+        <p>Nights, weekends, up a ladder — every caller gets handled like you answered yourself. Jobs land straight on your calendar while you stay focused on the work.</p>
+      </div>
+      <div class="glass svc-card warn" data-anim="rise" style="--d:1000">
+        <div class="k">WITHOUT IT</div>
+        <p>60–80% of callers who hit voicemail never call back. They just dial the next name on Google — and that job is gone before you even see the missed call.</p>
+      </div>
+    </div>
+    <div class="glass invest" data-anim style="--d:1150">
+      <span class="ik">INVESTMENT</span>
+      <span class="it">A flat monthly rate — one saved job typically covers it, everything after is profit.</span>
+      <a class="il" data-open-signup>Get your exact number on the call →</a>
+    </div>
+  </div>
+</section>
+
+<!-- 9. AI RECEPTIONIST — HOW IT WORKS FOR YOU -->
+<section class="section svc" id="svc-reception-flow" data-effect="corridor" data-label="Receptionist · For You">
+  <div class="section-inner">
+    <div class="eyebrow" data-anim style="--d:0"><span class="dot"></span>MISSED CALL RECOVERY + AI RECEPTIONIST · HOW IT WORKS FOR YOU</div>
+    <h1 class="serif" style="--d:120">Every call handled.<br><span class="serif-italic">Even the ones you miss.</span></h1>
+    <div class="flow">
+      <div class="glass flow-step" data-anim="rise" style="--d:640">
+        <div class="idx">01</div>
+        <div class="fk">THE PHONE RINGS</div>
+        <p>You're on a job or closed for the night. The AI receptionist picks up in your business's name — or a text fires back within seconds.</p>
+      </div>
+      <div class="glass flow-step" data-anim="rise" style="--d:800">
+        <div class="idx">02</div>
+        <div class="fk">IT HANDLES IT</div>
+        <p>Questions answered, details taken, appointment offered — like a trained front desk that never takes a break or a sick day.</p>
+      </div>
+      <div class="glass flow-step" data-anim="rise" style="--d:960">
+        <div class="idx">03</div>
+        <div class="fk">THE JOB'S BOOKED</div>
+        <p>It lands on your calendar with the caller's info attached. You show up, do the work, and get paid. That's it.</p>
+      </div>
+    </div>
+    <div class="glass invest" data-anim style="--d:1150">
+      <span class="ik">THE RESULT</span>
+      <span class="it">A full-time receptionist working your line 24/7 — without the payroll.</span>
+      <a class="il" data-open-signup>See it live on a call →</a>
+    </div>
+  </div>
+</section>
+
+<!-- 10. CALCULATOR -->
+<section class="section" id="calculator" data-effect="cube" data-label="The Leak Calculator">
   <div class="section-inner">
     <div class="eyebrow" data-anim="left" style="--d:0"><span class="dot"></span>THE LEAK CALCULATOR</div>
     <h1 class="serif" style="--d:120">What is the leak <span class="serif-italic">costing you?</span></h1>
@@ -480,156 +904,8 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
   </div>
 </section>
 
-<!-- 5. PHONE RANG -->
-<section class="section" id="phone-rang" data-effect="hyperdrive" data-label="The Save">
-  <div class="section-inner">
-    <div class="two-col">
-      <div class="left">
-        <div class="eyebrow" data-anim="left" style="--d:0"><span class="dot"></span>BOOK THE DEMO</div>
-        <h1 class="serif" style="--d:120">Your phone rang.</h1>
-        <h1 class="grad-gray" style="--d:340">Nobody answered.</h1>
-        <h1 class="serif-italic" style="--d:560">We just saved that job.</h1>
-        <p class="lede" data-anim="left" style="--d:900">Most local businesses lose 60–80% of callers who hit voicemail — they just dial the next name on Google. We text every missed caller back in nine seconds, answer their questions, and book them into your calendar. Automatically, 24/7.</p>
-        <div class="cta-row" data-anim style="--d:1040">
-          <a class="btn-primary" data-magnetic data-open-signup>Book the free demo <span class="arrow">→</span></a>
-          <a href="#hero" class="btn-secondary" data-magnetic>↑ Back to top</a>
-        </div>
-      </div>
-      <div data-parallax="1">
-        <div class="device" data-anim="tilt" style="--d:750">
-          <div class="frame">
-            <div class="notch"></div>
-            <div class="phone-contact"><div class="phone-avatar">A</div><div><div class="cname">Apex Standard</div><div class="crole">RECOVERY AGENT</div></div></div>
-            <div class="missed">📞 MISSED CALL · JUST NOW</div>
-            <div class="bubble">Hey, sorry we missed you! This is Apex Electric. Did you need a hand with something? We can get you booked tonight here.</div>
-            <div class="book-btn">Book your appointment →</div>
-            <div class="phone-foot"><span class="pulse"></span>Job saved · $420 recovered</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 6. HOW IT WORKS -->
-<section class="section" id="how-it-works" data-effect="iris" data-label="How It Works">
-  <div class="section-inner">
-    <div class="eyebrow" data-anim style="--d:0"><span class="dot"></span>HOW IT WORKS</div>
-    <h1 class="serif" style="--d:120">A call slips through. <span class="serif-italic">Nine seconds later, they're back.</span></h1>
-    <div class="stepper">
-      <div class="glass step" data-anim="left" style="--d:700">
-        <div class="step-idx">CATCH 01</div>
-        <div class="step-icon">📞</div>
-        <div class="step-body"><div class="step-title">A call slips through</div><div class="step-desc">You're on a job, with a client, or closed for the night. The instant a call goes unanswered, our system catches it — no voicemail black hole.</div></div>
-      </div>
-      <div class="glass step" data-anim="left" style="--d:840">
-        <div class="step-idx">RECOVER 02</div>
-        <div class="step-icon">✈️</div>
-        <div class="step-body"><div class="step-title">The text fires in seconds</div><div class="step-desc">The caller gets a friendly text in your business's name before they can dial a competitor. It answers questions, sends your booking link, and keeps the conversation alive.</div></div>
-      </div>
-      <div class="glass step" data-anim="left" style="--d:980">
-        <div class="step-idx">COUNT 03</div>
-        <div class="step-icon">💲</div>
-        <div class="step-body"><div class="step-title">You see the money</div><div class="step-desc">Every recovered lead is tracked. Once a month, you get a plain-English report — calls caught, jobs booked, dollars saved.</div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 7. DEMO CALL -->
-<section class="section" id="demo-call" data-effect="fold" data-label="Live Demo">
-  <div class="section-inner">
-    <div class="two-col">
-      <div class="left">
-        <div class="eyebrow" data-anim="left" style="--d:0"><span class="dot"></span>10 MIN · LIVE · ON YOUR NUMBER</div>
-        <h1 class="serif" style="--d:120">Call your own business.</h1>
-        <h1 class="serif-italic" style="--d:340">Watch nobody answer.</h1>
-        <h1 class="serif-italic" style="--d:560">Watch us save the lead anyway.</h1>
-        <p class="lede" data-anim="left" style="--d:960">That's the whole demo. You'll see the recovery text hit your own phone in real time — then decide for yourself.</p>
-        <div class="cta-row" data-anim style="--d:1100">
-          <a class="btn-primary" data-magnetic data-open-signup>Book the free demo <span class="arrow">→</span></a>
-          <a href="#how-it-works" class="btn-secondary" data-magnetic>↓ See how it works</a>
-        </div>
-        <div class="pills" data-anim style="--d:1240" style="justify-content:flex-start;">
-          <span class="pill">NO PITCH DECK</span><span class="pill">JUST YOUR PHONE RINGING</span><span class="pill">9-SECOND RECOVERY</span>
-        </div>
-      </div>
-      <div data-parallax="1">
-        <div class="device" data-anim="tilt" style="--d:750">
-          <div class="frame">
-            <div class="notch"></div>
-            <div class="phone-contact"><div class="phone-avatar">A</div><div><div class="cname">Apex Standard</div><div class="crole">(707) 555-0119 · MOBILE</div></div></div>
-            <div class="missed">📞 MISSED CALL · JUST NOW</div>
-            <div class="bubble">Hey — sorry we missed you! This is Apex Electric. Did you need a hand with something? We can get you booked tonight.</div>
-            <div class="book-btn">Book your appointment →</div>
-            <div class="phone-foot"><span class="pulse"></span>Reply sent in 9s</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 8. THREE PLAYS -->
-<section class="section" id="three-plays" data-effect="smear" data-label="Solutions">
-  <div class="section-inner">
-    <div class="eyebrow" data-anim="left" style="--d:0"><span class="dot"></span>WHAT WE DO</div>
-    <h1 class="serif" style="--d:120">Three plays. <span class="serif-italic">One compounding system.</span></h1>
-    <div class="plays">
-      <div class="glass play core tilt-3d" data-anim="right" style="--d:600">
-        <div class="badge">CORE</div>
-        <div class="tag">💬 THE CORE — START HERE</div>
-        <h3>Missed Call Text-Back Agent</h3>
-        <p>The missed-call machine. Nobody who wants to give you money gets ignored again.</p>
-        <ul class="feat-list">
-          <li>Instant text-back on every missed call, 24/7</li>
-          <li>Website chat that captures the ones who won't call</li>
-          <li>Automatic follow-up with leads who didn't book</li>
-          <li>Appointment reminders that kill no-shows</li>
-          <li>Wake-up texts to your old customer list</li>
-        </ul>
-      </div>
-      <div class="glass play tilt-3d" data-anim="right" style="--d:740">
-        <div class="tag">⭐ INCLUDED IN EVERY PLAN</div>
-        <h3>Google Review Automation</h3>
-        <p>Reviews decide who gets chosen on Google. We make sure it's you.</p>
-        <ul class="feat-list">
-          <li>Automatic review requests after every job</li>
-          <li>Every review answered — good and bad</li>
-          <li>Unhappy customers caught privately, before they post</li>
-          <li>Climb the Google Maps rankings</li>
-        </ul>
-      </div>
-      <div class="glass play tilt-3d" data-anim="right" style="--d:880">
-        <div class="tag">🌐 GET STARTED FAST</div>
-        <h3>Website Creation &amp; Design</h3>
-        <p>A clean, fast, mobile-ready website — the foundation everything else runs on.</p>
-        <ul class="feat-list">
-          <li>Custom-designed, mobile-friendly site</li>
-          <li>Built to plug into lead capture &amp; reviews</li>
-          <li>Fast turnaround, low commitment to start</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 9. BUILT TO BE FAST -->
-<section class="section center" id="built-fast" data-effect="ascension" data-label="Results">
-  <div class="section-inner">
-    <div class="eyebrow" data-anim style="--d:0"><span class="dot"></span>RESULTS THAT COMPOUND</div>
-    <h1 class="serif" style="--d:120">Built to be fast.</h1>
-    <h1 class="serif-italic" style="--d:320">Built to pay for itself.</h1>
-    <div class="bento cols-3" style="width:100%;">
-      <div class="glass stat-tile tilt-3d" data-anim style="--d:760;text-align:center;"><div class="num"><span data-count="3">3</span><span class="unit">days</span></div><div class="cap">From signup to fully live and installed on your line.</div></div>
-      <div class="glass stat-tile tilt-3d" data-anim style="--d:900;text-align:center;"><div class="num"><span data-count="9">9</span><span class="unit">sec</span></div><div class="cap">Average reply time from missed call to recovery text.</div></div>
-      <div class="glass stat-tile tilt-3d" data-anim style="--d:1040;text-align:center;"><div class="num"><span data-count="24">24</span>/7</div><div class="cap">Nights, weekends, holidays — every moment earns its keep.</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- 10. REPORTING -->
-<section class="section" id="reporting" data-effect="horizon" data-label="Reporting">
+<!-- 7. RECEIPTS -->
+<section class="section" id="receipts" data-effect="fold" data-label="Receipts">
   <div class="section-inner">
     <div class="two-col">
       <div data-parallax="0.8">
@@ -655,17 +931,30 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
         <h1 class="serif" style="--d:430">you see exactly</h1>
         <h1 class="serif-italic" style="--d:590">what we saved you.</h1>
         <p class="lede" data-anim="right" style="--d:930">Most marketing asks you to trust it. Ours shows receipts. This is the report every client gets — real numbers from your real phone line.</p>
-        <div class="cta-row" data-anim style="--d:1070">
-          <a class="btn-primary" data-magnetic data-open-signup>Get started <span class="arrow">→</span></a>
-        </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. BOOK A CALL -->
+<section class="section center" id="book-call" data-effect="ascension" data-label="Book a Call">
+  <div class="section-inner">
+    <div class="eyebrow" data-anim style="--d:0"><span class="dot"></span>THE NEXT STEP · 10 MINUTES</div>
+    <h1 class="serif" style="--d:120">Hop on a call.</h1>
+    <h1 class="serif-italic" style="--d:320">See it live on your own phone.</h1>
+    <p class="lede" data-anim style="--d:850">Ten minutes. No pitch deck. We show you exactly what this looks like for your business, size the numbers to you — and then you decide.</p>
+    <div class="cta-row" data-anim style="--d:1000" style="justify-content:center;">
+      <a class="btn-primary" data-magnetic data-open-signup>Book the free call <span class="arrow">→</span></a>
+      <a class="btn-secondary" data-magnetic id="calendlyHero" target="_blank" rel="noopener">Book directly on Calendly</a>
+    </div>
+    <div class="pills" data-anim style="--d:1180">
+      <span class="pill">NO CONTRACTS</span><span class="pill">NO PRESSURE</span><span class="pill">LIVE ON YOUR NUMBER</span>
     </div>
   </div>
 </section>
 
 </main>
 
-<div class="blades" id="blades"><span style="--bi:0"></span><span style="--bi:1"></span><span style="--bi:2"></span><span style="--bi:3"></span><span style="--bi:4"></span><span style="--bi:5"></span><span style="--bi:6"></span><span style="--bi:7"></span></div>
 <div class="grain"></div>
 
 <!-- SIGNUP MODAL -->
@@ -681,11 +970,12 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(.7em) rotateX(-68deg) 
         <div class="form-field"><label for="f-email">EMAIL</label><input id="f-email" type="email" placeholder="jane@gmail.com" required></div>
         <div class="form-field"><label for="f-phone">PHONE NUMBER</label><input id="f-phone" type="tel" placeholder="(707) 555-0119" required></div>
         <div class="form-field">
-          <label for="f-reason">REASON FOR SIGNING UP</label>
+          <label for="f-reason">WHAT ARE YOU MOST INTERESTED IN?</label>
           <select id="f-reason">
-            <option>Missed Call Text-Back Agent</option>
-            <option>Google Review Automation</option>
-            <option>Website Creation &amp; Design</option>
+            <option>Website + Chatbot</option>
+            <option>Google Review Engine</option>
+            <option>Lead Follow-Up + Nurture</option>
+            <option>Missed Call Recovery + AI Receptionist</option>
             <option>The full system</option>
             <option>Just exploring</option>
           </select>
@@ -736,11 +1026,11 @@ document.querySelectorAll('.section h1').forEach(h1 => {
   })(h1);
 });
 
-/* ═══════════ PARTICLE FIELD ═══════════ */
+/* ═══════════ AMBIENT PARTICLE FIELD (light) ═══════════ */
 const field = document.getElementById('field');
 const fctx = field.getContext('2d');
 let particles = [];
-const P_COUNT = innerWidth < 900 ? 46 : 116;
+const P_COUNT = innerWidth < 900 ? 22 : 52;
 let mouse = { x: -9999, y: -9999 };
 
 function fieldResize(){
@@ -752,7 +1042,7 @@ fieldResize(); addEventListener('resize', fieldResize);
 
 for (let i = 0; i < P_COUNT; i++){
   particles.push({ x: Math.random()*innerWidth, y: Math.random()*innerHeight,
-    vx:(Math.random()-.5)*.16, vy:(Math.random()-.5)*.16, r:Math.random()*1.5+.4, warm:Math.random()<.42 });
+    vx:(Math.random()-.5)*.15, vy:(Math.random()-.5)*.15, r:Math.random()*1.5+.4 });
 }
 function fieldImpulse(strength){
   const cx = innerWidth/2, cy = innerHeight/2;
@@ -774,22 +1064,21 @@ function fieldImpulse(strength){
     const md = Math.hypot(p.x-mouse.x, p.y-mouse.y);
     if (md<160){ p.vx += (p.x-mouse.x)/md*.012; p.vy += (p.y-mouse.y)/md*.012; }
     fctx.beginPath(); fctx.arc(p.x,p.y,p.r,0,7);
-    fctx.fillStyle = p.warm ? 'rgba(240,144,106,.4)' : 'rgba(130,150,230,.32)'; fctx.fill();
+    fctx.fillStyle = 'rgba(240,144,106,.20)'; fctx.fill();
     for (let j=i+1;j<particles.length;j++){
       const q = particles[j], dx=p.x-q.x, dy=p.y-q.y;
       if (Math.abs(dx)>LINK||Math.abs(dy)>LINK) continue;
       const d = Math.hypot(dx,dy);
       if (d<LINK){ fctx.beginPath(); fctx.moveTo(p.x,p.y); fctx.lineTo(q.x,q.y);
-        fctx.strokeStyle='rgba(150,165,215,'+(.1*(1-d/LINK))+')'; fctx.stroke(); }
+        fctx.strokeStyle='rgba(220,150,110,'+(.05*(1-d/LINK))+')'; fctx.stroke(); }
     }
   }
   if (!REDUCED) requestAnimationFrame(fieldTick);
 })();
 
-/* ═══════════ HYPERSPACE STREAK BURST ═══════════
-   Radial light-streaks fired from the optical center on every
-   navigation — the signature "Kling warp." The loop only runs while
-   streaks are alive, then clears itself, so it costs nothing at rest. */
+/* ═══════════ LIGHT-STREAK BURST ═══════════
+   Radial streaks fired on the big zoom transitions only.
+   The loop self-terminates when no streaks are alive. */
 const streaksC = document.getElementById('streaks');
 const sctx = streaksC.getContext('2d');
 let streakArr = [], streakRAF = 0;
@@ -800,11 +1089,11 @@ function streaksResize(){
 streaksResize(); addEventListener('resize', streaksResize);
 function fireStreaks(strength){
   if (!strength || REDUCED) return;
-  const n = Math.round(42*strength);
+  const n = Math.round(38*strength);
   for (let i=0;i<n;i++){
     streakArr.push({ ang:Math.random()*Math.PI*2, dist:14+Math.random()*80,
-      speed:(6+Math.random()*15)*strength, len:34+Math.random()*150*strength,
-      life:1, warm:Math.random()<.55, w:.6+Math.random()*1.5 });
+      speed:(6+Math.random()*15)*strength, len:34+Math.random()*140*strength,
+      life:1, w:.6+Math.random()*1.5 });
   }
   if (!streakRAF) streakRAF = requestAnimationFrame(streakTick);
 }
@@ -817,8 +1106,8 @@ function streakTick(){
   streakArr.forEach(s => {
     const c = Math.cos(s.ang), sn = Math.sin(s.ang);
     const x1 = cx+c*s.dist, y1 = cy+sn*s.dist, x2 = cx+c*(s.dist+s.len), y2 = cy+sn*(s.dist+s.len);
-    const g = sctx.createLinearGradient(x1,y1,x2,y2), col = s.warm?'247,183,154':'150,175,255';
-    g.addColorStop(0,'rgba('+col+',0)'); g.addColorStop(1,'rgba('+col+','+(s.life*.5)+')');
+    const g = sctx.createLinearGradient(x1,y1,x2,y2);
+    g.addColorStop(0,'rgba(247,183,154,0)'); g.addColorStop(1,'rgba(247,183,154,'+(s.life*.5)+')');
     sctx.strokeStyle = g; sctx.lineWidth = s.w; sctx.lineCap = 'round';
     sctx.beginPath(); sctx.moveTo(x1,y1); sctx.lineTo(x2,y2); sctx.stroke();
   });
@@ -827,97 +1116,112 @@ function streakTick(){
 }
 
 /* ═══════════ 3D TRANSITION LIBRARY ═══════════
-   Ten slides, ten 3D signatures. Every effect is a multi-phase WAAPI
-   timeline on a real perspective stage; reverse navigation plays the
-   departing slide's signature backwards. */
-/* Physical easings — accelerate away, decelerate into place (the
-   "settle" that gives AI-rendered video its weight). Each `in` uses
-   per-keyframe easing so motion rushes early and eases long into rest. */
-const EASE = 'cubic-bezier(.16,1,.3,1)', EASE_IO = 'cubic-bezier(.76,0,.24,1)';
+   Eight slides, eight signatures — no two entrances alike.
+   Physical easings: accelerate away, decelerate long into rest. */
+const EASE = 'cubic-bezier(.16,1,.3,1)';
 const E_ACC = 'cubic-bezier(.42,0,.82,.38)';   // accelerate out of frame
 const E_MID = 'cubic-bezier(.22,.62,.2,1)';    // carry through
-const E_SET = 'cubic-bezier(.14,1,.28,1)';     // decelerate + micro-overshoot
+const E_SET = 'cubic-bezier(.14,1,.28,1)';     // decelerate + settle
 const FX = {
-  /* deep-space dolly — camera rushes forward through the slide */
-  warp:{ dur:1650, ease:'linear', impulse:2.2, streak:1.3,
-    in:[{transform:'translateZ(-2100px) scale(1.44) rotateX(7deg)',opacity:0,filter:'blur(40px) brightness(2)',easing:E_ACC},
-        {transform:'translateZ(-430px) scale(1.12)',opacity:1,filter:'blur(15px) brightness(1.35)',offset:.42,easing:E_MID},
-        {transform:'translateZ(96px) scale(.984)',opacity:1,filter:'blur(2px) brightness(1.06)',offset:.78,easing:E_SET},
+  /* 1 · deep-space dolly — camera rushes forward through the slide */
+  warp:{ dur:1550, ease:'linear', impulse:2, streak:1.2,
+    in:[{transform:'translateZ(-1900px) scale(1.4) rotateX(6deg)',opacity:0,filter:'blur(26px) brightness(1.8)',easing:E_ACC},
+        {transform:'translateZ(-400px) scale(1.1)',opacity:1,filter:'blur(11px) brightness(1.3)',offset:.42,easing:E_MID},
+        {transform:'translateZ(88px) scale(.986)',opacity:1,filter:'blur(2px) brightness(1.05)',offset:.78,easing:E_SET},
         {transform:'none',opacity:1,filter:'blur(0) brightness(1)'}],
     out:[{transform:'none',opacity:1,filter:'blur(0)',easing:E_ACC},
-         {transform:'translateZ(760px) scale(.95)',opacity:1,filter:'blur(11px)',offset:.5,easing:E_MID},
-         {transform:'translateZ(1500px) scale(.88)',opacity:0,filter:'blur(30px) brightness(1.4)'}] },
-  /* orbital sweep — the slide arcs in around the Y axis */
-  helix:{ dur:1560, ease:'linear', impulse:1.1, streak:.5,
-    in:[{transform:'rotateY(-138deg) translateX(-54vw) translateZ(-540px) scale(1.16)',opacity:0,filter:'blur(20px)',easing:E_ACC},
-        {transform:'rotateY(-40deg) translateX(-15vw) translateZ(-130px)',opacity:1,filter:'blur(7px)',offset:.5,easing:E_MID},
-        {transform:'rotateY(9deg) translateX(1.4vw)',opacity:1,filter:'blur(1.4px)',offset:.82,easing:E_SET},
+         {transform:'translateZ(720px) scale(.95)',opacity:1,filter:'blur(9px)',offset:.5,easing:E_MID},
+         {transform:'translateZ(1400px) scale(.88)',opacity:0,filter:'blur(22px) brightness(1.35)'}] },
+  /* 2 · word-zoom — camera dives INTO the outgoing slide; the next one
+     blooms up from a point, like entering a word and coming out the other side */
+  wordzoom:{ dur:1550, ease:'linear', impulse:1.6, streak:1,
+    in:[{transform:'scale(.1) translateZ(0)',opacity:0,filter:'blur(16px)',easing:E_ACC},
+        {transform:'scale(.68)',opacity:1,filter:'blur(6px)',offset:.5,easing:E_MID},
+        {transform:'scale(1.025)',opacity:1,filter:'blur(1px)',offset:.82,easing:E_SET},
         {transform:'none',opacity:1,filter:'blur(0)'}],
     out:[{transform:'none',opacity:1,filter:'blur(0)',easing:E_ACC},
-         {transform:'rotateY(50deg) translateX(22vw) translateZ(-220px)',opacity:1,filter:'blur(8px)',offset:.5,easing:E_MID},
-         {transform:'rotateY(110deg) translateX(50vw) translateZ(-540px)',opacity:0,filter:'blur(20px)'}] },
-  /* cube tumble — folds down over the top edge in depth */
-  cube:{ dur:1520, ease:'linear', impulse:1, streak:.5,
-    in:[{transform:'rotateX(94deg) translateY(40vh) translateZ(360px) scale(1.1)',opacity:0,filter:'blur(16px)',transformOrigin:'50% 50%',easing:E_ACC},
-        {transform:'rotateX(30deg) translateY(11vh) translateZ(70px)',opacity:1,filter:'blur(6px)',transformOrigin:'50% 50%',offset:.5,easing:E_MID},
-        {transform:'rotateX(-7deg) translateY(-1vh)',opacity:1,filter:'blur(1px)',transformOrigin:'50% 50%',offset:.82,easing:E_SET},
-        {transform:'none',opacity:1,filter:'blur(0)',transformOrigin:'50% 50%'}],
-    out:[{transform:'none',opacity:1,filter:'blur(0)',transformOrigin:'50% 50%',easing:E_ACC},
-         {transform:'rotateX(-94deg) translateY(-40vh) translateZ(360px)',opacity:0,filter:'blur(16px)',transformOrigin:'50% 50%'}] },
-  /* shutter — vertical blades wipe across a depth-shifted slide */
-  blades:{ dur:1400, ease:'linear', impulse:.9, streak:.4, blades:true,
-    in:[{clipPath:'inset(0 0 0 100%)',transform:'translateX(11vw) translateZ(-140px)',filter:'blur(9px)',opacity:1,easing:E_MID},
-        {clipPath:'inset(0 0 0 22%)',transform:'translateX(2.4vw)',filter:'blur(2px)',opacity:1,offset:.62,easing:E_SET},
-        {clipPath:'inset(0 0 0 0)',transform:'none',filter:'blur(0)',opacity:1}],
-    out:[{clipPath:'inset(0 0 0 0)',transform:'none',filter:'blur(0)',opacity:1,easing:E_ACC},
-         {clipPath:'inset(0 100% 0 0)',transform:'translateX(-11vw) translateZ(-140px)',filter:'blur(9px)',opacity:1}] },
-  /* hyperdrive — slide punches toward the viewer through light streaks */
-  hyperdrive:{ dur:1720, ease:'linear', impulse:3, streak:1.6,
-    in:[{transform:'translateZ(1200px) translateY(5vh) scale(1.05)',opacity:0,filter:'blur(32px) saturate(1.8) brightness(1.5)',easing:E_ACC},
-        {transform:'translateZ(260px)',opacity:1,filter:'blur(11px) saturate(1.3)',offset:.5,easing:E_MID},
-        {transform:'translateZ(-74px) scale(1.006)',opacity:1,filter:'blur(2px)',offset:.8,easing:E_SET},
-        {transform:'none',opacity:1,filter:'blur(0) saturate(1) brightness(1)'}],
+         {transform:'scale(3.2)',opacity:.55,filter:'blur(10px) brightness(1.3)',offset:.55,easing:E_MID},
+         {transform:'scale(7.5)',opacity:0,filter:'blur(26px) brightness(1.7)'}] },
+  /* vortex — spirals up out of a point, spinning as it grows */
+  vortex:{ dur:1520, ease:'linear', impulse:1.5, streak:.9,
+    in:[{transform:'scale(.15) rotate(-150deg)',opacity:0,filter:'blur(18px) brightness(1.5)',easing:E_ACC},
+        {transform:'scale(.74) rotate(-32deg)',opacity:1,filter:'blur(7px)',offset:.5,easing:E_MID},
+        {transform:'scale(1.02) rotate(4deg)',opacity:1,filter:'blur(1px)',offset:.82,easing:E_SET},
+        {transform:'none',opacity:1,filter:'blur(0) brightness(1)'}],
     out:[{transform:'none',opacity:1,filter:'blur(0)',easing:E_ACC},
-         {transform:'translateZ(-1600px) translateY(-6vh) scale(1.16)',opacity:0,filter:'blur(30px) saturate(1.5)'}] },
-  /* iris — a circular aperture blooms open from the center */
-  iris:{ dur:1500, ease:'linear', impulse:1.4, streak:.7,
-    in:[{clipPath:'circle(0% at 50% 52%)',transform:'scale(1.16)',opacity:1,filter:'brightness(1.7) blur(4px)',easing:E_ACC},
-        {clipPath:'circle(46% at 50% 51%)',transform:'scale(1.06)',opacity:1,filter:'brightness(1.2) blur(1px)',offset:.56,easing:E_MID},
-        {clipPath:'circle(152% at 50% 50%)',transform:'scale(1)',opacity:1,filter:'brightness(1) blur(0)'}],
-    out:[{clipPath:'circle(152% at 50% 50%)',transform:'scale(1)',opacity:1,filter:'brightness(1)',easing:E_ACC},
-         {clipPath:'circle(0% at 50% 46%)',transform:'scale(.9)',opacity:1,filter:'brightness(1.4)'}] },
-  /* door — the slide swings open on its left hinge */
-  fold:{ dur:1560, ease:'linear', impulse:1, streak:.5,
-    in:[{transform:'rotateY(102deg) translateX(-6vw) translateZ(200px)',opacity:0,filter:'blur(14px)',transformOrigin:'0% 50%',easing:E_ACC},
-        {transform:'rotateY(31deg) translateZ(46px)',opacity:1,filter:'blur(5px)',transformOrigin:'0% 50%',offset:.5,easing:E_MID},
-        {transform:'rotateY(-8deg)',opacity:1,filter:'blur(1px)',transformOrigin:'0% 50%',offset:.82,easing:E_SET},
-        {transform:'none',opacity:1,filter:'blur(0)',transformOrigin:'0% 50%'}],
-    out:[{transform:'none',opacity:1,filter:'blur(0)',transformOrigin:'100% 50%',easing:E_ACC},
-         {transform:'rotateY(-90deg) translateX(6vw) translateZ(160px)',opacity:0,filter:'blur(14px)',transformOrigin:'100% 50%'}] },
-  /* smear — lateral velocity blur, like a fast whip-pan */
-  smear:{ dur:1480, ease:'linear', impulse:1.3, streak:1,
-    in:[{transform:'translateX(66vw) skewX(-20deg) scaleX(1.85)',opacity:0,filter:'blur(28px) contrast(1.4)',easing:E_ACC},
-        {transform:'translateX(12vw) skewX(-6deg) scaleX(1.2)',opacity:1,filter:'blur(9px) contrast(1.15)',offset:.5,easing:E_MID},
-        {transform:'translateX(-1.4vw) skewX(1.4deg) scaleX(1.01)',opacity:1,filter:'blur(1.4px)',offset:.82,easing:E_SET},
+         {transform:'scale(2.6) rotate(110deg)',opacity:0,filter:'blur(22px) brightness(1.4)'}] },
+  /* flip — the whole slide turns over like a card in deep space */
+  flip:{ dur:1480, ease:'linear', impulse:1, streak:.4,
+    in:[{transform:'rotateY(-176deg) translateZ(-380px) scale(.86)',opacity:0,filter:'blur(14px)',easing:E_ACC},
+        {transform:'rotateY(-52deg) translateZ(-100px)',opacity:1,filter:'blur(6px)',offset:.5,easing:E_MID},
+        {transform:'rotateY(10deg)',opacity:1,filter:'blur(1px)',offset:.82,easing:E_SET},
+        {transform:'none',opacity:1,filter:'blur(0)'}],
+    out:[{transform:'none',opacity:1,filter:'blur(0)',easing:E_ACC},
+         {transform:'rotateY(150deg) translateZ(-380px) scale(.86)',opacity:0,filter:'blur(14px)'}] },
+  /* pendulum — swings in from a pivot high above the frame */
+  pendulum:{ dur:1540, ease:'linear', impulse:1.1, streak:.4,
+    in:[{transform:'rotate(-16deg) translateX(-56vw) translateY(-24vh) scale(1.16)',opacity:0,filter:'blur(16px)',transformOrigin:'50% -60%',easing:E_ACC},
+        {transform:'rotate(5deg) translateX(6vw) translateY(2vh)',opacity:1,filter:'blur(5px)',transformOrigin:'50% -60%',offset:.55,easing:E_MID},
+        {transform:'rotate(-1.6deg) translateX(-1vw)',opacity:1,filter:'blur(1px)',transformOrigin:'50% -60%',offset:.84,easing:E_SET},
+        {transform:'none',opacity:1,filter:'blur(0)',transformOrigin:'50% -60%'}],
+    out:[{transform:'none',opacity:1,filter:'blur(0)',transformOrigin:'50% -60%',easing:E_ACC},
+         {transform:'rotate(14deg) translateX(54vw) translateY(-18vh) scale(1.12)',opacity:0,filter:'blur(16px)',transformOrigin:'50% -60%'}] },
+  /* corridor — banks in from far down a hallway of light */
+  corridor:{ dur:1600, ease:'linear', impulse:2.2, streak:1.4,
+    in:[{transform:'translateZ(-2200px) rotateY(24deg) translateX(30vw)',opacity:0,filter:'blur(26px) brightness(1.9)',easing:E_ACC},
+        {transform:'translateZ(-520px) rotateY(9deg) translateX(9vw)',opacity:1,filter:'blur(11px) brightness(1.3)',offset:.45,easing:E_MID},
+        {transform:'translateZ(70px) rotateY(-2deg)',opacity:1,filter:'blur(2px)',offset:.8,easing:E_SET},
+        {transform:'none',opacity:1,filter:'blur(0) brightness(1)'}],
+    out:[{transform:'none',opacity:1,filter:'blur(0)',easing:E_ACC},
+         {transform:'translateZ(900px) rotateY(-16deg) translateX(-16vw)',opacity:0,filter:'blur(22px) brightness(1.45)'}] },
+  /* 3 · orbital sweep — the slide arcs in around the Y axis */
+  helix:{ dur:1480, ease:'linear', impulse:1.1, streak:.4,
+    in:[{transform:'rotateY(-132deg) translateX(-52vw) translateZ(-520px) scale(1.14)',opacity:0,filter:'blur(16px)',easing:E_ACC},
+        {transform:'rotateY(-38deg) translateX(-14vw) translateZ(-120px)',opacity:1,filter:'blur(6px)',offset:.5,easing:E_MID},
+        {transform:'rotateY(8deg) translateX(1.3vw)',opacity:1,filter:'blur(1.3px)',offset:.82,easing:E_SET},
+        {transform:'none',opacity:1,filter:'blur(0)'}],
+    out:[{transform:'none',opacity:1,filter:'blur(0)',easing:E_ACC},
+         {transform:'rotateY(48deg) translateX(20vw) translateZ(-200px)',opacity:1,filter:'blur(7px)',offset:.5,easing:E_MID},
+         {transform:'rotateY(105deg) translateX(48vw) translateZ(-520px)',opacity:0,filter:'blur(16px)'}] },
+  /* 4 · smear — lateral velocity blur, like a fast whip-pan */
+  smear:{ dur:1420, ease:'linear', impulse:1.3, streak:.8,
+    in:[{transform:'translateX(62vw) skewX(-18deg) scaleX(1.7)',opacity:0,filter:'blur(22px) contrast(1.3)',easing:E_ACC},
+        {transform:'translateX(11vw) skewX(-5deg) scaleX(1.16)',opacity:1,filter:'blur(8px) contrast(1.12)',offset:.5,easing:E_MID},
+        {transform:'translateX(-1.3vw) skewX(1.3deg) scaleX(1.01)',opacity:1,filter:'blur(1.3px)',offset:.82,easing:E_SET},
         {transform:'none',opacity:1,filter:'blur(0) contrast(1)'}],
     out:[{transform:'none',opacity:1,filter:'blur(0)',easing:E_ACC},
-         {transform:'translateX(-66vw) skewX(20deg) scaleX(1.85)',opacity:0,filter:'blur(28px) contrast(1.4)'}] },
-  /* ascension — rises from below the floor plane and levels out */
-  ascension:{ dur:1580, ease:'linear', impulse:1.2, streak:.6,
-    in:[{transform:'translateY(66vh) scale(.55) rotateX(22deg)',opacity:0,filter:'blur(18px)',easing:E_ACC},
-        {transform:'translateY(15vh) scale(.85) rotateX(7deg)',opacity:1,filter:'blur(6px)',offset:.5,easing:E_MID},
-        {transform:'translateY(-2vh) scale(1.012)',opacity:1,filter:'blur(1px)',offset:.82,easing:E_SET},
+         {transform:'translateX(-62vw) skewX(18deg) scaleX(1.7)',opacity:0,filter:'blur(22px) contrast(1.3)'}] },
+  /* 5 · iris — a circular aperture blooms open from the center */
+  iris:{ dur:1440, ease:'linear', impulse:1.4, streak:.6,
+    in:[{clipPath:'circle(0% at 50% 52%)',transform:'scale(1.14)',opacity:1,filter:'brightness(1.6) blur(3px)',easing:E_ACC},
+        {clipPath:'circle(46% at 50% 51%)',transform:'scale(1.05)',opacity:1,filter:'brightness(1.18) blur(1px)',offset:.56,easing:E_MID},
+        {clipPath:'circle(152% at 50% 50%)',transform:'scale(1)',opacity:1,filter:'brightness(1) blur(0)'}],
+    out:[{clipPath:'circle(152% at 50% 50%)',transform:'scale(1)',opacity:1,filter:'brightness(1)',easing:E_ACC},
+         {clipPath:'circle(0% at 50% 46%)',transform:'scale(.9)',opacity:1,filter:'brightness(1.35)'}] },
+  /* 6 · cube tumble — folds down over the top edge in depth */
+  cube:{ dur:1460, ease:'linear', impulse:1, streak:.4,
+    in:[{transform:'rotateX(92deg) translateY(38vh) translateZ(340px) scale(1.08)',opacity:0,filter:'blur(13px)',transformOrigin:'50% 50%',easing:E_ACC},
+        {transform:'rotateX(29deg) translateY(10vh) translateZ(66px)',opacity:1,filter:'blur(5px)',transformOrigin:'50% 50%',offset:.5,easing:E_MID},
+        {transform:'rotateX(-6deg) translateY(-1vh)',opacity:1,filter:'blur(1px)',transformOrigin:'50% 50%',offset:.82,easing:E_SET},
+        {transform:'none',opacity:1,filter:'blur(0)',transformOrigin:'50% 50%'}],
+    out:[{transform:'none',opacity:1,filter:'blur(0)',transformOrigin:'50% 50%',easing:E_ACC},
+         {transform:'rotateX(-92deg) translateY(-38vh) translateZ(340px)',opacity:0,filter:'blur(13px)',transformOrigin:'50% 50%'}] },
+  /* 7 · door — the slide swings open on its left hinge */
+  fold:{ dur:1480, ease:'linear', impulse:1, streak:.4,
+    in:[{transform:'rotateY(100deg) translateX(-6vw) translateZ(190px)',opacity:0,filter:'blur(12px)',transformOrigin:'0% 50%',easing:E_ACC},
+        {transform:'rotateY(30deg) translateZ(44px)',opacity:1,filter:'blur(4px)',transformOrigin:'0% 50%',offset:.5,easing:E_MID},
+        {transform:'rotateY(-7deg)',opacity:1,filter:'blur(1px)',transformOrigin:'0% 50%',offset:.82,easing:E_SET},
+        {transform:'none',opacity:1,filter:'blur(0)',transformOrigin:'0% 50%'}],
+    out:[{transform:'none',opacity:1,filter:'blur(0)',transformOrigin:'100% 50%',easing:E_ACC},
+         {transform:'rotateY(-88deg) translateX(6vw) translateZ(150px)',opacity:0,filter:'blur(12px)',transformOrigin:'100% 50%'}] },
+  /* 8 · ascension — rises from below the floor plane and levels out */
+  ascension:{ dur:1500, ease:'linear', impulse:1.2, streak:.5,
+    in:[{transform:'translateY(62vh) scale(.58) rotateX(20deg)',opacity:0,filter:'blur(15px)',easing:E_ACC},
+        {transform:'translateY(14vh) scale(.86) rotateX(6deg)',opacity:1,filter:'blur(5px)',offset:.5,easing:E_MID},
+        {transform:'translateY(-2vh) scale(1.01)',opacity:1,filter:'blur(1px)',offset:.82,easing:E_SET},
         {transform:'none',opacity:1,filter:'blur(0)'}],
     out:[{transform:'none',opacity:1,filter:'blur(0)',easing:E_ACC},
-         {transform:'translateY(-58vh) scale(.7) rotateX(-16deg)',opacity:0,filter:'blur(16px)'}] },
-  /* horizon — tilts up off the ground like a camera craning to level */
-  horizon:{ dur:1580, ease:'linear', impulse:1.2, streak:.6,
-    in:[{transform:'rotateX(-86deg) translateZ(-230px) translateY(10vh)',opacity:0,filter:'blur(16px) brightness(.4)',transformOrigin:'50% 100%',easing:E_ACC},
-        {transform:'rotateX(-25deg) translateZ(-44px)',opacity:1,filter:'blur(6px) brightness(1.15)',transformOrigin:'50% 100%',offset:.5,easing:E_MID},
-        {transform:'rotateX(6deg)',opacity:1,filter:'blur(1px) brightness(1.05)',transformOrigin:'50% 100%',offset:.82,easing:E_SET},
-        {transform:'none',opacity:1,filter:'blur(0) brightness(1)',transformOrigin:'50% 100%'}],
-    out:[{transform:'none',opacity:1,filter:'blur(0)',transformOrigin:'50% 100%',easing:E_ACC},
-         {transform:'rotateX(64deg) translateY(-16vh) translateZ(-170px)',opacity:0,filter:'blur(16px) brightness(.5)',transformOrigin:'50% 100%'}] }
+         {transform:'translateY(-55vh) scale(.72) rotateX(-14deg)',opacity:0,filter:'blur(14px)'}] }
 };
 const FADE = { dur:500, ease:'ease', impulse:0, streak:0, in:[{opacity:0},{opacity:1}], out:[{opacity:1},{opacity:0}] };
 
@@ -928,45 +1232,47 @@ const railnav = document.getElementById('railnav');
 const counterCur = document.getElementById('counterCur');
 const counterTot = document.getElementById('counterTot');
 const counterBar = document.getElementById('counterBar');
-const bladesEl = document.getElementById('blades');
 const bloom = document.getElementById('bloom');
 const shock = document.getElementById('shock');
 const topProgress = document.getElementById('topProgress');
 let cur = 0, locked = false, liveAnims = [];
 
-function fireBloom(dur){ if (REDUCED) return; bloom.animate([{opacity:0},{opacity:.5,offset:.38},{opacity:0}],{duration:dur*.9,easing:'ease-out'}); }
-function fireShock(dur){ if (REDUCED) return; shock.animate([{transform:'translate(-50%,-50%) scale(0)',opacity:.65},{transform:'translate(-50%,-50%) scale(26)',opacity:0}],{duration:dur*.85,easing:'cubic-bezier(.16,1,.3,1)'}); }
+function fireBloom(dur){ if (REDUCED) return; bloom.animate([{opacity:0},{opacity:.45,offset:.38},{opacity:0}],{duration:dur*.9,easing:'ease-out'}); }
+function fireShock(dur){ if (REDUCED) return; shock.animate([{transform:'translate(-50%,-50%) scale(0)',opacity:.6},{transform:'translate(-50%,-50%) scale(26)',opacity:0}],{duration:dur*.85,easing:'cubic-bezier(.16,1,.3,1)'}); }
 
 /* ═══════════ PER-SLIDE WORLDS ═══════════
-   Every slide is its own place in space: a distinct background palette,
-   a distinct shard tint for the shatter, and a distinct camera (where
-   the perspective vanishing-point sits + a resting tilt of the scene). */
+   One warm color family everywhere. What changes per slide:
+   glow placement, the geometry layer, and where the camera sits. */
 const BG = [
-  'radial-gradient(46% 56% at 24% 30%, rgba(124,112,224,.36), transparent 60%), radial-gradient(50% 52% at 80% 68%, rgba(80,120,220,.26), transparent 62%), #060711',
-  'radial-gradient(52% 56% at 72% 34%, rgba(244,150,86,.32), transparent 62%), radial-gradient(46% 52% at 22% 76%, rgba(222,92,60,.24), transparent 60%), #0b0806',
-  'radial-gradient(56% 60% at 50% 18%, rgba(60,120,210,.30), transparent 64%), radial-gradient(42% 44% at 82% 82%, rgba(72,84,168,.22), transparent 60%), #05070f',
-  'radial-gradient(52% 56% at 30% 40%, rgba(66,190,146,.26), transparent 62%), radial-gradient(46% 50% at 82% 74%, rgba(120,206,120,.18), transparent 60%), #050c0a',
-  'radial-gradient(52% 56% at 72% 40%, rgba(247,164,112,.32), transparent 62%), radial-gradient(46% 50% at 20% 78%, rgba(232,110,70,.22), transparent 60%), #0b0806',
-  'radial-gradient(52% 56% at 40% 30%, rgba(58,196,196,.26), transparent 62%), radial-gradient(46% 50% at 84% 72%, rgba(70,144,206,.20), transparent 60%), #04090c',
-  'radial-gradient(52% 56% at 68% 38%, rgba(206,92,196,.28), transparent 62%), radial-gradient(46% 50% at 22% 76%, rgba(150,82,224,.20), transparent 60%), #0a060d',
-  'radial-gradient(52% 56% at 30% 34%, rgba(112,102,232,.30), transparent 62%), radial-gradient(46% 50% at 82% 74%, rgba(92,124,224,.20), transparent 60%), #07060f',
-  'radial-gradient(58% 62% at 50% 28%, rgba(252,152,72,.30), transparent 64%), radial-gradient(42% 46% at 80% 78%, rgba(242,102,60,.22), transparent 60%), #0b0705',
-  'radial-gradient(52% 56% at 28% 34%, rgba(242,192,112,.26), transparent 62%), radial-gradient(46% 50% at 82% 74%, rgba(232,152,92,.20), transparent 60%), #0a0806'
+  'radial-gradient(48% 54% at 50% 74%, rgba(240,132,84,.16), transparent 62%), #080606',
+  'radial-gradient(46% 52% at 22% 30%, rgba(240,132,84,.18), transparent 60%), radial-gradient(40% 46% at 82% 74%, rgba(200,90,52,.12), transparent 60%), #080606',
+  'radial-gradient(52% 58% at 62% 60%, rgba(240,132,84,.15), transparent 62%), #080606',
+  'radial-gradient(52% 56% at 50% 44%, rgba(240,132,84,.15), transparent 64%), #080606',
+  'radial-gradient(46% 52% at 24% 62%, rgba(240,132,84,.17), transparent 60%), radial-gradient(40% 46% at 80% 26%, rgba(200,90,52,.11), transparent 60%), #080606',
+  'radial-gradient(46% 52% at 76% 32%, rgba(240,132,84,.18), transparent 60%), radial-gradient(40% 46% at 18% 76%, rgba(200,90,52,.12), transparent 60%), #080606',
+  'radial-gradient(58% 60% at 50% 86%, rgba(240,132,84,.17), transparent 62%), #080606',
+  'radial-gradient(46% 52% at 70% 42%, rgba(240,132,84,.20), transparent 60%), #080606',
+  'radial-gradient(50% 54% at 50% 50%, rgba(240,132,84,.14), transparent 64%), #080606',
+  'radial-gradient(46% 52% at 28% 40%, rgba(240,132,84,.16), transparent 60%), radial-gradient(40% 46% at 78% 78%, rgba(200,90,52,.12), transparent 60%), #080606',
+  'radial-gradient(46% 52% at 30% 34%, rgba(240,132,84,.16), transparent 60%), #080606',
+  'radial-gradient(58% 62% at 50% 40%, rgba(240,132,84,.20), transparent 64%), #080606'
 ];
-const TINT = ['124,112,224','244,150,86','60,120,210','66,190,146','247,164,112','58,196,196','206,92,196','112,102,232','252,152,72','242,192,112'];
 const CAM = [
   {po:'50% 46%', tilt:''},
-  {po:'30% 40%', tilt:'rotateY(2.5deg)'},
-  {po:'70% 42%', tilt:'rotateY(-3deg)'},
-  {po:'40% 56%', tilt:'rotateX(2deg)'},
-  {po:'64% 40%', tilt:'rotateY(3deg) rotateX(-1deg)'},
-  {po:'34% 50%', tilt:'rotateY(-2.5deg) rotateX(-1.5deg)'},
-  {po:'68% 44%', tilt:'rotateY(-3deg)'},
-  {po:'44% 36%', tilt:'rotateY(2.5deg) rotateX(1deg)'},
-  {po:'50% 58%', tilt:'rotateX(2.5deg)'},
-  {po:'60% 44%', tilt:'rotateY(-2.5deg)'}
+  {po:'36% 42%', tilt:'rotateY(2.2deg)'},
+  {po:'58% 50%', tilt:'rotateY(-2deg) rotateX(1deg)'},
+  {po:'62% 42%', tilt:'rotateY(-2.5deg)'},
+  {po:'38% 48%', tilt:'rotateY(2.4deg)'},
+  {po:'40% 52%', tilt:'rotateY(2deg) rotateX(-1deg)'},
+  {po:'54% 58%', tilt:'rotateX(1.8deg)'},
+  {po:'64% 42%', tilt:'rotateY(-2.5deg) rotateX(1deg)'},
+  {po:'50% 48%', tilt:'rotateX(-1.5deg)'},
+  {po:'40% 50%', tilt:'rotateX(1.5deg)'},
+  {po:'56% 40%', tilt:'rotateY(-2deg)'},
+  {po:'50% 56%', tilt:'rotateX(2deg)'}
 ];
 const bgLayers = [document.getElementById('bgA'), document.getElementById('bgB')];
+const geoWorlds = Array.from(document.querySelectorAll('#geo .gw'));
 let bgTop = -1;
 function setWorld(i){
   const nextIdx = bgTop === 0 ? 1 : 0;
@@ -975,45 +1281,12 @@ function setWorld(i){
   next.classList.add('show');
   if (bgTop >= 0) bgLayers[bgTop].classList.remove('show');
   bgTop = nextIdx;
-  const cam = CAM[i] || CAM[0];
-  deck.style.perspectiveOrigin = cam.po;
+  geoWorlds.forEach((g,k) => g.classList.toggle('show', k === i));
+  deck.style.perspectiveOrigin = (CAM[i] || CAM[0]).po;
 }
 function applyTilt(i){
   const inner = slides[i].querySelector('.section-inner');
   if (inner) inner.style.transform = (CAM[i] || CAM[0]).tilt;
-}
-
-/* ═══════════ MIRROR-DIMENSION SHATTER ═══════════
-   A radial mandala of glass shards. On every navigation they briefly
-   fracture the frame, then blow outward with a 3D tumble. */
-const shatterEl = document.getElementById('shatter');
-const SHARD_N = 13, shards = [];
-(function buildShatter(){
-  for (let i=0;i<SHARD_N;i++){
-    const a0 = (i/SHARD_N)*Math.PI*2, a1 = ((i+1)/SHARD_N)*Math.PI*2, j = .2;
-    const b0 = a0 + (Math.random()-.5)*j, b1 = a1 + (Math.random()-.5)*j, R = 138;
-    const pt = ang => (50+R*Math.cos(ang)).toFixed(1)+'% '+(50+R*Math.sin(ang)).toFixed(1)+'%';
-    const sh = document.createElement('div');
-    sh.className = 'shard';
-    sh.style.clipPath = 'polygon(50% 47%, '+pt(b0)+', '+pt((b0*.6+b1*.4))+', '+pt((b0*.4+b1*.6))+', '+pt(b1)+')';
-    sh.dataset.ang = (b0+b1)/2;
-    shatterEl.appendChild(sh); shards.push(sh);
-  }
-})();
-function fireShatter(dur, tint){
-  if (REDUCED) return;
-  const diag = Math.hypot(innerWidth, innerHeight);
-  shards.forEach((sh,i) => {
-    const ang = +sh.dataset.ang;
-    const D = diag*(.34+Math.random()*.5), dx = Math.cos(ang)*D, dy = Math.sin(ang)*D, dz = (Math.random()-.3)*760;
-    const rx = (Math.random()-.5)*130, ry = (Math.random()-.5)*130, rz = (Math.random()-.5)*90;
-    sh.style.background = 'linear-gradient('+(ang*57).toFixed(0)+'deg, rgba('+tint+',.17), rgba(255,255,255,.05))';
-    sh.animate([
-      {opacity:.62, transform:'translate3d(0,0,0) rotate3d(0,0,1,0deg) scale(1)'},
-      {opacity:.52, transform:'translate3d('+(dx*.26)+'px,'+(dy*.26)+'px,'+(dz*.3)+'px) rotate3d('+rx+','+ry+','+rz+',12deg) scale(1.04)', offset:.26},
-      {opacity:0, transform:'translate3d('+dx+'px,'+dy+'px,'+dz+'px) rotate3d('+rx+','+ry+','+rz+',62deg) scale(1.2)'}
-    ], {duration: dur*.95, easing:'cubic-bezier(.2,.72,.2,1)', delay: i*15, fill:'forwards'});
-  });
 }
 
 counterTot.textContent = String(slides.length).padStart(2,'0');
@@ -1050,7 +1323,6 @@ function syncChrome(){
   railFill.style.height = (((cur+1)/slides.length)*100)+'%';
   history.replaceState(null,'','#'+slides[cur].id);
 }
-function runBlades(){ bladesEl.classList.remove('run'); void bladesEl.offsetWidth; bladesEl.classList.add('run'); }
 
 function goTo(n){
   n = Math.max(0, Math.min(n, slides.length-1));
@@ -1069,14 +1341,12 @@ function goTo(n){
   const aIn  = to.animate(forward?fx.in:fx.out, opts(forward?'normal':'reverse'));
   const aOut = from.animate(forward?fx.out:fx.in, opts(forward?'normal':'reverse'));
   liveAnims = [aIn, aOut];
-  if (fx.blades && !REDUCED) runBlades();
   if (!REDUCED){
     fieldImpulse(fx.impulse || .6);
     fireStreaks(fx.streak);
     fireBloom(fx.dur);
     fireShock(fx.dur);
-    fireShatter(fx.dur, TINT[cur] || '240,144,106');
-    deck.animate([{transform:'scale(1)'},{transform:'scale(1.02)',offset:.4},{transform:'scale(1)'}],{duration:fx.dur,easing:'ease-in-out'});
+    deck.animate([{transform:'scale(1)'},{transform:'scale(1.015)',offset:.4},{transform:'scale(1)'}],{duration:fx.dur,easing:'ease-in-out'});
   }
   syncChrome();
   setTimeout(() => runCounts(to), fx.dur*.45);
@@ -1200,6 +1470,7 @@ const submitBtn = document.getElementById('signupSubmit');
 const formError = document.getElementById('formError');
 document.getElementById('calendlyBtn').href = CALENDLY_URL;
 document.getElementById('calendlyDirect').href = CALENDLY_URL;
+document.getElementById('calendlyHero').href = CALENDLY_URL;
 function openModal(){ modal.classList.add('open'); setTimeout(() => document.getElementById('f-name').focus(), 420); }
 function closeModal(){ modal.classList.remove('open'); signupStep.hidden = false; successStep.hidden = true; signupForm.reset(); formError.classList.remove('show'); }
 document.querySelectorAll('[data-open-signup]').forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); openModal(); }));
