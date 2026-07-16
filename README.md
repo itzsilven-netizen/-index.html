@@ -1,12 +1,14 @@
 # Apex Standard
 
-AI-powered growth agency helping businesses get 5X more leads in 30 days — or you don't pay.
+Done-for-you B2B outbound lead generation for IT & tech staffing agencies. We book qualified sales meetings by running cold email + LinkedIn outreach targeting the client companies that hire staffing agencies to fill roles.
 
-## What We Do
-- Lead Generation
-- Sales Conversion
-- Customer Retention
-- Relationship Building
+## The Apex Lead Engine
+- Done-for-you sending infrastructure (domains, warmup, authentication)
+- Precision-targeted, verified, enriched prospect lists (zero-bounce tolerance)
+- AI-personalized email + LinkedIn sequences
+- Fast reply management, booked straight to calendar
+- Weekly transparent reporting
+- Monthly 15-minute review call
 
 ## Website
 https://apexstandard.biz
