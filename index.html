@@ -3,32 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Apex Standard books qualified sales meetings for IT & tech staffing agencies. Done-for-you cold email + LinkedIn outbound. Start with a free audit.">
-<title>Apex Standard — Outbound for IT & Tech Staffing Agencies</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2317140F'/%3E%3Cpath d='M32 12 L50 52 H41.5 L32 28.5 L22.5 52 H14 Z' fill='%23B08D57'/%3E%3C/svg%3E">
+<meta name="description" content="Apex Standard runs done-for-you cold email + LinkedIn outbound for boutique agencies and staffing firms. Founder-led, month-to-month, start with a free audit.">
+<title>Apex Standard — Outbound for Agencies & Staffing Firms</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23FAF6EC'/%3E%3Cpath d='M32 12 L50 52 H41.5 L32 28.5 L22.5 52 H14 Z' fill='%231F5D45'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400..600;1,400..500&family=Inter:wght@400..600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#17140F;
-  --bg-lift:#1E1A13;
-  --ink:#F0EBE0;
-  --muted:#8A8275;
-  --muted-dim:#5C564B;
-  --brass:#B08D57;
-  --brass-hi:#D4B483;
-  --brass-glow:#E9D3AC;
-  --green:#4A7C59;
-  --green-hi:#6FA383;
-  --line:rgba(240,235,224,.10);
-  --line-soft:rgba(240,235,224,.06);
-  --glass:rgba(240,235,224,.045);
-  --glass-2:rgba(240,235,224,.075);
-  --glass-border:rgba(240,235,224,.11);
-  --glass-hi:rgba(240,235,224,.16);
-  --serif:'Fraunces',Georgia,serif;
-  --sans:'Inter',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --bg:#F6F1E4;
+  --surface:#FFFFFF;
+  --surface-2:#EFE8D8;
+  --ink:#211D16;
+  --muted:#6B6153;
+  --muted-dim:#948A76;
+  --accent:#1F5D45;
+  --accent-hi:#2C7A5C;
+  --accent-glow:#7FBFA0;
+  --line:rgba(33,29,22,.14);
+  --line-soft:rgba(33,29,22,.08);
+  --card-border:rgba(33,29,22,.14);
+  --serif:'IBM Plex Serif',Georgia,serif;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
   --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
   --ease:cubic-bezier(.22,1,.36,1);
   --pad:clamp(20px,5vw,72px);
@@ -37,21 +33,20 @@
 html{scroll-behavior:smooth;}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}}
 body{
-  background:var(--bg) radial-gradient(ellipse 60% 40% at 50% 0%, rgba(176,141,87,.07), transparent 70%) fixed;
-  color:var(--ink);font-family:var(--sans);
+  background:var(--bg);color:var(--ink);font-family:var(--sans);
   font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
-::selection{background:rgba(176,141,87,.35);color:#fff;}
+::selection{background:rgba(31,93,69,.2);color:var(--ink);}
 
 /* top scroll progress */
 .topbar{position:fixed;top:0;left:0;right:0;height:2px;z-index:70;background:transparent;}
 .topbar i{position:absolute;inset:0;transform-origin:left;transform:scaleX(0);
-  background:linear-gradient(90deg,#8a6b3e,var(--brass) 55%,var(--brass-glow));}
+  background:linear-gradient(90deg,var(--accent),var(--accent-hi) 55%,var(--accent-glow));}
 
 /* ── type helpers ── */
 .mono{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;}
-.gold{background:linear-gradient(100deg,var(--brass) 10%,var(--brass-hi) 60%,var(--brass-glow));
+.accent{background:linear-gradient(100deg,var(--accent) 10%,var(--accent-hi) 60%,var(--accent-glow));
   -webkit-background-clip:text;background-clip:text;color:transparent;}
 .em{font-style:italic;font-weight:400;}
 
@@ -60,7 +55,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:50;
   display:flex;align-items:center;justify-content:space-between;
   padding:16px var(--pad);
   transition:background .25s,border-color .25s;border-bottom:1px solid transparent;}
-header.scrolled{background:rgba(23,20,15,.94);border-bottom-color:var(--line-soft);}
+header.scrolled{background:rgba(246,241,228,.94);border-bottom-color:var(--line-soft);}
 .wordmark{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink);}
 .wordmark .wm-name{font-family:var(--mono);font-size:12px;letter-spacing:.26em;font-weight:500;}
 .wordmark .wm-sub{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--muted-dim);margin-top:1px;}
@@ -68,163 +63,140 @@ header.scrolled{background:rgba(23,20,15,.94);border-bottom-color:var(--line-sof
   font-family:var(--sans);font-size:14px;font-weight:600;letter-spacing:.01em;
   padding:14px 26px;border-radius:999px;position:relative;overflow:hidden;
   transition:box-shadow .25s,background .2s,color .2s,border-color .2s,transform .2s var(--ease);}
-.btn-primary{background:linear-gradient(115deg,#c49a5e,var(--brass) 40%,var(--brass-hi));color:#17140F;
-  box-shadow:0 8px 28px rgba(176,141,87,.26),inset 0 1px 0 rgba(255,255,255,.35);}
-.btn-primary:hover{box-shadow:0 12px 34px rgba(176,141,87,.38),inset 0 1px 0 rgba(255,255,255,.35);transform:translateY(-2px);}
-.btn-ghost{background:var(--glass-2);color:var(--ink);border:1px solid var(--glass-border);}
-.btn-ghost:hover{border-color:rgba(176,141,87,.5);color:var(--brass-hi);transform:translateY(-2px);}
+.btn-primary{background:linear-gradient(115deg,#2C7A5C,var(--accent) 55%,#173F30);color:#FAF6EC;
+  box-shadow:0 8px 24px rgba(31,93,69,.24);}
+.btn-primary:hover{box-shadow:0 12px 30px rgba(31,93,69,.34);transform:translateY(-2px);}
+.btn-ghost{background:var(--surface);color:var(--ink);border:1px solid var(--card-border);}
+.btn-ghost:hover{border-color:var(--accent-hi);color:var(--accent-hi);transform:translateY(-2px);}
 .btn .arr{transition:transform .25s var(--ease);}
 .btn:hover .arr{transform:translateX(3px);}
 header .btn{padding:10px 20px;font-size:13px;}
 
-/* ── layout / sequence-ledger motif ── */
+/* ── layout ── */
 main{position:relative;z-index:2;}
 section{position:relative;padding:clamp(84px,12vh,140px) var(--pad);}
 .wrap{max-width:1080px;margin:0 auto;position:relative;}
 .step{display:flex;align-items:center;gap:14px;margin-bottom:26px;}
-.step .mono{color:var(--brass-hi);display:inline-flex;align-items:center;gap:9px;
-  padding:8px 15px;border:1px solid var(--glass-border);border-radius:999px;background:var(--glass-2);}
-.step .mono::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--brass);
+.step .mono{color:var(--accent-hi);display:inline-flex;align-items:center;gap:9px;
+  padding:8px 15px;border:1px solid var(--card-border);border-radius:999px;background:var(--surface);}
+.step .mono::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);
   animation:dotPulse 2.4s ease-in-out infinite;}
 @keyframes dotPulse{0%,100%{opacity:1;}50%{opacity:.35;}}
 @media (prefers-reduced-motion:reduce){.step .mono::before{animation:none;}}
-.step::after{content:'';height:1px;flex:1;max-width:180px;background:linear-gradient(90deg,rgba(176,141,87,.5),transparent);}
-h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.4vw,50px);line-height:1.12;letter-spacing:-.015em;max-width:18em;}
+.step::after{content:'';height:1px;flex:1;max-width:180px;background:linear-gradient(90deg,rgba(31,93,69,.4),transparent);}
+h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.4vw,50px);line-height:1.12;letter-spacing:-.015em;max-width:18em;text-wrap:balance;}
 .lede{color:var(--muted);font-size:clamp(16px,1.6vw,18px);max-width:38em;margin-top:20px;}
-.lede strong{color:var(--ink);font-weight:500;}
+.lede strong{color:var(--ink);font-weight:600;}
 
 /* ── reveal ── */
 .rv{opacity:0;transform:translateY(20px);transition:opacity .5s var(--ease),transform .5s var(--ease);transition-delay:var(--d,0ms);}
 .rv.in{opacity:1;transform:none;}
 @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none;}}
 
-/* ── glass card base ── */
-.glass{background:var(--glass);border:1px solid var(--glass-border);border-radius:18px;position:relative;overflow:hidden;}
-.glass::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,var(--glass-hi),transparent);opacity:.7;}
-.glass>*{position:relative;z-index:1;}
+/* ── card base ── */
+.card{background:var(--surface);border:1px solid var(--card-border);border-radius:16px;position:relative;
+  box-shadow:0 1px 2px rgba(33,29,22,.04);}
 
 /* ── hero ── */
 #hero{min-height:100svh;display:flex;align-items:center;padding-top:120px;}
 #hero .wrap{max-width:1120px;}
-#hero h1{font-family:var(--serif);font-weight:500;font-size:clamp(40px,6.6vw,82px);line-height:1.04;letter-spacing:-.02em;max-width:13em;}
-#hero .lede{font-size:clamp(17px,1.9vw,20px);max-width:36em;margin-top:28px;}
+#hero h1{font-family:var(--serif);font-weight:500;font-size:clamp(38px,6vw,72px);line-height:1.08;letter-spacing:-.02em;max-width:15em;text-wrap:balance;}
+#hero .lede{font-size:clamp(17px,1.9vw,20px);max-width:38em;margin-top:28px;}
 .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:40px;align-items:center;}
 .hero-foot{display:flex;gap:16px;flex-wrap:wrap;margin-top:60px;}
 .hf{padding:18px 24px;min-width:170px;}
-.hf .n{font-family:var(--mono);font-size:16px;color:var(--brass-hi);}
+.hf .n{font-family:var(--mono);font-size:15px;color:var(--accent-hi);}
 .hf .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:var(--muted-dim);text-transform:uppercase;margin-top:7px;}
 
-/* ── proof / sequence exhibit ── */
-#proof{background:linear-gradient(to bottom,transparent,rgba(30,26,19,.55) 18%,rgba(30,26,19,.55) 82%,transparent);}
-.seq{margin-top:56px;position:relative;display:flex;flex-direction:column;}
-.seq::before{content:'';position:absolute;left:19px;top:16px;bottom:16px;width:1px;
-  background:linear-gradient(to bottom,var(--brass),rgba(176,141,87,.15));}
-.seq-item{position:relative;padding:0 0 44px 64px;}
-.seq-item:last-child{padding-bottom:0;}
-.seq-dot{position:absolute;left:8px;top:2px;width:23px;height:23px;border-radius:50%;
-  border:1px solid var(--brass);background:var(--bg);display:flex;align-items:center;justify-content:center;}
-.seq-dot::after{content:'';width:7px;height:7px;border-radius:50%;background:var(--brass);}
-.seq-item.green .seq-dot{border-color:var(--green-hi);}
-.seq-item.green .seq-dot::after{background:var(--green-hi);}
-.seq-meta{display:flex;gap:14px;align-items:baseline;margin-bottom:12px;flex-wrap:wrap;}
-.seq-meta .when{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--brass-hi);text-transform:uppercase;}
-.seq-item.green .seq-meta .when{color:var(--green-hi);}
-.seq-meta .what{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--muted-dim);text-transform:uppercase;}
-.msg{padding:22px 24px;max-width:620px;transition:transform .3s var(--ease),border-color .2s;}
-.msg:hover{transform:translateY(-4px);border-color:rgba(176,141,87,.4);}
-.msg .from{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:6px;}
-.msg .from .who{font-weight:600;font-size:14px;}
-.msg .from .addr{font-family:var(--mono);font-size:11px;color:var(--muted-dim);}
-.msg .subj{font-size:14px;font-weight:600;color:var(--brass-hi);margin-bottom:12px;}
-.msg p{font-size:14.5px;color:#CFC8B9;line-height:1.7;}
-.msg p + p{margin-top:10px;}
-.msg .hl{background:rgba(176,141,87,.16);border-bottom:1px solid rgba(212,180,131,.5);padding:1px 4px;border-radius:3px;color:var(--ink);}
-.msg.reply{border-color:rgba(111,163,131,.35);background:rgba(74,124,89,.07);}
-.msg.reply:hover{border-color:rgba(111,163,131,.6);}
-.msg.cal{display:flex;gap:18px;align-items:center;border-color:rgba(212,180,131,.35);}
-.cal-date{flex-shrink:0;width:64px;text-align:center;border:1px solid var(--line);border-radius:10px;overflow:hidden;}
-.cal-date .cd-m{font-family:var(--mono);font-size:9px;letter-spacing:.2em;background:linear-gradient(115deg,var(--brass),var(--brass-hi));color:#17140F;padding:3px 0;font-weight:500;}
-.cal-date .cd-d{font-family:var(--serif);font-size:26px;padding:7px 0 9px;}
-.msg.cal .cal-body .t{font-weight:600;font-size:15px;}
-.msg.cal .cal-body .s{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:5px;}
-.seq-note{font-size:13px;color:var(--muted);margin-top:12px;max-width:600px;}
-.seq-note b{color:#BFB7A6;font-weight:500;}
-.exhibit-foot{margin-top:48px;padding:22px 26px;border:1px dashed rgba(176,141,87,.4);border-radius:16px;
-  color:var(--muted);font-size:14px;max-width:760px;background:rgba(176,141,87,.03);}
-.exhibit-foot b{color:var(--brass-hi);font-weight:500;}
+/* ── founder ── */
+#founder{background:linear-gradient(to bottom,transparent,var(--surface-2) 12%,var(--surface-2) 88%,transparent);}
+.founder-grid{display:grid;grid-template-columns:220px 1fr;gap:clamp(32px,5vw,56px);margin-top:52px;align-items:start;}
+.avatar{width:168px;height:168px;border-radius:50%;background:linear-gradient(150deg,#2C7A5C,var(--accent) 60%,#173F30);
+  display:flex;align-items:center;justify-content:center;color:#FAF6EC;font-family:var(--serif);font-weight:500;
+  font-size:52px;border:5px solid var(--surface);box-shadow:0 10px 28px rgba(31,93,69,.22);margin:0 auto;}
+.founder-name{font-family:var(--serif);font-size:19px;font-weight:600;margin-top:18px;text-align:center;}
+.founder-title{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-dim);margin-top:5px;text-align:center;}
+.founder-linkedin{display:flex;justify-content:center;margin-top:12px;}
+.founder-linkedin a{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--accent-hi);text-decoration:none;
+  display:inline-flex;align-items:center;gap:5px;}
+.founder-linkedin a:hover{text-decoration:underline;text-underline-offset:3px;}
+.founder-bio p{font-size:15.5px;color:var(--ink);line-height:1.8;}
+.offer-box{margin-top:26px;padding:24px 28px;border-left:3px solid var(--accent);background:var(--surface);
+  border-radius:0 14px 14px 0;box-shadow:0 1px 2px rgba(33,29,22,.04);}
+.offer-box .k{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-hi);margin-bottom:9px;}
+.offer-box p{font-size:14.5px;color:var(--ink);}
+@media (max-width:700px){.founder-grid{grid-template-columns:1fr;justify-items:center;}.founder-bio{text-align:left;width:100%;}}
 
 /* ── situations (interactive) ── */
 .sit-tabs{display:flex;gap:10px;flex-wrap:wrap;margin-top:44px;}
 .sit-tab{font-family:var(--sans);font-size:14px;font-weight:500;color:var(--muted);
-  background:var(--glass-2);border:1px solid var(--glass-border);border-radius:999px;padding:12px 22px;cursor:pointer;
+  background:var(--surface);border:1px solid var(--card-border);border-radius:999px;padding:12px 22px;cursor:pointer;
   transition:color .2s,border-color .2s,transform .2s var(--ease);}
-.sit-tab:hover{color:var(--ink);border-color:rgba(176,141,87,.5);transform:translateY(-2px);}
-.sit-tab[aria-selected="true"]{color:#17140F;background:linear-gradient(115deg,#c49a5e,var(--brass) 40%,var(--brass-hi));
+.sit-tab:hover{color:var(--ink);border-color:var(--accent-hi);transform:translateY(-2px);}
+.sit-tab[aria-selected="true"]{color:#FAF6EC;background:linear-gradient(115deg,#2C7A5C,var(--accent) 55%,#173F30);
   border-color:transparent;font-weight:600;}
 .sit-panel{margin-top:28px;border-radius:20px;
   padding:clamp(26px,4vw,44px);display:none;}
 .sit-panel.active{display:grid;grid-template-columns:1.4fr 1fr;gap:clamp(24px,4vw,56px);}
 .sit-panel h3{font-family:var(--serif);font-weight:500;font-size:clamp(22px,2.6vw,30px);line-height:1.2;margin-bottom:14px;}
 .sit-panel .story{color:var(--muted);font-size:15.5px;}
-.sit-fix{border-left:2px solid var(--brass);padding-left:20px;align-self:center;}
-.sit-fix .k{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--brass-hi);text-transform:uppercase;margin-bottom:10px;}
-.sit-fix p{font-size:14.5px;color:#CFC8B9;}
+.sit-fix{border-left:2px solid var(--accent);padding-left:20px;align-self:center;}
+.sit-fix .k{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--accent-hi);text-transform:uppercase;margin-bottom:10px;}
+.sit-fix p{font-size:14.5px;color:var(--ink);}
 @media (max-width:760px){.sit-panel.active{grid-template-columns:1fr;}}
 
 /* ── engine (6 components) ── */
 .engine-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:56px;}
 .eng{padding:30px 28px 34px;transition:transform .3s var(--ease),border-color .2s;}
-.eng:hover{transform:translateY(-5px);border-color:rgba(176,141,87,.38);}
-.eng .num{font-family:var(--serif);font-style:italic;font-size:38px;line-height:1;color:rgba(176,141,87,.5);}
+.eng:hover{transform:translateY(-5px);border-color:var(--accent-hi);}
+.eng .num{font-family:var(--serif);font-style:italic;font-size:36px;line-height:1;color:rgba(31,93,69,.4);}
 .eng h3{font-family:var(--serif);font-weight:500;font-size:20px;margin:16px 0 10px;line-height:1.25;}
 .eng p{font-size:14px;color:var(--muted);}
-.eng p b{color:#CFC8B9;font-weight:500;}
+.eng p b{color:var(--ink);font-weight:600;}
 @media (max-width:900px){.engine-grid{grid-template-columns:1fr 1fr;}}
 @media (max-width:560px){.engine-grid{grid-template-columns:1fr;}}
 
 /* ── guarantees ── */
-.g-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:56px;}
-.g-card{border-color:rgba(111,163,131,.28);background:rgba(74,124,89,.08);border-radius:20px;padding:30px 30px 32px;
+.g-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:56px;}
+.g-card{border-color:rgba(31,93,69,.22);background:rgba(31,93,69,.05);border-radius:20px;padding:30px 30px 32px;
   display:flex;gap:20px;align-items:flex-start;transition:transform .3s var(--ease),border-color .2s;}
-.g-card:hover{transform:translateY(-4px);border-color:rgba(111,163,131,.55);}
-.g-check{flex-shrink:0;width:36px;height:36px;border-radius:50%;background:rgba(111,163,131,.15);
-  border:1px solid var(--green-hi);display:flex;align-items:center;justify-content:center;margin-top:3px;}
+.g-card:hover{transform:translateY(-4px);border-color:var(--accent-hi);}
+.g-check{flex-shrink:0;width:36px;height:36px;border-radius:50%;background:rgba(31,93,69,.12);
+  border:1px solid var(--accent-hi);display:flex;align-items:center;justify-content:center;margin-top:3px;}
 .g-check svg{display:block;}
-.g-card .g-n{font-family:var(--mono);font-size:23px;color:var(--green-hi);line-height:1.2;}
+.g-card .g-n{font-family:var(--mono);font-size:22px;color:var(--accent-hi);line-height:1.2;}
 .g-card h3{font-size:16px;font-weight:600;margin:6px 0 8px;}
 .g-card p{font-size:14px;color:var(--muted);}
-@media (max-width:760px){.g-grid{grid-template-columns:1fr;}}
 
 /* ── anchor (vs in-house SDR) ── */
 .anchor-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:52px;}
 .stat{border-radius:20px;padding:30px 28px 32px;transition:transform .3s var(--ease),border-color .2s;}
-.stat:hover{border-color:rgba(176,141,87,.38);}
-.stat .n{font-family:var(--mono);font-size:clamp(26px,3vw,34px);color:var(--brass-hi);line-height:1.1;}
+.stat:hover{border-color:var(--accent-hi);}
+.stat .n{font-family:var(--mono);font-size:clamp(26px,3vw,34px);color:var(--accent-hi);line-height:1.1;}
 .stat .k{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--muted-dim);text-transform:uppercase;margin-top:12px;}
 .stat p{font-size:13.5px;color:var(--muted);margin-top:12px;}
-.anchor-line{margin-top:36px;font-size:15.5px;color:#CFC8B9;max-width:44em;}
-.anchor-line b{color:var(--brass-hi);font-weight:500;}
+.anchor-line{margin-top:36px;font-size:15.5px;color:var(--ink);max-width:44em;}
+.anchor-line b{color:var(--accent-hi);font-weight:600;}
 @media (max-width:760px){.anchor-grid{grid-template-columns:1fr;}}
 
 /* ── fit: missing → handled ── */
-#fit{background:linear-gradient(to bottom,transparent,rgba(30,26,19,.55) 18%,rgba(30,26,19,.55) 82%,transparent);}
+#fit{background:linear-gradient(to bottom,transparent,var(--surface-2) 18%,var(--surface-2) 82%,transparent);}
 .fit-table{margin-top:56px;border-radius:20px;}
 .fit-head,.fit-row{display:grid;grid-template-columns:1fr 44px 1fr;align-items:center;}
-.fit-head{background:rgba(240,235,224,.03);border-bottom:1px solid var(--line);}
+.fit-head{background:rgba(33,29,22,.025);border-bottom:1px solid var(--line);}
 .fit-head .mono{padding:16px 26px;color:var(--muted-dim);}
-.fit-head .mono:last-child{color:var(--brass-hi);}
+.fit-head .mono:last-child{color:var(--accent-hi);}
 .fit-row{border-bottom:1px solid var(--line-soft);transition:background .2s;}
 .fit-row:last-child{border-bottom:none;}
-.fit-row:hover{background:rgba(176,141,87,.05);}
-.fit-row:hover .fit-arrow{transform:translateX(5px);color:var(--brass-hi);}
+.fit-row:hover{background:rgba(31,93,69,.05);}
+.fit-row:hover .fit-arrow{transform:translateX(5px);color:var(--accent-hi);}
 .fit-row .miss{padding:22px 26px;font-size:15px;color:var(--muted);}
 .fit-row .use{padding:22px 26px;font-size:15px;color:var(--ink);font-weight:500;}
 .fit-row .use .sub{display:block;font-weight:400;font-size:13px;color:var(--muted);margin-top:4px;}
-.fit-arrow{color:var(--brass);text-align:center;font-family:var(--mono);transition:transform .2s var(--ease),color .2s;}
-.fit-note{margin-top:32px;padding:24px 28px;border-left:2px solid var(--brass);background:var(--glass);border-radius:0 16px 16px 0;
+.fit-arrow{color:var(--accent);text-align:center;font-family:var(--mono);transition:transform .2s var(--ease),color .2s;}
+.fit-note{margin-top:32px;padding:24px 28px;border-left:2px solid var(--accent);background:var(--surface);border-radius:0 16px 16px 0;
   color:var(--muted);font-size:15px;max-width:760px;}
-.fit-note b{color:var(--ink);font-weight:500;}
+.fit-note b{color:var(--ink);font-weight:600;}
 @media (max-width:700px){
   .fit-head{display:none;}
   .fit-row{grid-template-columns:1fr;}
@@ -232,7 +204,7 @@ h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.4vw,50px);lin
   .fit-row .miss{padding-bottom:4px;}
   .fit-row .miss::before{content:'IF YOU\'RE MISSING';display:block;font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--muted-dim);margin-bottom:6px;}
   .fit-row .use{padding-top:4px;}
-  .fit-row .use::before{content:'USE THIS';display:block;font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--brass-hi);margin-bottom:6px;}
+  .fit-row .use::before{content:'USE THIS';display:block;font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--accent-hi);margin-bottom:6px;}
 }
 
 /* ── audit cta ── */
@@ -242,15 +214,15 @@ h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.4vw,50px);lin
 #audit .step{justify-content:center;}
 #audit .step::after{display:none;}
 #audit .findings{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:34px;}
-.finding{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#BFB7A6;
-  border:1px solid var(--glass-border);border-radius:999px;padding:10px 19px;background:var(--glass-2);
+.finding{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  border:1px solid var(--card-border);border-radius:999px;padding:10px 19px;background:var(--surface);
   display:inline-flex;align-items:center;gap:9px;}
-.finding::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--brass);}
+.finding::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--accent);}
 #audit .hero-cta{justify-content:center;margin-top:44px;}
 #audit .btn-primary{font-size:15.5px;padding:17px 32px;}
 #audit .alt{margin-top:22px;font-size:13.5px;color:var(--muted-dim);}
 #audit .alt a{color:var(--muted);text-decoration:underline;text-underline-offset:3px;}
-#audit .alt a:hover{color:var(--brass-hi);}
+#audit .alt a:hover{color:var(--accent-hi);}
 
 /* ── footer ── */
 footer{border-top:1px solid var(--line-soft);padding:36px var(--pad);position:relative;z-index:2;
@@ -259,7 +231,7 @@ footer .mono{color:var(--muted-dim);letter-spacing:.14em;font-size:10px;}
 footer nav{display:flex;gap:22px;}
 footer a{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
   color:var(--muted);text-decoration:none;transition:color .2s;}
-footer a:hover{color:var(--brass-hi);}
+footer a:hover{color:var(--accent-hi);}
 
 @media (max-width:640px){
   header .wm-sub{display:none;}
@@ -274,78 +246,53 @@ footer a:hover{color:var(--brass-hi);}
 
 <header id="hdr">
   <a class="wordmark" href="#hero" aria-label="Apex Standard — home">
-    <svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#1E1A13" stroke="rgba(176,141,87,.4)"/><path d="M32 14 L49 50 H41.8 L32 28.5 L22.2 50 H15 Z" fill="#B08D57"/></svg>
-    <span><span class="wm-name">APEX STANDARD</span><br><span class="wm-sub">OUTBOUND · IT &amp; TECH STAFFING</span></span>
+    <svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#EFE8D8" stroke="rgba(31,93,69,.35)"/><path d="M32 14 L49 50 H41.8 L32 28.5 L22.2 50 H15 Z" fill="#1F5D45"/></svg>
+    <span><span class="wm-name">APEX STANDARD</span><br><span class="wm-sub">OUTBOUND · AGENCIES &amp; STAFFING</span></span>
   </a>
   <a class="btn btn-primary" href="#audit">Book a free audit</a>
 </header>
 
 <main>
 
-<!-- ══ HERO — the recursive proof ══ -->
+<!-- ══ HERO ══ -->
 <section id="hero">
   <div class="wrap">
-    <div class="step rv"><span class="mono">Outbound for IT &amp; tech staffing agencies</span></div>
-    <h1 class="rv" style="--d:80ms">You're reading this<br>because <span class="gold em">the system works.</span></h1>
-    <p class="lede rv" style="--d:140ms">Chances are, this page reached you through a cold email or a LinkedIn message. That wasn't luck — it was a sequence we built and run every day. <strong>We run the same engine for staffing agencies like yours</strong>, pointed at the companies that hire you to fill roles. The proof isn't a testimonial. It's that you're here.</p>
+    <div class="step rv"><span class="mono">Outbound for agencies &amp; staffing firms</span></div>
+    <h1 class="rv" style="--d:80ms">You're the best salesperson your business has. <span class="accent em">That's the problem.</span></h1>
+    <p class="lede rv" style="--d:140ms">Apex Standard runs cold email and LinkedIn outbound for boutique agencies and staffing firms where the founder is still the one closing every deal. <strong>I'm Silven — I built this because you shouldn't have to choose between doing the work and finding the next client.</strong></p>
     <div class="hero-cta rv" style="--d:200ms">
       <a class="btn btn-primary" href="#audit">Book the free audit <span class="arr">→</span></a>
-      <a class="btn btn-ghost" href="#proof">See what found you ↓</a>
+      <a class="btn btn-ghost" href="#founder">Meet the founder ↓</a>
     </div>
     <div class="hero-foot rv" style="--d:260ms">
-      <div class="glass hf"><div class="n">DONE-FOR-YOU</div><div class="k">You keep recruiting</div></div>
-      <div class="glass hf"><div class="n">WEEK 1</div><div class="k">Outreach starts — no dead month</div></div>
-      <div class="glass hf"><div class="n">≤ 12 H</div><div class="k">Every interested reply answered</div></div>
+      <div class="card hf"><div class="n">FOUNDER-RUN</div><div class="k">You work directly with me</div></div>
+      <div class="card hf"><div class="n">MONTH-TO-MONTH</div><div class="k">No long-term contract</div></div>
+      <div class="card hf"><div class="n">≤ 12 H</div><div class="k">Every interested reply answered</div></div>
     </div>
   </div>
 </section>
 
-<!-- ══ PROOF — the sequence that reached you ══ -->
-<section id="proof">
+<!-- ══ FOUNDER ══ -->
+<section id="founder">
   <div class="wrap">
-    <div class="step rv"><span class="mono">Exhibit A · The mechanism</span></div>
-    <h2 class="rv">This is what <span class="gold em">found you.</span></h2>
-    <p class="lede rv">Reconstructed from our own outbound — details changed, mechanism identical. Everything below is the same machinery we point at your future clients.</p>
+    <div class="step rv"><span class="mono">Who's actually doing this</span></div>
+    <h2 class="rv">One founder. <span class="accent em">Not a faceless agency.</span></h2>
 
-    <div class="seq">
-      <div class="seq-item rv">
-        <div class="seq-dot" aria-hidden="true"></div>
-        <div class="seq-meta"><span class="when">Day 1 · 07:42</span><span class="what">Cold email · touch 1 of 4</span></div>
-        <div class="glass msg">
-          <div class="from"><span class="who">Silven Yoder</span><span class="addr">Apex Standard</span></div>
-          <div class="subj">quick one about your bench</div>
-          <p>Hey — I'll keep this short.</p>
-          <p><span class="hl">Saw you just wrapped that cloud-migration contract role in Columbus</span> — nice placement. Question: while you're heads-down filling roles like that, who's out finding your next client?</p>
-          <p>We book sales meetings for IT staffing agencies. If your pipeline depends on you having a free afternoon, worth a look.</p>
-        </div>
-        <p class="seq-note"><b>One real detail per prospect.</b> Researched, not mail-merged — and sent from managed domains, never your company email.</p>
+    <div class="founder-grid">
+      <div class="rv">
+        <div class="avatar" aria-hidden="true">SY</div>
+        <div class="founder-name">Silven Rhyse Yoder</div>
+        <div class="founder-title">Founder, Apex Standard</div>
+        <div class="founder-linkedin"><a href="https://www.linkedin.com/in/silven-yoder-90001841b" target="_blank" rel="noopener">View LinkedIn →</a></div>
       </div>
-
-      <div class="seq-item green rv">
-        <div class="seq-dot" aria-hidden="true"></div>
-        <div class="seq-meta"><span class="when">Day 3 · 09:56</span><span class="what">Reply · interested</span></div>
-        <div class="glass msg reply">
-          <div class="from"><span class="who">Agency founder</span><span class="addr">the seat you're in right now</span></div>
-          <p>Ha — fair point, that's exactly how it goes. What does this actually look like?</p>
+      <div class="founder-bio rv" style="--d:100ms">
+        <p>I spent the last year studying business and sales from the ground up, and started Apex Standard because agencies and staffing firms all run into the same wall: whoever's best at the actual work ends up with the least time to go sell it. There's no account team here — it's just me, which means every client gets direct, hands-on attention, not a junior manager reading from a playbook.</p>
+        <div class="offer-box">
+          <div class="k">Right now — founding clients</div>
+          <p>I'm taking on a small number of clients while I build out real case studies. In exchange for results and a testimonial, you get direct founder attention and month-to-month terms — no long-term contract, and no obligation to stick around if it isn't working.</p>
         </div>
-        <p class="seq-note"><b>Answered the same morning.</b> Interested replies get a response within 12 hours — guaranteed, in writing.</p>
-      </div>
-
-      <div class="seq-item rv">
-        <div class="seq-dot" aria-hidden="true"></div>
-        <div class="seq-meta"><span class="when">Day 4</span><span class="what">Booked · straight to calendar</span></div>
-        <div class="glass msg cal">
-          <div class="cal-date" aria-hidden="true"><div class="cd-m">THU</div><div class="cd-d">14</div></div>
-          <div class="cal-body">
-            <div class="t">Intro — Your Agency × Apex Standard</div>
-            <div class="s">25 MIN · ZOOM · CONFIRMED</div>
-          </div>
-        </div>
-        <p class="seq-note"><b>No back-and-forth.</b> A qualified conversation, on the calendar, while you were busy doing the actual work.</p>
       </div>
     </div>
-
-    <div class="exhibit-foot rv">If you run an IT or tech staffing agency and got here from one of our messages — <b>the loop just closed</b>. You're standing inside the product. The only question left is whether it gets pointed at your prospects next.</div>
   </div>
 </section>
 
@@ -353,7 +300,7 @@ footer a:hover{color:var(--brass-hi);}
 <section id="situations">
   <div class="wrap">
     <div class="step rv"><span class="mono">Sound familiar?</span></div>
-    <h2 class="rv">Three founders land here.<br><span class="gold em">Which one is you?</span></h2>
+    <h2 class="rv">Three founders land here.<br><span class="accent em">Which one is you?</span></h2>
 
     <div class="sit-tabs rv" role="tablist" aria-label="Buyer situations">
       <button class="sit-tab" role="tab" id="tab-0" aria-selected="true" aria-controls="panel-0">I do the selling myself</button>
@@ -361,21 +308,21 @@ footer a:hover{color:var(--brass-hi);}
       <button class="sit-tab" role="tab" id="tab-2" aria-selected="false" aria-controls="panel-2">My BD hire isn't ramping</button>
     </div>
 
-    <div class="glass sit-panel active" role="tabpanel" id="panel-0" aria-labelledby="tab-0">
+    <div class="card sit-panel active" role="tabpanel" id="panel-0" aria-labelledby="tab-0">
       <div>
-        <h3>Outreach happens between placements — until it doesn't.</h3>
-        <p class="story">You're the founder and the closer. The moment a big role lands on your desk, prospecting stops — and the gap shows up in revenue two months later, right on schedule. Feast, famine, repeat. Not because you can't sell. Because you can't be two people at once.</p>
+        <h3>Outreach happens between projects — until it doesn't.</h3>
+        <p class="story">You're the founder and the closer. The moment real client work lands on your desk, prospecting stops — and the gap shows up in revenue two months later, right on schedule. Feast, famine, repeat. Not because you can't sell. Because you can't be two people at once.</p>
       </div>
       <div class="sit-fix">
         <div class="k">What changes</div>
-        <p>The engine keeps prospecting while you recruit. Outreach never pauses because you got busy — that's the entire point of it being done for you.</p>
+        <p>The engine keeps prospecting while you work. Outreach never pauses because you got busy — that's the entire point of it being done for you.</p>
       </div>
     </div>
 
-    <div class="glass sit-panel" role="tabpanel" id="panel-1" aria-labelledby="tab-1" hidden>
+    <div class="card sit-panel" role="tabpanel" id="panel-1" aria-labelledby="tab-1" hidden>
       <div>
-        <h3>Referrals built the agency. They won't scale it.</h3>
-        <p class="story">Repeat clients and word of mouth got you here — and growth has gone flat. If one or two anchor clients slow their hiring, there's nothing active behind them. No list, no sequences, no system. You don't need a miracle. You need a pipeline that exists whether or not anyone remembers to work it.</p>
+        <h3>Referrals built the business. They won't scale it.</h3>
+        <p class="story">Repeat clients and word of mouth got you here — and growth has gone flat. If one or two anchor clients slow down, there's nothing active behind them. No list, no sequences, no system. You don't need a miracle. You need a pipeline that exists whether or not anyone remembers to work it.</p>
       </div>
       <div class="sit-fix">
         <div class="k">What changes</div>
@@ -383,7 +330,7 @@ footer a:hover{color:var(--brass-hi);}
       </div>
     </div>
 
-    <div class="glass sit-panel" role="tabpanel" id="panel-2" aria-labelledby="tab-2" hidden>
+    <div class="card sit-panel" role="tabpanel" id="panel-2" aria-labelledby="tab-2" hidden>
       <div>
         <h3>You hired for outbound. You're watching a salary line instead.</h3>
         <p class="story">Six months in, the calendar is thin and you're quietly doing the math on the hire. It's usually not their fault — outbound is a systems problem, not an effort problem. One person without infrastructure, data, and sequences is a rowboat doing a tanker's job.</p>
@@ -400,15 +347,15 @@ footer a:hover{color:var(--brass-hi);}
 <section id="engine">
   <div class="wrap">
     <div class="step rv"><span class="mono">How it works</span></div>
-    <h2 class="rv">The Apex Lead Engine.<br><span class="gold em">Six parts, none of them yours to run.</span></h2>
+    <h2 class="rv">The Apex Lead Engine.<br><span class="accent em">Six parts, none of them yours to run.</span></h2>
 
     <div class="engine-grid rv">
-      <div class="glass eng"><div class="num">01</div><h3>Sending infrastructure</h3><p>Dedicated domains, warmed and authenticated — SPF, DKIM, DMARC. <b>Your real company email never touches cold outreach.</b></p></div>
-      <div class="glass eng"><div class="num">02</div><h3>The prospect list</h3><p>Precision-targeted companies that hire agencies like yours — verified and enriched, with <b>zero-bounce tolerance</b>.</p></div>
-      <div class="glass eng"><div class="num">03</div><h3>Personalized sequences</h3><p>AI-drafted email + LinkedIn touches with <b>one real, researched detail per prospect</b>. LinkedIn starts week one, while domains warm — no dead month.</p></div>
-      <div class="glass eng"><div class="num">04</div><h3>Reply management</h3><p>Interested replies answered fast and <b>booked straight onto your calendar</b>. You walk into conversations, not inboxes.</p></div>
-      <div class="glass eng"><div class="num">05</div><h3>Weekly reporting</h3><p>A transparent report every week — sends, replies, meetings. <b>No vanity metrics, no mystery.</b></p></div>
-      <div class="glass eng"><div class="num">06</div><h3>Monthly review</h3><p>Fifteen minutes on Zoom, once a month. What worked, what's next. <b>That's the whole meeting.</b></p></div>
+      <div class="card eng"><div class="num">01</div><h3>Sending infrastructure</h3><p>Dedicated domains, warmed and authenticated — SPF, DKIM, DMARC. <b>Your real company email never touches cold outreach.</b></p></div>
+      <div class="card eng"><div class="num">02</div><h3>The prospect list</h3><p>Precision-targeted companies that hire businesses like yours — verified and enriched, with <b>zero-bounce tolerance</b>.</p></div>
+      <div class="card eng"><div class="num">03</div><h3>Personalized sequences</h3><p>Email + LinkedIn touches with <b>one real, researched detail per prospect</b>. LinkedIn starts week one, while domains warm — no dead month.</p></div>
+      <div class="card eng"><div class="num">04</div><h3>Reply management</h3><p>Interested replies answered fast and <b>booked straight onto your calendar</b>. You walk into conversations, not inboxes.</p></div>
+      <div class="card eng"><div class="num">05</div><h3>Weekly reporting</h3><p>A transparent report every week — sends, replies, meetings. <b>No vanity metrics, no mystery.</b></p></div>
+      <div class="card eng"><div class="num">06</div><h3>Monthly review</h3><p>Fifteen minutes on Zoom, once a month. What worked, what's next. <b>That's the whole meeting.</b></p></div>
     </div>
   </div>
 </section>
@@ -417,18 +364,20 @@ footer a:hover{color:var(--brass-hi);}
 <section id="guarantees">
   <div class="wrap">
     <div class="step rv"><span class="mono">In writing</span></div>
-    <h2 class="rv">Guaranteed — because <span class="gold em">we control it.</span></h2>
-    <p class="lede rv">No promises about your results dressed up as guarantees. These four things are fully in our control — so they go in the agreement, not just the sales pitch.</p>
+    <h2 class="rv">Guaranteed — because <span class="accent em">we control it.</span></h2>
+    <p class="lede rv">No promises about your results dressed up as guarantees. These are fully in our control — so they go in the agreement, not just the sales pitch.</p>
 
     <div class="g-grid">
-      <div class="glass g-card rv"><div class="g-check"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5 L6.5 12 L13 4.5" stroke="#6FA383" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="card g-card rv"><div class="g-check"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5 L6.5 12 L13 4.5" stroke="#2C7A5C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div><div class="g-n">0</div><h3>Bounces tolerated</h3><p>Every contact is verified before it enters a sequence. Bad data never gets a chance to burn a domain — or your name.</p></div></div>
-      <div class="glass g-card rv"><div class="g-check"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5 L6.5 12 L13 4.5" stroke="#6FA383" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="card g-card rv"><div class="g-check"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5 L6.5 12 L13 4.5" stroke="#2C7A5C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div><div class="g-n">90%+</div><h3>Domain health before anything sends</h3><p>Nothing goes out until the sending domains clear a 90% health score. Warmup finishes first. Every time.</p></div></div>
-      <div class="glass g-card rv"><div class="g-check"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5 L6.5 12 L13 4.5" stroke="#6FA383" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <div><div class="g-n">EVERY WK</div><h3>A report, or the month is free</h3><p>You get a transparent report every single week. If one is ever missed, that month costs you nothing.</p></div></div>
-      <div class="glass g-card rv"><div class="g-check"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5 L6.5 12 L13 4.5" stroke="#6FA383" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="card g-card rv"><div class="g-check"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5 L6.5 12 L13 4.5" stroke="#2C7A5C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div><div class="g-n">EVERY WK</div><h3>A report, or the week is free</h3><p>You get a transparent report every single week. If one is ever missed, that stretch costs you nothing.</p></div></div>
+      <div class="card g-card rv"><div class="g-check"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5 L6.5 12 L13 4.5" stroke="#2C7A5C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div><div class="g-n">≤12H</div><h3>Response to every interested reply</h3><p>A warm reply is perishable. Anyone who raises their hand hears back within twelve hours — usually much sooner.</p></div></div>
+      <div class="card g-card rv"><div class="g-check"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5 L6.5 12 L13 4.5" stroke="#2C7A5C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div><div class="g-n">NO LOCK-IN</div><h3>Cancel anytime</h3><p>Month-to-month, no long-term contract. You're never stuck paying for something that isn't working.</p></div></div>
     </div>
   </div>
 </section>
@@ -437,15 +386,15 @@ footer a:hover{color:var(--brass-hi);}
 <section id="math">
   <div class="wrap">
     <div class="step rv"><span class="mono">The alternative</span></div>
-    <h2 class="rv">The math against <span class="gold em">hiring it in-house.</span></h2>
+    <h2 class="rv">The math against <span class="accent em">hiring it in-house.</span></h2>
 
     <div class="anchor-grid">
-      <div class="glass stat rv"><div class="n">$60–100K</div><div class="k">Per year, per SDR</div><p>Salary before tools, data, and management overhead — and before a single meeting is booked.</p></div>
-      <div class="glass stat rv"><div class="n">~6 MO</div><div class="k">Ramp before productive</div><p>Half a year of full cost while they learn your market, your pitch, and the craft itself.</p></div>
-      <div class="glass stat rv"><div class="n">1 IN 2</div><div class="k">Quit or replaced in year one</div><p>And when they leave, the ramp clock starts over. The system walks out the door with the person.</p></div>
+      <div class="card stat rv"><div class="n">$60–100K</div><div class="k">Per year, per SDR</div><p>Salary before tools, data, and management overhead — and before a single meeting is booked.</p></div>
+      <div class="card stat rv"><div class="n">~6 MO</div><div class="k">Ramp before productive</div><p>Half a year of full cost while they learn your market, your pitch, and the craft itself.</p></div>
+      <div class="card stat rv"><div class="n">1 IN 2</div><div class="k">Quit or replaced in year one</div><p>And when they leave, the ramp clock starts over. The system walks out the door with the person.</p></div>
     </div>
 
-    <p class="anchor-line rv">The engine costs <b>a fraction of that</b>, starts producing in weeks instead of months, and doesn't resign. The exact number for your agency? That's what the audit call is for — it's sized to you, not read off a rate card.</p>
+    <p class="anchor-line rv">The engine costs <b>a fraction of that</b>, starts producing in weeks instead of months, and doesn't resign. The exact number for your business? That's what the audit call is for — it's sized to you, not read off a rate card.</p>
   </div>
 </section>
 
@@ -453,9 +402,9 @@ footer a:hover{color:var(--brass-hi);}
 <section id="fit">
   <div class="wrap">
     <div class="step rv"><span class="mono">Where you fit</span></div>
-    <h2 class="rv">If you're missing it,<br><span class="gold em">this is what handles it.</span></h2>
+    <h2 class="rv">If you're missing it,<br><span class="accent em">this is what handles it.</span></h2>
 
-    <div class="glass fit-table rv">
+    <div class="card fit-table rv">
       <div class="fit-head"><span class="mono">If you're missing…</span><span></span><span class="mono">Use this</span></div>
       <div class="fit-row">
         <div class="miss">Any outbound system at all — no list, no sequences, no process</div>
@@ -484,7 +433,7 @@ footer a:hover{color:var(--brass-hi);}
       </div>
     </div>
 
-    <div class="fit-note rv"><b>What does it cost?</b> It's sized to your agency — your niche, your capacity, what a new client is worth to you. We go over the exact number together on the audit call, once we've actually seen your setup. No rate card copy-pasted onto your business, and no surprises after.</div>
+    <div class="fit-note rv"><b>What does it cost?</b> It's sized to your business — your niche, your capacity, what a new client is worth to you. We go over the exact number together on the audit call, once I've actually seen your setup. No rate card copy-pasted onto your business, and no surprises after.</div>
   </div>
 </section>
 
@@ -492,8 +441,8 @@ footer a:hover{color:var(--brass-hi);}
 <section id="audit">
   <div class="wrap">
     <div class="step rv"><span class="mono">The next step · free</span></div>
-    <h2 class="rv">Start with the audit.<br><span class="gold em">Keep the findings either way.</span></h2>
-    <p class="lede rv">We check your setup and hand you three concrete findings you can act on whether or not you ever hire us. Fifteen minutes to book. No charge, no obligation.</p>
+    <h2 class="rv">Start with the audit.<br><span class="accent em">Keep the findings either way.</span></h2>
+    <p class="lede rv">I check your setup and hand you three concrete findings you can act on whether or not you ever hire me. Fifteen minutes to book. No charge, no obligation.</p>
     <div class="findings rv">
       <span class="finding">Domain health · SPF / DKIM / DMARC</span>
       <span class="finding">Deliverability check</span>
@@ -509,7 +458,7 @@ footer a:hover{color:var(--brass-hi);}
 </main>
 
 <footer>
-  <span class="mono">© 2026 APEX STANDARD · OUTBOUND FOR IT &amp; TECH STAFFING AGENCIES</span>
+  <span class="mono">© 2026 APEX STANDARD · OUTBOUND FOR AGENCIES &amp; STAFFING FIRMS</span>
   <nav aria-label="Legal">
     <a href="privacy.html">Privacy</a>
     <a href="terms.html">Terms</a>
