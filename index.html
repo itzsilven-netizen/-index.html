@@ -139,12 +139,16 @@ h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.4vw,50px);lin
 
 /* ── ask bar ── */
 .ask-bar{margin-top:34px;max-width:620px;}
-.ask-form{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--card-border);
-  border-radius:999px;padding:6px 6px 6px 22px;box-shadow:0 14px 34px rgba(20,18,14,.09);transition:border-color .2s,box-shadow .2s;}
+.ask-form{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--card-border);
+  border-radius:28px;padding:18px 20px 12px;box-shadow:0 14px 34px rgba(20,18,14,.09);transition:border-color .2s,box-shadow .2s;}
 .ask-form:focus-within{border-color:var(--accent-hi);box-shadow:0 14px 34px rgba(31,93,69,.16);}
-.ask-input{flex:1;min-width:0;border:none;outline:none;background:transparent;
-  font-family:var(--sans);font-size:15px;color:var(--ink);padding:13px 0;}
+.ask-input{width:100%;border:none;outline:none;background:transparent;
+  font-family:var(--sans);font-size:16px;color:var(--ink);padding:2px 0 16px;}
 .ask-input::placeholder{color:var(--muted-dim);}
+.ask-toolbar{display:flex;align-items:center;justify-content:space-between;}
+.ask-attach{flex-shrink:0;width:34px;height:34px;border-radius:50%;border:1px solid var(--card-border);background:transparent;
+  color:var(--muted-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;}
+.ask-attach:hover{background:var(--surface-2);color:var(--muted);}
 .ask-send{flex-shrink:0;width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;
   background:linear-gradient(115deg,#2C7A5C,var(--accent) 55%,#173F30);color:#FAF6EC;
   display:flex;align-items:center;justify-content:center;transition:transform .2s var(--ease),opacity .2s;}
@@ -355,9 +359,14 @@ footer a:hover{opacity:1;text-decoration:underline;text-underline-offset:3px;}
         <div class="ask-bar rv" style="--d:180ms">
           <form id="askForm" class="ask-form" autocomplete="off">
             <input type="text" id="askInput" class="ask-input" placeholder="How can I help?" aria-label="Ask a question">
-            <button type="submit" class="ask-send" aria-label="Send">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M12 5L6 11M12 5L18 11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
+            <div class="ask-toolbar">
+              <button type="button" class="ask-attach" aria-label="Attachments" title="Attachments coming soon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21.44 11.05l-9.19 9.19a5.5 5.5 0 0 1-7.78-7.78l9.19-9.19a3.5 3.5 0 0 1 4.95 4.95l-9.2 9.19a1.5 1.5 0 0 1-2.12-2.12l8.49-8.48" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button type="submit" class="ask-send" aria-label="Send">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M12 5L6 11M12 5L18 11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
           </form>
           <div class="ask-hint">Goes straight to me — not an AI, a real reply</div>
           <div class="ask-reply" id="askReply" hidden>
@@ -627,6 +636,7 @@ navSections.forEach(s => navObserver.observe(s));
 const askForm = document.getElementById('askForm');
 const askInput = document.getElementById('askInput');
 const askReply = document.getElementById('askReply');
+document.querySelector('.ask-attach').addEventListener('click', () => askInput.focus());
 askForm.addEventListener('submit', e => {
   e.preventDefault();
   const msg = askInput.value.trim();
