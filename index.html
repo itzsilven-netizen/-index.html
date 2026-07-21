@@ -137,6 +137,29 @@ h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.4vw,50px);lin
 .hf .n{font-family:var(--mono);font-size:15px;color:var(--accent-hi);}
 .hf .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:var(--muted-dim);text-transform:uppercase;margin-top:7px;}
 
+/* ── ask bar ── */
+.ask-bar{margin-top:34px;max-width:620px;}
+.ask-form{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--card-border);
+  border-radius:999px;padding:6px 6px 6px 22px;box-shadow:0 14px 34px rgba(20,18,14,.09);transition:border-color .2s,box-shadow .2s;}
+.ask-form:focus-within{border-color:var(--accent-hi);box-shadow:0 14px 34px rgba(31,93,69,.16);}
+.ask-input{flex:1;min-width:0;border:none;outline:none;background:transparent;
+  font-family:var(--sans);font-size:15px;color:var(--ink);padding:13px 0;}
+.ask-input::placeholder{color:var(--muted-dim);}
+.ask-send{flex-shrink:0;width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;
+  background:linear-gradient(115deg,#2C7A5C,var(--accent) 55%,#173F30);color:#FAF6EC;
+  display:flex;align-items:center;justify-content:center;transition:transform .2s var(--ease),opacity .2s;}
+.ask-send:hover{transform:scale(1.07);}
+.ask-send:disabled{opacity:.45;cursor:default;transform:none;}
+.ask-hint{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-dim);
+  margin:10px 0 0 22px;}
+.ask-reply{margin-top:14px;padding:16px 20px;background:var(--surface);border:1px solid var(--card-border);
+  border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  animation:askIn .4s var(--ease);}
+@keyframes askIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.ask-reply p{font-size:14px;color:var(--ink);margin:0;max-width:32em;}
+.ask-reply .btn{padding:11px 20px;font-size:13.5px;}
+@media (prefers-reduced-motion:reduce){.ask-reply{animation:none;}}
+
 /* ── console panel ── */
 .console{background:var(--ink);border-radius:12px;overflow:hidden;box-shadow:0 24px 56px rgba(20,18,14,.2);}
 .console-bar{display:flex;align-items:center;gap:7px;padding:14px 18px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08);}
@@ -328,7 +351,22 @@ footer a:hover{opacity:1;text-decoration:underline;text-underline-offset:3px;}
         <div class="step rv"><span class="mono">Lead generation &amp; growth for agencies &amp; staffing firms</span></div>
         <h1 class="rv" style="--d:80ms">You're the best salesperson your business has. <span class="accent em">That's the problem.</span></h1>
         <p class="lede rv" style="--d:140ms">Apex Standard is a lead generation and growth partner for boutique agencies and staffing firms where the founder is still the one closing every deal — cold email, LinkedIn, calling, and nurture systems, built to grow with you. <strong>I'm Silven — I built this because you shouldn't have to choose between doing the work and finding the next client.</strong></p>
-        <div class="hero-cta rv" style="--d:200ms">
+
+        <div class="ask-bar rv" style="--d:180ms">
+          <form id="askForm" class="ask-form" autocomplete="off">
+            <input type="text" id="askInput" class="ask-input" placeholder="How can I help?" aria-label="Ask a question">
+            <button type="submit" class="ask-send" aria-label="Send">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M12 5L6 11M12 5L18 11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </form>
+          <div class="ask-hint">Goes straight to me — not an AI, a real reply</div>
+          <div class="ask-reply" id="askReply" hidden>
+            <p>Got it — that's exactly what the free audit call is for. I read every message myself.</p>
+            <a class="btn btn-primary" href="https://calendly.com/itz-silven-apexstandard/30min" target="_blank" rel="noopener">Book the free audit <span class="arr">→</span></a>
+          </div>
+        </div>
+
+        <div class="hero-cta rv" style="--d:220ms">
           <a class="btn btn-primary" href="#audit">Book the free audit <span class="arr">→</span></a>
           <a class="btn btn-ghost" href="#founder">Meet the founder ↓</a>
         </div>
@@ -584,6 +622,22 @@ const navObserver = new IntersectionObserver(entries => {
   });
 }, {rootMargin: '-40% 0px -55% 0px', threshold: 0});
 navSections.forEach(s => navObserver.observe(s));
+
+/* ── ask bar ── */
+const askForm = document.getElementById('askForm');
+const askInput = document.getElementById('askInput');
+const askReply = document.getElementById('askReply');
+askForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const msg = askInput.value.trim();
+  if (!msg) return;
+  const subject = encodeURIComponent('Question from the website');
+  const body = encodeURIComponent(msg + '\n\n—\nSent from the Apex Standard site');
+  askReply.hidden = false;
+  askForm.querySelector('.ask-send').disabled = true;
+  askInput.disabled = true;
+  window.location.href = 'mailto:itz.silven@apexstandard.biz?subject=' + subject + '&body=' + body;
+});
 </script>
 </body>
 </html>
