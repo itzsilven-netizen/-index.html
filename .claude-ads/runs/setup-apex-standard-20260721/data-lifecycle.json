@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0.0",
+  "lifecycle_id": "lifecycle-setup-apex-standard-20260721",
+  "classification": "public",
+  "retention": {
+    "minimum_seconds": 0,
+    "mode": "operator-defined",
+    "delete_after": "2027-07-21T00:00:00Z",
+    "purpose": "Retain the setup and brand profile as reference for planning Apex Standard's LinkedIn brand-awareness campaign; delete after 12 months or upon account closure, whichever is first.",
+    "exception_reason": null
+  },
+  "encryption": {
+    "at_rest": "not-applicable",
+    "in_transit": "not-applicable",
+    "evidence_refs": []
+  },
+  "access": {
+    "owner": "itz.silven@apexstandard.biz",
+    "authorized_roles": [
+      "owner"
+    ],
+    "access_log_locator": null
+  },
+  "deletion": {
+    "status": "scheduled",
+    "method": "Manual deletion of .claude-ads/runs/setup-apex-standard-20260721/ by the repository owner on request or account closure.",
+    "verification_required": true,
+    "verification_artifact_locator": null
+  },
+  "incident": {
+    "owner": "itz.silven@apexstandard.biz",
+    "reporting_channel": "email:itz.silven@apexstandard.biz",
+    "status": "not-triggered",
+    "record_locator": null
+  }
+}

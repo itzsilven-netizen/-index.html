@@ -1,0 +1,118 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "brand-profile",
+  "run_id": "setup-apex-standard-20260721",
+  "created_at": "2026-07-21T00:00:00Z",
+  "brand_name": "Apex Standard",
+  "website_url": "https://apexstandard.biz",
+  "observations": [
+    {
+      "field": "offer",
+      "value": "5X more leads in 30 days \u2014 or you don't pay",
+      "evidence_refs": [
+        "README.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "field": "services",
+      "value": [
+        "Lead Generation",
+        "Sales Conversion",
+        "Customer Retention",
+        "Relationship Building"
+      ],
+      "evidence_refs": [
+        "README.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "field": "website_url",
+      "value": "https://apexstandard.biz",
+      "evidence_refs": [
+        "README.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "field": "contact_email",
+      "value": "itz.silven@apexstandard.biz",
+      "evidence_refs": [
+        "README.md"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "inferences": [
+    {
+      "field": "target_audience",
+      "value": "SMB/B2B businesses seeking outsourced lead-generation and growth services",
+      "evidence_refs": [
+        "README.md",
+        "index.html"
+      ],
+      "confidence": "medium",
+      "approval_status": "pending"
+    },
+    {
+      "field": "brand_voice_and_visual_identity",
+      "value": "Premium, high-end tech aesthetic: dark background, chrome/silver gradient accents, uppercase condensed headings",
+      "evidence_refs": [
+        "bootcamp.html"
+      ],
+      "confidence": "medium",
+      "approval_status": "pending"
+    }
+  ],
+  "source_ids": [
+    "README.md",
+    "index.html",
+    "bootcamp.html"
+  ],
+  "source_assets_authorized": true,
+  "missing_fields": [
+    "regulated_categories_confirmation",
+    "target_audience_confirmation",
+    "brand_voice_confirmation",
+    "logo_assets",
+    "brand_color_hex_values"
+  ],
+  "status": "draft",
+  "data_lifecycle": {
+    "schema_version": "1.0.0",
+    "lifecycle_id": "lifecycle-brand-apex-standard-20260721",
+    "classification": "public",
+    "retention": {
+      "minimum_seconds": 0,
+      "mode": "operator-defined",
+      "delete_after": "2027-07-21T00:00:00Z",
+      "purpose": "Retain the setup and brand profile as reference for planning Apex Standard's LinkedIn brand-awareness campaign; delete after 12 months or upon account closure, whichever is first.",
+      "exception_reason": null
+    },
+    "encryption": {
+      "at_rest": "not-applicable",
+      "in_transit": "not-applicable",
+      "evidence_refs": []
+    },
+    "access": {
+      "owner": "itz.silven@apexstandard.biz",
+      "authorized_roles": [
+        "owner"
+      ],
+      "access_log_locator": null
+    },
+    "deletion": {
+      "status": "scheduled",
+      "method": "Manual deletion of .claude-ads/runs/setup-apex-standard-20260721/ by the repository owner on request or account closure.",
+      "verification_required": true,
+      "verification_artifact_locator": null
+    },
+    "incident": {
+      "owner": "itz.silven@apexstandard.biz",
+      "reporting_channel": "email:itz.silven@apexstandard.biz",
+      "status": "not-triggered",
+      "record_locator": null
+    }
+  }
+}
