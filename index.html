@@ -23,11 +23,16 @@
   --line:rgba(33,29,22,.14);
   --line-soft:rgba(33,29,22,.08);
   --card-border:rgba(33,29,22,.14);
+  --gray:#DDDBD3;
+  --gray-hi:#E7E5DE;
+  --gray-line:rgba(26,24,20,.14);
   --serif:'IBM Plex Serif',Georgia,serif;
   --sans:'IBM Plex Sans',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
   --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
   --ease:cubic-bezier(.22,1,.36,1);
   --pad:clamp(20px,5vw,72px);
+  --hdr-h:72px;
+  --side-w:232px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
@@ -51,11 +56,30 @@ body{
 .em{font-style:italic;font-weight:400;}
 
 /* ── header ── */
-header{position:fixed;top:0;left:0;right:0;z-index:50;
+header{position:fixed;top:0;left:0;right:0;z-index:50;height:var(--hdr-h);
   display:flex;align-items:center;justify-content:space-between;
-  padding:16px var(--pad);
-  transition:background .25s,border-color .25s;border-bottom:1px solid transparent;}
-header.scrolled{background:rgba(246,241,228,.94);border-bottom-color:var(--line-soft);}
+  padding:16px var(--pad);background:var(--gray);border-bottom:1px solid var(--gray-line);
+  transition:box-shadow .25s;box-shadow:none;}
+header.scrolled{box-shadow:0 2px 14px rgba(20,18,14,.08);}
+
+/* ── sidenav ── */
+.sidenav{position:fixed;top:var(--hdr-h);left:0;bottom:0;width:var(--side-w);z-index:40;
+  background:var(--gray);border-right:1px solid var(--gray-line);
+  overflow-y:auto;padding:26px 0;display:none;}
+.sidenav-inner{padding:0 26px;}
+.sidenav-group{display:flex;flex-direction:column;gap:1px;}
+.sidenav-kicker{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted-dim);margin:0 0 10px 15px;}
+.sidenav-link{font-family:var(--sans);font-size:14px;font-weight:500;color:var(--ink);text-decoration:none;
+  padding:9px 15px;margin-left:-15px;border-left:3px solid transparent;transition:border-color .15s;
+  text-underline-offset:4px;}
+.sidenav-link:hover{text-decoration:underline;}
+.sidenav-link.active{font-weight:700;border-left-color:var(--accent);background:rgba(31,93,69,.07);}
+.sidenav-divider{height:1px;background:var(--gray-line);margin:20px 0;}
+@media (min-width:900px){
+  .sidenav{display:block;}
+  main,footer{margin-left:var(--side-w);}
+}
 .wordmark{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink);}
 .wordmark .wm-name{font-family:var(--mono);font-size:12px;letter-spacing:.26em;font-weight:500;}
 .wordmark .wm-sub{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--muted-dim);margin-top:1px;}
@@ -74,7 +98,7 @@ header .btn{padding:10px 20px;font-size:13px;}
 
 /* ── layout ── */
 main{position:relative;z-index:2;}
-section{position:relative;padding:clamp(84px,12vh,140px) var(--pad);}
+section{position:relative;padding:clamp(84px,12vh,140px) var(--pad);scroll-margin-top:calc(var(--hdr-h) + 18px);}
 .wrap{max-width:1080px;margin:0 auto;position:relative;}
 .step{display:flex;align-items:center;gap:14px;margin-bottom:26px;}
 .step .mono{color:var(--accent-hi);display:inline-flex;align-items:center;gap:9px;
@@ -225,13 +249,14 @@ h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.4vw,50px);lin
 #audit .alt a:hover{color:var(--accent-hi);}
 
 /* ── footer ── */
-footer{border-top:1px solid var(--line-soft);padding:36px var(--pad);position:relative;z-index:2;
+footer{border-top:1px solid var(--gray-line);padding:36px var(--pad);position:relative;z-index:2;
+  background:var(--gray);
   display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;}
-footer .mono{color:var(--muted-dim);letter-spacing:.14em;font-size:10px;}
+footer .mono{color:var(--ink);opacity:.6;letter-spacing:.14em;font-size:10px;}
 footer nav{display:flex;gap:22px;}
 footer a{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--muted);text-decoration:none;transition:color .2s;}
-footer a:hover{color:var(--accent-hi);}
+  color:var(--ink);opacity:.7;text-decoration:none;transition:opacity .2s,text-decoration .15s;}
+footer a:hover{opacity:1;text-decoration:underline;text-underline-offset:3px;}
 
 @media (max-width:640px){
   header .wm-sub{display:none;}
@@ -246,11 +271,34 @@ footer a:hover{color:var(--accent-hi);}
 
 <header id="hdr">
   <a class="wordmark" href="#hero" aria-label="Apex Standard — home">
-    <svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#EFE8D8" stroke="rgba(31,93,69,.35)"/><path d="M32 14 L49 50 H41.8 L32 28.5 L22.2 50 H15 Z" fill="#1F5D45"/></svg>
+    <svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#FFFFFF" stroke="rgba(31,93,69,.35)"/><path d="M32 14 L49 50 H41.8 L32 28.5 L22.2 50 H15 Z" fill="#1F5D45"/></svg>
     <span><span class="wm-name">APEX STANDARD</span><br><span class="wm-sub">OUTBOUND · AGENCIES &amp; STAFFING</span></span>
   </a>
   <a class="btn btn-primary" href="#audit">Book a free audit</a>
 </header>
+
+<nav class="sidenav" aria-label="Page sections">
+  <div class="sidenav-inner">
+    <div class="sidenav-kicker">On this page</div>
+    <div class="sidenav-group">
+      <a class="sidenav-link" data-section="hero" href="#hero">Home</a>
+      <a class="sidenav-link" data-section="founder" href="#founder">Founder</a>
+      <a class="sidenav-link" data-section="situations" href="#situations">Situations</a>
+      <a class="sidenav-link" data-section="engine" href="#engine">How It Works</a>
+      <a class="sidenav-link" data-section="guarantees" href="#guarantees">Guarantees</a>
+      <a class="sidenav-link" data-section="math" href="#math">The Math</a>
+      <a class="sidenav-link" data-section="fit" href="#fit">Where You Fit</a>
+      <a class="sidenav-link" data-section="audit" href="#audit">Book Audit</a>
+    </div>
+    <div class="sidenav-divider"></div>
+    <div class="sidenav-kicker">More</div>
+    <div class="sidenav-group">
+      <a class="sidenav-link" href="privacy.html">Privacy</a>
+      <a class="sidenav-link" href="terms.html">Terms</a>
+      <a class="sidenav-link" href="mailto:itz.silven@apexstandard.biz">Contact</a>
+    </div>
+  </div>
+</nav>
 
 <main>
 
@@ -493,6 +541,16 @@ tabs.forEach((t,i) => {
     if (e.key === 'ArrowLeft')  { selectTab((i+tabs.length-1)%tabs.length); tabs[(i+tabs.length-1)%tabs.length].focus(); }
   });
 });
+
+/* ── sidenav active-section tracking ── */
+const navLinks = [...document.querySelectorAll('.sidenav-link[data-section]')];
+const navSections = navLinks.map(l => document.getElementById(l.dataset.section)).filter(Boolean);
+const navObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) navLinks.forEach(l => l.classList.toggle('active', l.dataset.section === e.target.id));
+  });
+}, {rootMargin: '-40% 0px -55% 0px', threshold: 0});
+navSections.forEach(s => navObserver.observe(s));
 </script>
 </body>
 </html>
