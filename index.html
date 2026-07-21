@@ -127,7 +127,7 @@ h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.4vw,50px);lin
 /* ── hero ── */
 #hero{min-height:100svh;display:flex;align-items:center;padding-top:120px;}
 #hero .wrap{max-width:1180px;}
-.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(28px,4vw,64px);align-items:center;}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(28px,4vw,64px);align-items:center;margin-top:72px;}
 @media (max-width:900px){.hero-grid{grid-template-columns:1fr;}}
 #hero h1{font-family:var(--serif);font-weight:500;font-size:clamp(36px,5.2vw,64px);line-height:1.08;letter-spacing:-.02em;text-wrap:balance;}
 #hero .lede{font-size:clamp(16px,1.6vw,18px);margin-top:26px;}
@@ -138,7 +138,7 @@ h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.4vw,50px);lin
 .hf .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:var(--muted-dim);text-transform:uppercase;margin-top:7px;}
 
 /* ── ask bar ── */
-.ask-section{margin:64px auto 0;max-width:760px;text-align:center;}
+.ask-section{margin:26px auto 0;max-width:760px;text-align:center;}
 .ask-label{font-family:var(--serif);font-style:italic;font-weight:500;
   font-size:clamp(24px,3.4vw,34px);color:var(--ink);margin-bottom:20px;text-wrap:balance;}
 .ask-form{display:flex;flex-direction:column;background:#FFFFFF;border:1px solid var(--card-border);
@@ -162,6 +162,7 @@ h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.4vw,50px);lin
 .ask-reply{margin-top:14px;padding:16px 20px;background:#FFFFFF;border:1px solid var(--card-border);
   border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
   text-align:left;animation:askIn .4s var(--ease);}
+.ask-reply[hidden]{display:none;}
 @keyframes askIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 .ask-reply p{font-size:14px;color:var(--ink);margin:0;max-width:32em;}
 .ask-reply .btn{padding:11px 20px;font-size:13.5px;}
@@ -354,30 +355,9 @@ footer a:hover{opacity:1;text-decoration:underline;text-underline-offset:3px;}
 <!-- ══ HERO ══ -->
 <section id="hero">
   <div class="wrap">
-    <div class="hero-grid">
-      <div>
-        <div class="step rv"><span class="mono">Lead generation &amp; growth for agencies &amp; staffing firms</span></div>
-        <h1 class="rv" style="--d:80ms">You're the best salesperson your business has. <span class="accent em">That's the problem.</span></h1>
-        <p class="lede rv" style="--d:140ms">Apex Standard is a lead generation and growth partner for boutique agencies and staffing firms where the founder is still the one closing every deal — cold email, LinkedIn, calling, and nurture systems, built to grow with you. <strong>I'm Silven — I built this because you shouldn't have to choose between doing the work and finding the next client.</strong></p>
+    <div class="step rv"><span class="mono">Lead generation &amp; growth for agencies &amp; staffing firms</span></div>
 
-        <div class="hero-cta rv" style="--d:220ms">
-          <a class="btn btn-primary" href="#audit">Book the free audit <span class="arr">→</span></a>
-          <a class="btn btn-ghost" href="#founder">Meet the founder ↓</a>
-        </div>
-      </div>
-      <div class="console rv" style="--d:260ms">
-        <div class="console-bar"><span></span><span></span><span></span><div class="console-title">SYSTEM STATUS</div></div>
-        <div class="console-body">
-          <div class="console-row"><span class="dot" aria-hidden="true"></span><span class="console-label">Channels</span><span class="console-val">email · linkedin · calling</span></div>
-          <div class="console-row"><span class="dot" aria-hidden="true"></span><span class="console-label">Domain health</span><span class="console-val">monitoring</span></div>
-          <div class="console-row"><span class="dot" aria-hidden="true"></span><span class="console-label">Bounce tolerance</span><span class="console-val">0%</span></div>
-          <div class="console-row"><span class="dot" aria-hidden="true"></span><span class="console-label">Reply SLA</span><span class="console-val">≤ 12h</span></div>
-          <div class="console-row"><span class="dot" aria-hidden="true"></span><span class="console-label">Contract</span><span class="console-val">month-to-month</span></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="ask-section rv" style="--d:300ms">
+    <div class="ask-section rv" style="--d:100ms">
       <p class="ask-label">How can I help?</p>
       <form id="askForm" class="ask-form" autocomplete="off">
         <input type="text" id="askInput" class="ask-input" placeholder="Ex: I don't have any outbound infrastructure" aria-label="Ask a question">
@@ -397,7 +377,29 @@ footer a:hover{opacity:1;text-decoration:underline;text-underline-offset:3px;}
       </div>
     </div>
 
-    <div class="hero-foot rv" style="--d:320ms">
+    <div class="hero-grid">
+      <div>
+        <h1 class="rv" style="--d:160ms">You're the best salesperson your business has. <span class="accent em">That's the problem.</span></h1>
+        <p class="lede rv" style="--d:220ms">Apex Standard is a lead generation and growth partner for boutique agencies and staffing firms where the founder is still the one closing every deal — cold email, LinkedIn, calling, and nurture systems, built to grow with you. <strong>I'm Silven — I built this because you shouldn't have to choose between doing the work and finding the next client.</strong></p>
+
+        <div class="hero-cta rv" style="--d:280ms">
+          <a class="btn btn-primary" href="#audit">Book the free audit <span class="arr">→</span></a>
+          <a class="btn btn-ghost" href="#founder">Meet the founder ↓</a>
+        </div>
+      </div>
+      <div class="console rv" style="--d:320ms">
+        <div class="console-bar"><span></span><span></span><span></span><div class="console-title">SYSTEM STATUS</div></div>
+        <div class="console-body">
+          <div class="console-row"><span class="dot" aria-hidden="true"></span><span class="console-label">Channels</span><span class="console-val">email · linkedin · calling</span></div>
+          <div class="console-row"><span class="dot" aria-hidden="true"></span><span class="console-label">Domain health</span><span class="console-val">monitoring</span></div>
+          <div class="console-row"><span class="dot" aria-hidden="true"></span><span class="console-label">Bounce tolerance</span><span class="console-val">0%</span></div>
+          <div class="console-row"><span class="dot" aria-hidden="true"></span><span class="console-label">Reply SLA</span><span class="console-val">≤ 12h</span></div>
+          <div class="console-row"><span class="dot" aria-hidden="true"></span><span class="console-label">Contract</span><span class="console-val">month-to-month</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-foot rv" style="--d:360ms">
       <div class="card hf"><div class="n">FOUNDER-RUN</div><div class="k">You work directly with me</div></div>
       <div class="card hf"><div class="n">MONTH-TO-MONTH</div><div class="k">No long-term contract</div></div>
       <div class="card hf"><div class="n">≤ 12 H</div><div class="k">Every interested reply answered</div></div>
@@ -643,6 +645,35 @@ const askForm = document.getElementById('askForm');
 const askInput = document.getElementById('askInput');
 const askReply = document.getElementById('askReply');
 document.querySelector('.ask-attach').addEventListener('click', () => askInput.focus());
+
+/* ── rotating example prompts ── */
+const askExamples = [
+  "I don't have any outbound infrastructure",
+  "I'm too busy doing the work to go sell",
+  "We only grow from referrals — and it's stalled",
+  "My BD hire isn't booking meetings",
+  "My cold emails keep landing in spam",
+  "I don't know what this should cost"
+];
+let askIdx = 0;
+let askRotateTimer = null;
+function rotateAskPlaceholder(){
+  askIdx = (askIdx + 1) % askExamples.length;
+  askInput.setAttribute('placeholder', 'Ex: ' + askExamples[askIdx]);
+}
+function startAskRotation(){
+  if (askRotateTimer || REDUCED_MOTION) return;
+  askRotateTimer = setInterval(rotateAskPlaceholder, 2800);
+}
+function stopAskRotation(){
+  clearInterval(askRotateTimer);
+  askRotateTimer = null;
+}
+const REDUCED_MOTION = matchMedia('(prefers-reduced-motion: reduce)').matches;
+startAskRotation();
+askInput.addEventListener('focus', stopAskRotation);
+askInput.addEventListener('blur', () => { if (!askInput.value) startAskRotation(); });
+
 askForm.addEventListener('submit', e => {
   e.preventDefault();
   const msg = askInput.value.trim();
