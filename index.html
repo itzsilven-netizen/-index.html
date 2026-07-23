@@ -5,20 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Apex Standard is a lead generation and growth partner for boutique agencies and staffing firms — cold email, LinkedIn, calling, and nurture systems. Founder-led, month-to-month, start with a free audit.">
 <title>Apex Standard — Lead Generation & Growth for Agencies & Staffing Firms</title>
-</* ══════════════════════════════════════════════
-   COLORS — change these eight lines to match your website.
-   ══════════════════════════════════════════════ */
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23FAF6EC'/%3E%3Cpath d='M32 12 L50 52 H41.5 L32 28.5 L22.5 52 H14 Z' fill='%231F5D45'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
 :root{
-  --bg:      #07080a;
-  --surface: #0c0e12;
-  --raised:  #15181d;
-  --accent:  #c9a227;
-  --accent2: #6f5a16;
-  --text:    #efe9dc;
-  --muted:   #93949a;
-  --edge:    #2a2e35;
-}
-
+  --bg:#F6F1E4;
+  --surface:#FFFFFF;
+  --surface-2:#EFE8D8;
+  --ink:#211D16;
   --muted:#6B6153;
   --muted-dim:#948A76;
   --accent:#1F5D45;
@@ -42,7 +38,9 @@
 html{scroll-behavior:smooth;}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}}
 body{
-  background:var(--bg) radial-gradient(ellipse 60% 40% at 50% 0%, rgba(31,93,69,.07), transparent 70%) fixed;
+  background-color:var(--bg);
+  background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);
+  background-size:42px 42px;
   color:var(--ink);font-family:var(--sans);
   font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;
   overflow-x:hidden;
@@ -123,17 +121,19 @@ h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.4vw,50px);lin
 @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none;}}
 
 /* ── card base ── */
-.card{background:var(--surface);border:1px solid var(--card-border);border-radius:16px;position:relative;
+.card{background:var(--surface);border:1px solid var(--card-border);border-radius:10px;position:relative;
   box-shadow:0 1px 2px rgba(33,29,22,.04);}
 
 /* ── hero ── */
 #hero{min-height:100svh;display:flex;align-items:center;padding-top:120px;}
-#hero .wrap{max-width:1120px;}
-#hero h1{font-family:var(--serif);font-weight:500;font-size:clamp(38px,6vw,72px);line-height:1.08;letter-spacing:-.02em;max-width:15em;text-wrap:balance;}
-#hero .lede{font-size:clamp(17px,1.9vw,20px);max-width:38em;margin-top:28px;}
-.hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:40px;align-items:center;}
+#hero .wrap{max-width:1180px;}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(28px,4vw,64px);align-items:center;margin-top:72px;}
+@media (max-width:900px){.hero-grid{grid-template-columns:1fr;}}
+#hero h1{font-family:var(--serif);font-weight:500;font-size:clamp(36px,5.2vw,64px);line-height:1.08;letter-spacing:-.02em;text-wrap:balance;}
+#hero .lede{font-size:clamp(16px,1.6vw,18px);margin-top:26px;}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:38px;align-items:center;}
 .hero-foot{display:flex;gap:16px;flex-wrap:wrap;margin-top:56px;}
-.hf{padding:18px 24px;min-width:170px;}
+.hf{padding:18px 24px;min-width:170px;border-radius:8px;}
 .hf .n{font-family:var(--mono);font-size:15px;color:var(--accent-hi);}
 .hf .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:var(--muted-dim);text-transform:uppercase;margin-top:7px;}
 
@@ -169,6 +169,18 @@ h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.4vw,50px);lin
 @media (prefers-reduced-motion:reduce){.ask-reply{animation:none;}}
 @media (max-width:640px){.ask-form{padding:18px 20px 14px;}}
 
+/* ── console panel ── */
+.console{background:var(--ink);border-radius:12px;overflow:hidden;box-shadow:0 24px 56px rgba(20,18,14,.2);}
+.console-bar{display:flex;align-items:center;gap:7px;padding:14px 18px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08);}
+.console-bar span{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.18);}
+.console-title{margin-left:8px;font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:rgba(246,241,228,.4);}
+.console-body{padding:22px 22px 26px;display:flex;flex-direction:column;gap:15px;}
+.console-row{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12.5px;}
+.console-row .dot{width:7px;height:7px;border-radius:50%;background:var(--accent-glow);box-shadow:0 0 8px var(--accent-glow);flex-shrink:0;
+  animation:dotPulse 2.4s ease-in-out infinite;}
+.console-label{color:rgba(246,241,228,.55);flex:1;}
+.console-val{color:var(--accent-glow);font-weight:500;}
+
 /* ── founder ── */
 #founder{background:linear-gradient(to bottom,transparent,var(--surface-2) 12%,var(--surface-2) 88%,transparent);}
 .founder-grid{display:grid;grid-template-columns:220px 1fr;gap:clamp(32px,5vw,56px);margin-top:52px;align-items:start;}
@@ -196,7 +208,7 @@ h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.4vw,50px);lin
 .sit-tab:hover{color:var(--ink);border-color:var(--accent-hi);transform:translateY(-2px);}
 .sit-tab[aria-selected="true"]{color:#FAF6EC;background:linear-gradient(115deg,#2C7A5C,var(--accent) 55%,#173F30);
   border-color:transparent;font-weight:600;}
-.sit-panel{margin-top:28px;border-radius:20px;
+.sit-panel{margin-top:28px;border-radius:12px;
   padding:clamp(26px,4vw,44px);display:none;}
 .sit-panel.active{display:grid;grid-template-columns:1.4fr 1fr;gap:clamp(24px,4vw,56px);}
 .sit-panel h3{font-family:var(--serif);font-weight:500;font-size:clamp(22px,2.6vw,30px);line-height:1.2;margin-bottom:14px;}
@@ -208,8 +220,9 @@ h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.4vw,50px);lin
 
 /* ── engine (6 components) ── */
 .engine-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:56px;}
-.eng{padding:30px 28px 34px;transition:transform .3s var(--ease),border-color .2s;}
+.eng{padding:30px 28px 34px;border-radius:12px;transition:transform .3s var(--ease),border-color .2s;}
 .eng:hover{transform:translateY(-5px);border-color:var(--accent-hi);}
+.eng:first-child{grid-column:span 2;background:linear-gradient(135deg,rgba(31,93,69,.07),var(--surface) 65%);border-color:var(--accent-hi);}
 .eng .num{font-family:var(--serif);font-style:italic;font-size:36px;line-height:1;color:rgba(31,93,69,.4);}
 .eng h3{font-family:var(--serif);font-weight:500;font-size:20px;margin:16px 0 10px;line-height:1.25;}
 .eng p{font-size:14px;color:var(--muted);}
@@ -219,9 +232,9 @@ h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.4vw,50px);lin
 
 /* ── guarantees ── */
 .g-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:56px;}
-.g-card{border-color:rgba(31,93,69,.22);background:rgba(31,93,69,.05);border-radius:20px;padding:30px 30px 32px;
-  display:flex;gap:20px;align-items:flex-start;transition:transform .3s var(--ease),border-color .2s;}
-.g-card:hover{transform:translateY(-4px);border-color:var(--accent-hi);}
+.g-card{border-left:3px solid var(--accent-hi);border-radius:8px;padding:26px 26px 28px;background:var(--surface);
+  display:flex;gap:20px;align-items:flex-start;transition:transform .3s var(--ease),box-shadow .2s;}
+.g-card:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(20,18,14,.08);}
 .g-check{flex-shrink:0;width:36px;height:36px;border-radius:50%;background:rgba(31,93,69,.12);
   border:1px solid var(--accent-hi);display:flex;align-items:center;justify-content:center;margin-top:3px;}
 .g-check svg{display:block;}
@@ -231,7 +244,7 @@ h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.4vw,50px);lin
 
 /* ── anchor (vs in-house SDR) ── */
 .anchor-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:52px;}
-.stat{border-radius:20px;padding:30px 28px 32px;transition:transform .3s var(--ease),border-color .2s;}
+.stat{border-radius:12px;padding:30px 28px 32px;transition:transform .3s var(--ease),border-color .2s;}
 .stat:hover{border-color:var(--accent-hi);}
 .stat .n{font-family:var(--mono);font-size:clamp(26px,3vw,34px);color:var(--accent-hi);line-height:1.1;}
 .stat .k{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--muted-dim);text-transform:uppercase;margin-top:12px;}
@@ -242,7 +255,7 @@ h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.4vw,50px);lin
 
 /* ── fit: missing → handled ── */
 #fit{background:linear-gradient(to bottom,transparent,var(--surface-2) 18%,var(--surface-2) 82%,transparent);}
-.fit-table{margin-top:56px;border-radius:20px;}
+.fit-table{margin-top:56px;border-radius:12px;}
 .fit-head,.fit-row{display:grid;grid-template-columns:1fr 44px 1fr;align-items:center;}
 .fit-head{background:rgba(33,29,22,.025);border-bottom:1px solid var(--line);}
 .fit-head .mono{padding:16px 26px;color:var(--muted-dim);}
@@ -364,12 +377,26 @@ footer a:hover{opacity:1;text-decoration:underline;text-underline-offset:3px;}
       </div>
     </div>
 
-    <h1 class="rv" style="--d:160ms">You're the best salesperson your business has. <span class="accent em">That's the problem.</span></h1>
-    <p class="lede rv" style="--d:220ms">Apex Standard is a lead generation and growth partner for boutique agencies and staffing firms where the founder is still the one closing every deal — cold email, LinkedIn, calling, and nurture systems, built to grow with you. <strong>I'm Silven — I built this because you shouldn't have to choose between doing the work and finding the next client.</strong></p>
+    <div class="hero-grid">
+      <div>
+        <h1 class="rv" style="--d:160ms">You're the best salesperson your business has. <span class="accent em">That's the problem.</span></h1>
+        <p class="lede rv" style="--d:220ms">Apex Standard is a lead generation and growth partner for boutique agencies and staffing firms where the founder is still the one closing every deal — cold email, LinkedIn, calling, and nurture systems, built to grow with you. <strong>I'm Silven — I built this because you shouldn't have to choose between doing the work and finding the next client.</strong></p>
 
-    <div class="hero-cta rv" style="--d:280ms">
-      <a class="btn btn-primary" href="#audit">Book the free audit <span class="arr">→</span></a>
-      <a class="btn btn-ghost" href="#founder">Meet the founder ↓</a>
+        <div class="hero-cta rv" style="--d:280ms">
+          <a class="btn btn-primary" href="#audit">Book the free audit <span class="arr">→</span></a>
+          <a class="btn btn-ghost" href="#founder">Meet the founder ↓</a>
+        </div>
+      </div>
+      <div class="console rv" style="--d:320ms">
+        <div class="console-bar"><span></span><span></span><span></span><div class="console-title">SYSTEM STATUS</div></div>
+        <div class="console-body">
+          <div class="console-row"><span class="dot" aria-hidden="true"></span><span class="console-label">Channels</span><span class="console-val">email · linkedin · calling</span></div>
+          <div class="console-row"><span class="dot" aria-hidden="true"></span><span class="console-label">Domain health</span><span class="console-val">monitoring</span></div>
+          <div class="console-row"><span class="dot" aria-hidden="true"></span><span class="console-label">Bounce tolerance</span><span class="console-val">0%</span></div>
+          <div class="console-row"><span class="dot" aria-hidden="true"></span><span class="console-label">Reply SLA</span><span class="console-val">≤ 12h</span></div>
+          <div class="console-row"><span class="dot" aria-hidden="true"></span><span class="console-label">Contract</span><span class="console-val">month-to-month</span></div>
+        </div>
+      </div>
     </div>
 
     <div class="hero-foot rv" style="--d:360ms">
