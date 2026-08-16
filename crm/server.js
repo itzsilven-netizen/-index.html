@@ -1,98 +1,86 @@
 import express from 'express'
 import cors from 'cors'
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import { createClient } from '@supabase/supabase-js'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
 const PORT = process.env.PORT || 3001
 
-// Middleware
 app.use(cors())
 app.use(express.json({ limit: '50mb' }))
 
-// Path to leads storage file
-const leadsFile = path.join(__dirname, 'leads.json')
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+)
 
-// Helper: Read leads from file
-const readLeads = () => {
+const dedupeKey = (lead) =>
+  lead.phone || lead.email || `${lead.business_name}|${lead.website || ''}`
+
+// GET /api/leads - Fetch all leads, grouped by type
+app.get('/api/leads', async (req, res) => {
   try {
-    if (fs.existsSync(leadsFile)) {
-      return JSON.parse(fs.readFileSync(leadsFile, 'utf-8'))
-    }
+    const { data, error } = await supabase.from('leads').select('*')
+    if (error) throw error
+
+    const calls = data.filter(row => row.type === 'calls').map(row => ({ id: row.id, ...row.data }))
+    const emails = data.filter(row => row.type === 'emails').map(row => ({ id: row.id, ...row.data }))
+
+    res.json({ calls, emails })
   } catch (err) {
-    console.error('Error reading leads:', err.message)
+    console.error('Error fetching leads:', err.message)
+    res.status(500).json({ error: 'Failed to fetch leads' })
   }
-  return { calls: [], emails: [] }
-}
-
-// Helper: Write leads to file
-const writeLeads = (data) => {
-  fs.writeFileSync(leadsFile, JSON.stringify(data, null, 2))
-}
-
-// GET /api/leads - Fetch all leads
-app.get('/api/leads', (req, res) => {
-  const leads = readLeads()
-  res.json(leads)
 })
 
-// POST /api/import-leads - Import leads from routine
-app.post('/api/import-leads', (req, res) => {
-  const { type, leads, apiKey } = req.body
-
-  // Simple auth: check API key if provided
-  const expectedKey = process.env.CRMS_API_KEY || 'your-secret-key'
-  if (apiKey && apiKey !== expectedKey) {
-    return res.status(401).json({ error: 'Invalid API key' })
-  }
+// POST /api/import-leads - Import leads from routine (deduped server-side)
+app.post('/api/import-leads', async (req, res) => {
+  const { type, leads } = req.body
 
   if (!type || !Array.isArray(leads)) {
     return res.status(400).json({ error: 'Invalid request. Need "type" (calls/emails) and "leads" array.' })
   }
-
   if (type !== 'calls' && type !== 'emails') {
     return res.status(400).json({ error: 'Type must be "calls" or "emails"' })
   }
 
   try {
-    const data = readLeads()
-    data[type] = data[type] || []
-
-    // Dedupe key: phone for calls, email for emails, fall back to business+website
-    const dedupeKey = (lead) =>
-      lead.phone || lead.email || `${lead.business_name}-${lead.website || ''}`
-
-    const existingKeys = new Set(data[type].map(dedupeKey))
-
-    const newLeads = leads
-      .filter(lead => !existingKeys.has(dedupeKey(lead)))
-      .map(lead => ({
-        id: Date.now() + Math.random(),
+    const rows = leads.map(lead => ({
+      type,
+      dedupe_key: dedupeKey(lead),
+      data: {
         ...lead,
         status: lead.status || 'new',
         importedAt: new Date().toISOString(),
-      }))
+      },
+    }))
 
-    data[type] = [...data[type], ...newLeads]
-    writeLeads(data)
+    const { data, error } = await supabase
+      .from('leads')
+      .upsert(rows, { onConflict: 'type,dedupe_key', ignoreDuplicates: true })
+      .select()
+
+    if (error) throw error
+
+    const { count: total } = await supabase
+      .from('leads')
+      .select('*', { count: 'exact', head: true })
+      .eq('type', type)
 
     res.json({
       success: true,
-      message: `Imported ${newLeads.length} new ${type} leads (${leads.length - newLeads.length} duplicates skipped)`,
-      count: newLeads.length,
-      skipped: leads.length - newLeads.length,
-      total: data[type].length,
+      message: `Imported ${data.length} new ${type} leads (${leads.length - data.length} duplicates skipped)`,
+      count: data.length,
+      skipped: leads.length - data.length,
+      total,
     })
   } catch (err) {
-    console.error('Error importing leads:', err)
+    console.error('Error importing leads:', err.message)
     res.status(500).json({ error: 'Failed to import leads' })
   }
 })
 
 // POST /api/update-lead - Update a single lead
-app.post('/api/update-lead', (req, res) => {
+app.post('/api/update-lead', async (req, res) => {
   const { type, leadId, updates } = req.body
 
   if (!type || !leadId || !updates) {
@@ -100,29 +88,36 @@ app.post('/api/update-lead', (req, res) => {
   }
 
   try {
-    const data = readLeads()
-    const lead = data[type]?.find(l => l.id === leadId)
+    const { data: existing, error: fetchError } = await supabase
+      .from('leads')
+      .select('*')
+      .eq('id', leadId)
+      .single()
 
-    if (!lead) {
+    if (fetchError || !existing) {
       return res.status(404).json({ error: 'Lead not found' })
     }
 
-    Object.assign(lead, updates)
-    writeLeads(data)
+    const { data, error } = await supabase
+      .from('leads')
+      .update({ data: { ...existing.data, ...updates } })
+      .eq('id', leadId)
+      .select()
+      .single()
 
-    res.json({ success: true, lead })
+    if (error) throw error
+
+    res.json({ success: true, lead: { id: data.id, ...data.data } })
   } catch (err) {
-    console.error('Error updating lead:', err)
+    console.error('Error updating lead:', err.message)
     res.status(500).json({ error: 'Failed to update lead' })
   }
 })
 
-// Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
 })
 
-// Start server
 app.listen(PORT, () => {
   console.log(`🚀 CRM API running at http://localhost:${PORT}`)
   console.log(`📥 Import endpoint: POST http://localhost:${PORT}/api/import-leads`)
