@@ -1,9 +1,10 @@
 import { create } from 'zustand'
 
+const API_URL = 'http://localhost:3001'
+
 export const useAuthStore = create((set) => ({
   user: JSON.parse(localStorage.getItem('user')) || null,
   login: async (email, password) => {
-    // TODO: Integrate with Supabase auth
     const user = { id: email, email }
     localStorage.setItem('user', JSON.stringify(user))
     set({ user })
@@ -19,8 +20,23 @@ export const useLeadsStore = create((set, get) => ({
   emailLeads: [],
   nurtureLogs: [],
 
-  initializeSync: (userId) => {
-    // Load from localStorage
+  initializeSync: async (userId) => {
+    try {
+      // Try to fetch from backend first
+      const response = await fetch(`${API_URL}/api/leads`)
+      if (response.ok) {
+        const data = await response.json()
+        set({
+          callLeads: data.calls || [],
+          emailLeads: data.emails || [],
+        })
+        return
+      }
+    } catch (err) {
+      console.log('Backend not available, using localStorage')
+    }
+
+    // Fallback to localStorage
     const stored = localStorage.getItem(`leads_${userId}`)
     if (stored) {
       const data = JSON.parse(stored)
