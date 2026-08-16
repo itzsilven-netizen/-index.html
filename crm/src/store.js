@@ -81,6 +81,24 @@ export const useLeadsStore = create((set, get) => ({
     get().persistLeads()
   },
 
+  // Adds a single lead to the live backend (dedup by phone/email happens server-side),
+  // then merges the result into local state so it shows up immediately.
+  addLeadToServer: async (type, lead) => {
+    const response = await fetch(`${API_URL}/api/import-leads`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, leads: [lead] }),
+    })
+    if (!response.ok) throw new Error(`Server responded ${response.status}`)
+    const result = await response.json()
+
+    if (result.count > 0) {
+      await get().syncFromServer()
+    }
+
+    return result
+  },
+
   updateCallLead: (id, updates) => {
     const { callLeads } = get()
     set({ callLeads: callLeads.map(l => l.id === id ? { ...l, ...updates } : l) })

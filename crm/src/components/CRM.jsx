@@ -1,11 +1,13 @@
 import { useState, useRef } from 'react'
 import { useLeadsStore } from '../store'
+import AddLeadForm from './AddLeadForm'
 import './CRM.css'
 
 export default function CRM() {
   const { callLeads, emailLeads, updateCallLead, updateEmailLead, importCallLeads, importEmailLeads } = useLeadsStore()
   const [activeSubTab, setActiveSubTab] = useState('calls')
   const [editingId, setEditingId] = useState(null)
+  const [showAddForm, setShowAddForm] = useState(false)
   const fileInputRef = useRef(null)
 
   const handleImport = (e, type) => {
@@ -33,6 +35,9 @@ export default function CRM() {
     <div className="crm-section">
       <div className="section-header">
         <h2>Call Leads</h2>
+        <button className="btn btn-secondary" onClick={() => setShowAddForm(true)}>
+          + Add Lead
+        </button>
         <button className="btn" onClick={() => fileInputRef.current?.click()}>
           + Import Leads
         </button>
@@ -109,6 +114,9 @@ export default function CRM() {
     <div className="crm-section">
       <div className="section-header">
         <h2>Email Leads</h2>
+        <button className="btn btn-secondary" onClick={() => setShowAddForm(true)}>
+          + Add Lead
+        </button>
         <button className="btn" onClick={() => fileInputRef.current?.click()}>
           + Import Leads
         </button>
@@ -196,6 +204,13 @@ export default function CRM() {
 
       {activeSubTab === 'calls' && renderCallLeads()}
       {activeSubTab === 'emails' && renderEmailLeads()}
+
+      {showAddForm && (
+        <AddLeadForm
+          type={activeSubTab}
+          onClose={() => setShowAddForm(false)}
+        />
+      )}
     </div>
   )
 }
