@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 
 // Middleware
 app.use(cors())
@@ -58,23 +58,32 @@ app.post('/api/import-leads', (req, res) => {
 
   try {
     const data = readLeads()
+    data[type] = data[type] || []
 
-    // Add timestamp and IDs to leads
-    const processedLeads = leads.map(lead => ({
-      id: Date.now() + Math.random(),
-      ...lead,
-      status: lead.status || 'new',
-      importedAt: new Date().toISOString(),
-    }))
+    // Dedupe key: phone for calls, email for emails, fall back to business+website
+    const dedupeKey = (lead) =>
+      lead.phone || lead.email || `${lead.business_name}-${lead.website || ''}`
 
-    // Add to appropriate type
-    data[type] = [...(data[type] || []), ...processedLeads]
+    const existingKeys = new Set(data[type].map(dedupeKey))
+
+    const newLeads = leads
+      .filter(lead => !existingKeys.has(dedupeKey(lead)))
+      .map(lead => ({
+        id: Date.now() + Math.random(),
+        ...lead,
+        status: lead.status || 'new',
+        importedAt: new Date().toISOString(),
+      }))
+
+    data[type] = [...data[type], ...newLeads]
     writeLeads(data)
 
     res.json({
       success: true,
-      message: `Imported ${processedLeads.length} ${type} leads`,
-      count: processedLeads.length,
+      message: `Imported ${newLeads.length} new ${type} leads (${leads.length - newLeads.length} duplicates skipped)`,
+      count: newLeads.length,
+      skipped: leads.length - newLeads.length,
+      total: data[type].length,
     })
   } catch (err) {
     console.error('Error importing leads:', err)

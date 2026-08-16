@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-const API_URL = 'http://localhost:3001'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
 export const useAuthStore = create((set) => ({
   user: JSON.parse(localStorage.getItem('user')) || null,
@@ -42,6 +42,30 @@ export const useLeadsStore = create((set, get) => ({
       const data = JSON.parse(stored)
       set(data)
     }
+  },
+
+  syncFromServer: async () => {
+    const response = await fetch(`${API_URL}/api/leads`)
+    if (!response.ok) throw new Error(`Server responded ${response.status}`)
+    const data = await response.json()
+
+    const dedupeKey = (lead) =>
+      lead.phone || lead.email || `${lead.business_name}-${lead.website || ''}`
+
+    const { callLeads, emailLeads } = get()
+    const existingCallKeys = new Set(callLeads.map(dedupeKey))
+    const existingEmailKeys = new Set(emailLeads.map(dedupeKey))
+
+    const newCallLeads = (data.calls || []).filter(l => !existingCallKeys.has(dedupeKey(l)))
+    const newEmailLeads = (data.emails || []).filter(l => !existingEmailKeys.has(dedupeKey(l)))
+
+    set({
+      callLeads: [...callLeads, ...newCallLeads],
+      emailLeads: [...emailLeads, ...newEmailLeads],
+    })
+    get().persistLeads()
+
+    return { newCallLeads: newCallLeads.length, newEmailLeads: newEmailLeads.length }
   },
 
   addCallLead: (lead) => {

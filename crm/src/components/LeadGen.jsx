@@ -1,9 +1,22 @@
 import { useState } from 'react'
+import { useLeadsStore } from '../store'
 import './LeadGen.css'
 
 export default function LeadGen() {
   const [routineOutput, setRoutineOutput] = useState(null)
   const [isPasting, setIsPasting] = useState(false)
+  const [syncStatus, setSyncStatus] = useState(null)
+  const syncFromServer = useLeadsStore((s) => s.syncFromServer)
+
+  const handleSync = async () => {
+    setSyncStatus('syncing')
+    try {
+      const { newCallLeads, newEmailLeads } = await syncFromServer()
+      setSyncStatus(`✓ Synced ${newCallLeads + newEmailLeads} new leads (${newCallLeads} calls, ${newEmailLeads} emails)`)
+    } catch (err) {
+      setSyncStatus(`❌ Sync failed: ${err.message}. Is the CRM backend running?`)
+    }
+  }
 
   return (
     <div className="content-section">
@@ -78,9 +91,11 @@ export default function LeadGen() {
       <div className="integration-card">
         <h3>🔗 Direct API Integration</h3>
         <p>
-          Your routine can push leads directly to the CRM without manual import.
-          Set up API authentication in your routine settings (coming soon).
+          Your routine can POST leads directly to <code>/api/import-leads</code>{' '}
+          on the CRM backend. Click below to pull in anything it's received.
         </p>
+        <button className="btn" onClick={handleSync}>Sync Now</button>
+        {syncStatus && <p className="leadgen-info">{syncStatus}</p>}
       </div>
     </div>
   )
