@@ -21,26 +21,17 @@ export const useLeadsStore = create((set, get) => ({
   nurtureLogs: [],
 
   initializeSync: async (userId) => {
-    try {
-      // Try to fetch from backend first
-      const response = await fetch(`${API_URL}/api/leads`)
-      if (response.ok) {
-        const data = await response.json()
-        set({
-          callLeads: data.calls || [],
-          emailLeads: data.emails || [],
-        })
-        return
-      }
-    } catch (err) {
-      console.log('Backend not available, using localStorage')
-    }
-
-    // Fallback to localStorage
+    // Load local state first so any status/notes edits aren't lost
     const stored = localStorage.getItem(`leads_${userId}`)
     if (stored) {
-      const data = JSON.parse(stored)
-      set(data)
+      set(JSON.parse(stored))
+    }
+
+    // Then merge in anything new from the backend (never overwrites existing leads)
+    try {
+      await get().syncFromServer()
+    } catch (err) {
+      console.log('Backend not available, using localStorage only')
     }
   },
 
