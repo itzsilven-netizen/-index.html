@@ -41,11 +41,11 @@
   position: relative;
 }
 
-.stage-new       .kanban-header { border-bottom-color: rgba(55, 125, 255, 0.5); }
-.stage-contacted .kanban-header { border-bottom-color: rgba(155, 125, 255, 0.5); }
-.stage-qualified .kanban-header { border-bottom-color: rgba(245, 185, 66, 0.5); }
-.stage-booked    .kanban-header { border-bottom-color: rgba(255, 122, 26, 0.5); }
-.stage-closed    .kanban-header { border-bottom-color: rgba(55, 201, 120, 0.5); }
+.stage-new       .kanban-header { border-bottom-color: #C9C5BD; }
+.stage-contacted .kanban-header { border-bottom-color: #FFC48A; }
+.stage-qualified .kanban-header { border-bottom-color: #FF9C4C; }
+.stage-booked    .kanban-header { border-bottom-color: var(--accent); }
+.stage-closed    .kanban-header { border-bottom-color: var(--ink); }
 
 .kanban-title {
   font-size: 12.5px;
@@ -88,9 +88,9 @@
 }
 
 .kanban-card:hover {
-  border-color: #2A3B50;
+  border-color: var(--border-strong);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 16px rgba(26, 25, 21, 0.08);
 }
 
 .kanban-card:active {

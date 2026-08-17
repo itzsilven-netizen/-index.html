@@ -11,16 +11,23 @@
 }
 
 .sidebar-logo {
-  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
   font-weight: 800;
-  letter-spacing: 1.5px;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
   padding: 22px 20px 18px;
 }
 
-.sidebar-logo::after {
-  content: '.';
-  color: var(--accent);
+.logo-star {
+  flex-shrink: 0;
+  transition: transform 400ms cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.sidebar-logo:hover .logo-star {
+  transform: rotate(45deg);
 }
 
 .sidebar-nav {
@@ -50,13 +57,14 @@
 }
 
 .nav-item:hover {
-  background: var(--bg-elevated);
-  color: var(--text-secondary);
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .nav-item.active {
-  background: var(--bg-elevated);
+  background: var(--accent-soft);
   color: var(--text-primary);
+  font-weight: 600;
 }
 
 .nav-item.active svg {
@@ -128,5 +136,5 @@
 }
 
 .user-logout:hover {
-  color: var(--red);
+  color: #C0392B;
 }

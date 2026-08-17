@@ -4,7 +4,7 @@ import './Dashboard.css'
 
 const STAGES = ['new', 'contacted', 'qualified', 'booked', 'closed']
 const STAGE_LABELS = { new: 'New Lead', contacted: 'Contacted', qualified: 'Qualified', booked: 'Booked', closed: 'Closed Won' }
-const STAGE_COLORS = { new: 'var(--blue)', contacted: 'var(--purple)', qualified: 'var(--yellow)', booked: 'var(--accent)', closed: 'var(--green)' }
+const STAGE_COLORS = { new: '#C9C5BD', contacted: '#FFC48A', qualified: '#FF9C4C', booked: 'var(--accent)', closed: 'var(--ink)' }
 
 export default function Dashboard({ onNavigate, onOpenLead }) {
   const { callLeads, emailLeads, nurtureLogs } = useLeadsStore()
@@ -41,10 +41,10 @@ export default function Dashboard({ onNavigate, onOpenLead }) {
       </div>
 
       <div className="kpi-grid">
-        <KpiCard label="Total Leads" value={total} icon="👥" />
-        <KpiCard label="Contacted" value={contacted} icon="📞" />
-        <KpiCard label="Qualified" value={stageCounts.qualified} icon="⭐" />
-        <KpiCard label="Closed Won" value={closed} icon="✅" accent />
+        <KpiCard label="Total Leads" value={total} icon="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+        <KpiCard label="Contacted" value={contacted} icon="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
+        <KpiCard label="Qualified" value={stageCounts.qualified} icon="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+        <KpiCard label="Closed Won" value={closed} icon="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" accent />
       </div>
 
       <div className="dash-grid">
@@ -133,7 +133,11 @@ export default function Dashboard({ onNavigate, onOpenLead }) {
 function KpiCard({ label, value, icon, accent }) {
   return (
     <div className={`card kpi-card ${accent ? 'kpi-accent' : ''}`}>
-      <div className="kpi-icon">{icon}</div>
+      <div className="kpi-icon">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+          <path d={icon} />
+        </svg>
+      </div>
       <div className="kpi-value">{value}</div>
       <div className="kpi-label">{label}</div>
     </div>

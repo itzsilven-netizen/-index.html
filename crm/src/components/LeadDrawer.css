@@ -1,7 +1,7 @@
 .drawer-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(26, 25, 21, 0.35);
   z-index: 200;
   animation: fadeIn 180ms ease;
 }
@@ -109,9 +109,6 @@
   text-decoration: none;
 }
 
-.meta-value a:hover {
-  text-decoration: underline;
-}
 
 .drawer-actions {
   display: flex;
@@ -184,13 +181,13 @@
   height: 9px;
   min-width: 9px;
   border-radius: 50%;
-  background: var(--blue);
+  background: var(--accent);
   margin-top: 5px;
 }
 
-.timeline-dot.note   { background: var(--yellow); }
+.timeline-dot.note   { background: var(--ink-soft); }
 .timeline-dot.status { background: var(--accent); }
-.timeline-dot.follow-up { background: var(--purple); }
+.timeline-dot.follow-up { background: #FF9C4C; }
 
 .timeline-message {
   font-size: 13.5px;

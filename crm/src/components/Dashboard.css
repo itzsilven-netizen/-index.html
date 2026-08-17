@@ -37,13 +37,24 @@
 
 .kpi-card:hover {
   transform: translateY(-2px);
-  border-color: #263850;
+  border-color: var(--border-strong);
 }
 
 .kpi-icon {
-  font-size: 18px;
-  margin-bottom: 10px;
-  opacity: 0.9;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.kpi-accent .kpi-icon {
+  background: var(--accent);
+  color: #fff;
 }
 
 .kpi-value {

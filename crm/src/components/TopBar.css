@@ -50,10 +50,10 @@
   top: calc(100% + 8px);
   left: 0;
   right: 0;
-  background: var(--bg-elevated);
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-pop);
   padding: 8px;
   z-index: 100;
   animation: searchIn 150ms ease;
@@ -87,7 +87,7 @@
 }
 
 .search-result:hover {
-  background: var(--bg-card);
+  background: var(--bg-hover);
 }
 
 .result-name {

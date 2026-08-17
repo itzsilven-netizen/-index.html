@@ -19,10 +19,45 @@ function NavIcon({ path }) {
   )
 }
 
+function Starburst({ size = 22 }) {
+  const rays = []
+  for (let i = 0; i < 8; i++) {
+    const a = (i * Math.PI) / 4
+    const r1 = 4.2
+    const r2 = 10
+    rays.push(
+      <line
+        key={i}
+        x1={12 + r1 * Math.cos(a)}
+        y1={12 + r1 * Math.sin(a)}
+        x2={12 + r2 * Math.cos(a)}
+        y2={12 + r2 * Math.sin(a)}
+      />
+    )
+  }
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width={size}
+      height={size}
+      stroke="var(--accent)"
+      strokeWidth="2.6"
+      strokeLinecap="round"
+      fill="none"
+      className="logo-star"
+    >
+      {rays}
+    </svg>
+  )
+}
+
 export default function Sidebar({ activePage, onNavigate, user, onLogout }) {
   return (
     <aside className="sidebar">
-      <div className="sidebar-logo">CRM</div>
+      <div className="sidebar-logo">
+        <Starburst />
+        <span>Claude CRM</span>
+      </div>
 
       <nav className="sidebar-nav">
         {NAV_ITEMS.map(item => (

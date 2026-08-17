@@ -1,26 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 :root {
-  --bg: #07101D;
-  --bg-sidebar: #08111F;
-  --bg-card: #0C1625;
-  --bg-elevated: #101C2C;
-  --border: #1B293A;
-  --text-primary: #F5F7FA;
-  --text-secondary: #9CA8B8;
-  --text-muted: #677487;
+  --bg: #FFFFFF;
+  --bg-sidebar: #FAF9F7;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #F6F5F2;
+  --bg-hover: #F1EFEB;
+  --border: #E8E6E1;
+  --border-strong: #D9D6CF;
+  --text-primary: #1A1915;
+  --text-secondary: #55524B;
+  --text-muted: #8C8880;
   --accent: #FF7A1A;
-  --accent-hover: #FF8F3D;
-  --accent-glow: rgba(255, 122, 26, 0.15);
-  --blue: #377DFF;
-  --green: #37C978;
-  --yellow: #F5B942;
-  --red: #EE5A5A;
-  --purple: #9B7DFF;
+  --accent-hover: #F06A0A;
+  --accent-soft: #FFF3E8;
+  --accent-glow: rgba(255, 122, 26, 0.14);
+  --ink: #1A1915;
+  --ink-soft: #3A3833;
 
   --radius: 14px;
   --radius-sm: 10px;
   --transition: 180ms ease;
-  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.25);
-  --shadow-drawer: -8px 0 32px rgba(0, 0, 0, 0.45);
+  --shadow-card: 0 1px 3px rgba(26, 25, 21, 0.05);
+  --shadow-pop: 0 12px 40px rgba(26, 25, 21, 0.14);
+  --shadow-drawer: -12px 0 40px rgba(26, 25, 21, 0.12);
 }
 
 * {
@@ -35,13 +38,19 @@ html, body, #root {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv11', 'ss01';
   background: var(--bg);
   color: var(--text-primary);
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.55;
+}
+
+h1, h2, h3 {
+  letter-spacing: -0.02em;
+  font-weight: 700;
 }
 
 ::-webkit-scrollbar {
@@ -52,11 +61,11 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
+  background: var(--border-strong);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2A3B50;
+  background: var(--text-muted);
 }
 
 button {
@@ -66,8 +75,8 @@ button {
 
 input, select, textarea {
   font-family: inherit;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
   color: var(--text-primary);
   border-radius: var(--radius-sm);
   padding: 9px 12px;
@@ -85,6 +94,32 @@ input::placeholder, textarea::placeholder {
   color: var(--text-muted);
 }
 
+select {
+  cursor: pointer;
+}
+
+/* ---------- link underline animation ---------- */
+
+.u-link,
+.cell-link,
+.panel-link,
+.meta-value a {
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1.5px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 220ms cubic-bezier(0.2, 0.8, 0.3, 1), color var(--transition);
+  padding-bottom: 1px;
+}
+
+.u-link:hover,
+.cell-link:hover,
+.panel-link:hover,
+.meta-value a:hover {
+  background-size: 100% 1.5px;
+}
+
 /* ---------- shared components ---------- */
 
 .btn {
@@ -98,6 +133,7 @@ input::placeholder, textarea::placeholder {
   border-radius: var(--radius-sm);
   font-size: 13px;
   font-weight: 600;
+  letter-spacing: 0.01em;
   transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
 }
 
@@ -116,9 +152,9 @@ input::placeholder, textarea::placeholder {
 }
 
 .btn-ghost {
-  background: transparent;
+  background: var(--bg);
   color: var(--text-secondary);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
 }
 
 .btn-ghost:hover {
@@ -128,13 +164,13 @@ input::placeholder, textarea::placeholder {
 }
 
 .btn-outline-accent {
-  background: transparent;
+  background: var(--bg);
   color: var(--accent);
   border: 1px solid var(--accent);
 }
 
 .btn-outline-accent:hover {
-  background: var(--accent-glow);
+  background: var(--accent-soft);
   box-shadow: none;
 }
 
@@ -152,20 +188,14 @@ input::placeholder, textarea::placeholder {
   border-radius: 999px;
   font-size: 11.5px;
   font-weight: 600;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
-.badge-new      { background: rgba(55, 125, 255, 0.14); color: #6FA2FF; }
-.badge-contacted{ background: rgba(155, 125, 255, 0.14); color: #B49DFF; }
-.badge-qualified{ background: rgba(245, 185, 66, 0.14); color: #F5C560; }
-.badge-booked   { background: rgba(255, 122, 26, 0.14); color: var(--accent-hover); }
-.badge-closed   { background: rgba(55, 201, 120, 0.14); color: #5AD98F; }
-.badge-lost     { background: rgba(238, 90, 90, 0.14); color: #F27E7E; }
-
-.priority-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-}
+/* stage colors: strictly grayscale → orange ramp → ink */
+.badge-new       { background: #F1EFEB; color: #6B675F; }
+.badge-contacted { background: #FFEFDD; color: #C05C08; }
+.badge-qualified { background: #FFE3C4; color: #A94F04; }
+.badge-booked    { background: var(--accent); color: #fff; }
+.badge-closed    { background: var(--ink); color: #fff; }
+.badge-lost      { background: #EBE9E4; color: #8C8880; text-decoration: line-through; }
