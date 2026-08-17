@@ -20,6 +20,8 @@ export const useLeadsStore = create((set, get) => ({
   emailLeads: [],
   nurtureLogs: [],
   tasks: [],
+  events: [],
+  pendingSchedule: null,
 
   initializeSync: async (userId) => {
     // Load local state first so any status/notes edits aren't lost
@@ -177,6 +179,37 @@ export const useLeadsStore = create((set, get) => ({
     get().persistLeads()
   },
 
+  // ---- Calendar events ----
+
+  addEvent: (event) => {
+    const { events } = get()
+    const newEvent = {
+      id: Date.now() + Math.random(),
+      type: 'call',
+      duration: 30,
+      createdAt: new Date().toISOString(),
+      ...event,
+    }
+    set({ events: [...events, newEvent] })
+    get().persistLeads()
+    return newEvent
+  },
+
+  updateEvent: (id, updates) => {
+    const { events } = get()
+    set({ events: events.map(e => e.id === id ? { ...e, ...updates } : e) })
+    get().persistLeads()
+  },
+
+  deleteEvent: (id) => {
+    const { events } = get()
+    set({ events: events.filter(e => e.id !== id) })
+    get().persistLeads()
+  },
+
+  requestSchedule: (lead, leadType) => set({ pendingSchedule: { lead, leadType } }),
+  clearPendingSchedule: () => set({ pendingSchedule: null }),
+
   // Quick call-result system: logs the outcome, moves the lead's stage,
   // and (for "No Answer") spins up a same-lead follow-up task automatically.
   logCallResult: (lead, leadType, result) => {
@@ -223,6 +256,10 @@ export const useLeadsStore = create((set, get) => ({
         dueAt: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
       })
     }
+
+    if (result === 'booked') {
+      get().requestSchedule(lead, leadType)
+    }
   },
 
   persistLeads: () => {
@@ -234,6 +271,7 @@ export const useLeadsStore = create((set, get) => ({
         emailLeads: state.emailLeads,
         nurtureLogs: state.nurtureLogs,
         tasks: state.tasks,
+        events: state.events,
       }))
     }
   },

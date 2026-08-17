@@ -7,6 +7,7 @@ import Dashboard from './components/Dashboard'
 import LeadsPage from './components/LeadsPage'
 import PipelinePage from './components/PipelinePage'
 import TasksPage from './components/TasksPage'
+import CalendarPage, { CreateEventModal } from './components/CalendarPage'
 import ComingSoon from './components/ComingSoon'
 import LeadDrawer from './components/LeadDrawer'
 import AddLeadForm from './components/AddLeadForm'
@@ -14,7 +15,7 @@ import './App.css'
 
 export default function App() {
   const { user, login, logout } = useAuthStore()
-  const { initializeSync, callLeads, emailLeads } = useLeadsStore()
+  const { initializeSync, callLeads, emailLeads, pendingSchedule, clearPendingSchedule } = useLeadsStore()
   const [activePage, setActivePage] = useState('dashboard')
   const [drawerLead, setDrawerLead] = useState(null)
   const [showQuickAdd, setShowQuickAdd] = useState(false)
@@ -54,7 +55,8 @@ export default function App() {
           {activePage === 'leads' && <LeadsPage onOpenLead={openLead} />}
           {activePage === 'pipeline' && <PipelinePage onOpenLead={openLead} />}
           {activePage === 'tasks' && <TasksPage onOpenLead={openLead} />}
-          {['calendar', 'automations', 'inbox', 'reports', 'settings'].includes(activePage) && (
+          {activePage === 'calendar' && <CalendarPage onOpenLead={openLead} />}
+          {['automations', 'inbox', 'reports', 'settings'].includes(activePage) && (
             <ComingSoon pageId={activePage} />
           )}
         </main>
@@ -70,6 +72,14 @@ export default function App() {
 
       {showQuickAdd && (
         <AddLeadForm type="calls" onClose={() => setShowQuickAdd(false)} />
+      )}
+
+      {pendingSchedule && (
+        <CreateEventModal
+          leads={[{ ...pendingSchedule.lead, _type: pendingSchedule.leadType }]}
+          prefill={{ type: 'meeting', leadId: pendingSchedule.lead.id }}
+          onClose={clearPendingSchedule}
+        />
       )}
     </div>
   )
