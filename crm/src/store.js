@@ -2,16 +2,23 @@ import { create } from 'zustand'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
-// Opens the device's native Messages app pre-filled with a voicemail follow-up.
-// Intentionally NOT automatic-send — you still tap Send yourself in your own
-// SMS app, which keeps this as a manually-sent text rather than an
-// autodialer-style blast (a meaningfully safer posture under the TCPA).
+export const voicemailFollowUpMessage = (lead) => {
+  const angle = lead.pitch_angle ? ` about ${lead.pitch_angle.toLowerCase()}` : ''
+  return `Hi, this is Silven — just left you a voicemail${angle}. Text me back here if that's easier, happy to answer any questions. Reply STOP to opt out.`
+}
+
+// Copies the lead's number to the clipboard and opens Google Voice's message
+// inbox in a new tab, ready to paste in. Intentionally NOT automatic-send —
+// you still paste the number, type/paste the message, and tap Send yourself,
+// which keeps this a manually-sent text rather than an autodialer-style
+// blast (a meaningfully safer posture under the TCPA).
 export const openVoicemailFollowUpText = (lead) => {
   if (!lead.phone) return
-  const digits = lead.phone.replace(/[^\d+]/g, '')
-  const angle = lead.pitch_angle ? ` about ${lead.pitch_angle.toLowerCase()}` : ''
-  const message = `Hi, this is Silven — just left you a voicemail${angle}. Text me back here if that's easier, happy to answer any questions. Reply STOP to opt out.`
-  window.open(`sms:${digits}?body=${encodeURIComponent(message)}`, '_blank')
+  const digits = lead.phone.replace(/[^\d]/g, '')
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(digits).catch(() => {})
+  }
+  window.open('https://voice.google.com/u/0/messages', '_blank')
 }
 
 export const useAuthStore = create((set) => ({

@@ -125,6 +125,30 @@
   margin-left: auto;
 }
 
+.text-helper {
+  background: var(--accent-soft);
+  border: 1px solid #FFD9B5;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  font-size: 12.5px;
+}
+
+.text-helper-row {
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.text-helper-message {
+  color: var(--text-secondary);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  cursor: text;
+  user-select: all;
+}
+
 .drawer-tabs {
   display: flex;
   border-bottom: 1px solid var(--border);

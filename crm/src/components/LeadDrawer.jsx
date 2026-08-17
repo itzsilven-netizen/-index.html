@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useLeadsStore, openVoicemailFollowUpText } from '../store'
+import { useLeadsStore, openVoicemailFollowUpText, voicemailFollowUpMessage } from '../store'
 import CallResultModal from './CallResultModal'
 import './LeadDrawer.css'
 
@@ -11,6 +11,13 @@ export default function LeadDrawer({ lead, type, onClose }) {
   const [tab, setTab] = useState('activity')
   const [noteText, setNoteText] = useState('')
   const [showCallResult, setShowCallResult] = useState(false)
+  const [numberCopied, setNumberCopied] = useState(false)
+
+  const handleText = () => {
+    openVoicemailFollowUpText(lead)
+    setNumberCopied(true)
+    setTimeout(() => setNumberCopied(false), 4000)
+  }
 
   if (!lead) return null
 
@@ -60,7 +67,7 @@ export default function LeadDrawer({ lead, type, onClose }) {
           <div className="drawer-actions">
             {lead.phone && <a className="btn" href={`tel:${lead.phone}`}>Call</a>}
             {lead.phone && <button className="btn btn-ghost" onClick={() => setShowCallResult(true)}>Log Result</button>}
-            {lead.phone && <button className="btn btn-ghost" onClick={() => openVoicemailFollowUpText(lead)}>Text</button>}
+            {lead.phone && <button className="btn btn-ghost" onClick={handleText}>Text</button>}
             {lead.email && <a className="btn btn-ghost" href={`mailto:${lead.email}`}>Email</a>}
             <button
               className="btn btn-ghost"
@@ -83,6 +90,15 @@ export default function LeadDrawer({ lead, type, onClose }) {
               {STATUS_OPTIONS.map(s => <option key={s} value={s}>{STATUS_LABELS[s]}</option>)}
             </select>
           </div>
+
+          {numberCopied && (
+            <div className="text-helper">
+              <div className="text-helper-row">
+                <strong>✓ Number copied</strong> — paste it into Google Voice's "To" field.
+              </div>
+              <div className="text-helper-message">{voicemailFollowUpMessage(lead)}</div>
+            </div>
+          )}
         </div>
 
         <div className="drawer-tabs">
