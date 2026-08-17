@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useLeadsStore } from '../store'
+import { useLeadsStore, openVoicemailFollowUpText } from '../store'
 import CallResultModal from './CallResultModal'
 import './LeadDrawer.css'
 
@@ -60,6 +60,7 @@ export default function LeadDrawer({ lead, type, onClose }) {
           <div className="drawer-actions">
             {lead.phone && <a className="btn" href={`tel:${lead.phone}`}>Call</a>}
             {lead.phone && <button className="btn btn-ghost" onClick={() => setShowCallResult(true)}>Log Result</button>}
+            {lead.phone && <button className="btn btn-ghost" onClick={() => openVoicemailFollowUpText(lead)}>Text</button>}
             {lead.email && <a className="btn btn-ghost" href={`mailto:${lead.email}`}>Email</a>}
             <button
               className="btn btn-ghost"

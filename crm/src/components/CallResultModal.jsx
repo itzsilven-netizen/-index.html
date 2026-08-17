@@ -2,7 +2,7 @@ import { useLeadsStore } from '../store'
 import './CallResultModal.css'
 
 const RESULTS = [
-  { key: 'no_answer', label: 'No Answer', hint: 'Creates a follow-up task for tomorrow' },
+  { key: 'no_answer', label: 'No Answer / Left Voicemail', hint: 'Opens a text follow-up + creates a task for tomorrow' },
   { key: 'interested', label: 'Interested', hint: 'Moves to Contacted' },
   { key: 'qualified', label: 'Qualified', hint: 'Moves to Qualified' },
   { key: 'booked', label: 'Meeting Booked', hint: 'Moves to Booked' },

@@ -2,6 +2,18 @@ import { create } from 'zustand'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
+// Opens the device's native Messages app pre-filled with a voicemail follow-up.
+// Intentionally NOT automatic-send — you still tap Send yourself in your own
+// SMS app, which keeps this as a manually-sent text rather than an
+// autodialer-style blast (a meaningfully safer posture under the TCPA).
+export const openVoicemailFollowUpText = (lead) => {
+  if (!lead.phone) return
+  const digits = lead.phone.replace(/[^\d+]/g, '')
+  const angle = lead.pitch_angle ? ` about ${lead.pitch_angle.toLowerCase()}` : ''
+  const message = `Hi, this is Silven — just left you a voicemail${angle}. Text me back here if that's easier, happy to answer any questions. Reply STOP to opt out.`
+  window.open(`sms:${digits}?body=${encodeURIComponent(message)}`, '_blank')
+}
+
 export const useAuthStore = create((set) => ({
   user: JSON.parse(localStorage.getItem('user')) || null,
   login: async (email, password) => {
@@ -254,6 +266,13 @@ export const useLeadsStore = create((set, get) => ({
         type: 'call',
         priority: 'medium',
         dueAt: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
+      })
+      openVoicemailFollowUpText(lead)
+      addNurtureLog({
+        leadId: lead.id,
+        leadType,
+        message: 'Opened text follow-up (voicemail left)',
+        type: 'note',
       })
     }
 
