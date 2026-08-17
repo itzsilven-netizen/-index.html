@@ -6,3 +6,13 @@ services:
     buildCommand: npm install
     startCommand: node server.js
     plan: free
+
+  - type: web
+    name: claude-crm
+    runtime: static
+    rootDir: crm
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://lead-crm-api-1lw1.onrender.com
