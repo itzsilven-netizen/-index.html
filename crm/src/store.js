@@ -1,8 +1,6 @@
 import { create } from 'zustand'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
-const INSTANTLY_API_KEY = import.meta.env.VITE_INSTANTLY_API_KEY
-const INSTANTLY_EMAIL = import.meta.env.VITE_INSTANTLY_EMAIL
 
 export const useAuthStore = create((set) => ({
   user: JSON.parse(localStorage.getItem('user')) || null,
@@ -254,39 +252,19 @@ export const useLeadsStore = create((set, get) => ({
   },
 
   sendInstantlyDraft: async (lead) => {
-    if (!INSTANTLY_API_KEY || !INSTANTLY_EMAIL || !lead.email) {
-      throw new Error('Missing Instantly configuration or lead email')
+    if (!lead?.email) {
+      throw new Error('Lead email is required')
     }
 
-    const emailBody = `Hi ${lead.contact_name || lead.business_name},
-
-I wanted to reach out about ${lead.pitch_angle ? `how we can help with ${lead.pitch_angle.toLowerCase()}` : 'a potential opportunity'}.
-
-Would you be open to a brief conversation?
-
-Best regards,
-Silven
-silven@apexstandardhq.com`
-
-    const response = await fetch('https://api.instantly.ai/api/v2/emails/test', {
+    const response = await fetch(`${API_URL}/api/send-email`, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${INSTANTLY_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        eaccount: INSTANTLY_EMAIL,
-        to_address_email_list: lead.email,
-        subject: `Quick question about ${lead.business_name}`,
-        body: {
-          html: `<p>${emailBody.replace(/\n/g, '</p><p>')}</p>`,
-        },
-      }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lead }),
     })
 
     if (!response.ok) {
       const error = await response.json()
-      throw new Error(`Instantly API error: ${error.message || response.statusText}`)
+      throw new Error(error.error || 'Failed to send email')
     }
 
     return await response.json()

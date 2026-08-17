@@ -117,6 +117,61 @@ app.post('/api/update-lead', (req, res) => {
   }
 })
 
+// POST /api/send-email - Send email via Instantly (server-side, secure)
+app.post('/api/send-email', async (req, res) => {
+  const { lead } = req.body
+
+  if (!lead?.email) {
+    return res.status(400).json({ error: 'Lead email is required' })
+  }
+
+  const INSTANTLY_API_KEY = process.env.INSTANTLY_API_KEY
+  const INSTANTLY_EMAIL = process.env.INSTANTLY_EMAIL
+
+  if (!INSTANTLY_API_KEY || !INSTANTLY_EMAIL) {
+    return res.status(500).json({ error: 'Instantly credentials not configured' })
+  }
+
+  try {
+    const emailBody = `Hi ${lead.contact_name || lead.business_name},
+
+I wanted to reach out about ${lead.pitch_angle ? `how we can help with ${lead.pitch_angle.toLowerCase()}` : 'a potential opportunity'}.
+
+Would you be open to a brief conversation?
+
+Best regards,
+Silven
+silven@apexstandardhq.com`
+
+    const response = await fetch('https://api.instantly.ai/api/v2/emails/test', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${INSTANTLY_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        eaccount: INSTANTLY_EMAIL,
+        to_address_email_list: lead.email,
+        subject: `Quick question about ${lead.business_name}`,
+        body: {
+          html: `<p>${emailBody.replace(/\n/g, '</p><p>')}</p>`,
+        },
+      }),
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      return res.status(response.status).json({ error: error.message || response.statusText })
+    }
+
+    const result = await response.json()
+    res.json({ success: true, result })
+  } catch (err) {
+    console.error('Error sending email via Instantly:', err)
+    res.status(500).json({ error: 'Failed to send email' })
+  }
+})
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
