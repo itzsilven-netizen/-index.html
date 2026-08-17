@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const INSTANTLY_API_KEY = import.meta.env.VITE_INSTANTLY_API_KEY
+const INSTANTLY_EMAIL = import.meta.env.VITE_INSTANTLY_EMAIL
 
 export const useAuthStore = create((set) => ({
   user: JSON.parse(localStorage.getItem('user')) || null,
@@ -19,28 +21,22 @@ export const useLeadsStore = create((set, get) => ({
   callLeads: [],
   emailLeads: [],
   nurtureLogs: [],
+  tasks: [],
+  events: [],
+  pendingSchedule: null,
 
   initializeSync: async (userId) => {
-    try {
-      // Try to fetch from backend first
-      const response = await fetch(`${API_URL}/api/leads`)
-      if (response.ok) {
-        const data = await response.json()
-        set({
-          callLeads: data.calls || [],
-          emailLeads: data.emails || [],
-        })
-        return
-      }
-    } catch (err) {
-      console.log('Backend not available, using localStorage')
-    }
-
-    // Fallback to localStorage
+    // Load local state first so any status/notes edits aren't lost
     const stored = localStorage.getItem(`leads_${userId}`)
     if (stored) {
-      const data = JSON.parse(stored)
-      set(data)
+      set(JSON.parse(stored))
+    }
+
+    // Then merge in anything new from the backend (never overwrites existing leads)
+    try {
+      await get().syncFromServer()
+    } catch (err) {
+      console.log('Backend not available, using localStorage only')
     }
   },
 
@@ -132,6 +128,170 @@ export const useLeadsStore = create((set, get) => ({
     get().persistLeads()
   },
 
+  // ---- Tasks ----
+
+  addTask: (task) => {
+    const { tasks } = get()
+    const newTask = {
+      id: Date.now() + Math.random(),
+      type: 'call',
+      priority: 'medium',
+      completed: false,
+      createdAt: new Date().toISOString(),
+      ...task,
+    }
+    set({ tasks: [newTask, ...tasks] })
+    get().persistLeads()
+    return newTask
+  },
+
+  completeTask: (id) => {
+    const { tasks } = get()
+    set({ tasks: tasks.map(t => t.id === id ? { ...t, completed: true, completedAt: new Date().toISOString() } : t) })
+    get().persistLeads()
+  },
+
+  reopenTask: (id) => {
+    const { tasks } = get()
+    set({ tasks: tasks.map(t => t.id === id ? { ...t, completed: false, completedAt: null } : t) })
+    get().persistLeads()
+  },
+
+  deleteTask: (id) => {
+    const { tasks } = get()
+    set({ tasks: tasks.filter(t => t.id !== id) })
+    get().persistLeads()
+  },
+
+  // ---- Calendar events ----
+
+  addEvent: (event) => {
+    const { events } = get()
+    const newEvent = {
+      id: Date.now() + Math.random(),
+      type: 'call',
+      duration: 30,
+      createdAt: new Date().toISOString(),
+      ...event,
+    }
+    set({ events: [...events, newEvent] })
+    get().persistLeads()
+    return newEvent
+  },
+
+  updateEvent: (id, updates) => {
+    const { events } = get()
+    set({ events: events.map(e => e.id === id ? { ...e, ...updates } : e) })
+    get().persistLeads()
+  },
+
+  deleteEvent: (id) => {
+    const { events } = get()
+    set({ events: events.filter(e => e.id !== id) })
+    get().persistLeads()
+  },
+
+  requestSchedule: (lead, leadType) => set({ pendingSchedule: { lead, leadType } }),
+  clearPendingSchedule: () => set({ pendingSchedule: null }),
+
+  // Quick call-result system: logs the outcome, moves the lead's stage,
+  // and (for "No Answer") spins up a same-lead follow-up task automatically.
+  logCallResult: (lead, leadType, result) => {
+    const { updateCallLead, updateEmailLead, addNurtureLog, addTask } = get()
+    const update = leadType === 'calls' ? updateCallLead : updateEmailLead
+
+    const STAGE_BY_RESULT = {
+      no_answer: null,
+      interested: 'contacted',
+      qualified: 'qualified',
+      booked: 'booked',
+      won: 'closed',
+    }
+    const LABEL_BY_RESULT = {
+      no_answer: 'No Answer',
+      interested: 'Interested',
+      qualified: 'Qualified',
+      booked: 'Meeting Booked',
+      won: 'Won',
+      not_interested: 'Not Interested',
+    }
+
+    const stage = STAGE_BY_RESULT[result]
+    if (stage) {
+      update(lead.id, { status: stage, lastContact: new Date().toLocaleString() })
+    } else {
+      update(lead.id, { lastContact: new Date().toLocaleString() })
+    }
+
+    addNurtureLog({
+      leadId: lead.id,
+      leadType,
+      message: `Call result: ${LABEL_BY_RESULT[result] || result}`,
+      type: 'status',
+    })
+
+    if (result === 'no_answer') {
+      addTask({
+        leadId: lead.id,
+        leadType,
+        title: `Follow up with ${lead.business_name}`,
+        type: 'call',
+        priority: 'medium',
+        dueAt: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
+      })
+      openVoicemailFollowUpText(lead)
+      addNurtureLog({
+        leadId: lead.id,
+        leadType,
+        message: 'Opened text follow-up (voicemail left)',
+        type: 'note',
+      })
+    }
+
+    if (result === 'booked') {
+      get().requestSchedule(lead, leadType)
+    }
+  },
+
+  sendInstantlyDraft: async (lead) => {
+    if (!INSTANTLY_API_KEY || !INSTANTLY_EMAIL || !lead.email) {
+      throw new Error('Missing Instantly configuration or lead email')
+    }
+
+    const emailBody = `Hi ${lead.contact_name || lead.business_name},
+
+I wanted to reach out about ${lead.pitch_angle ? `how we can help with ${lead.pitch_angle.toLowerCase()}` : 'a potential opportunity'}.
+
+Would you be open to a brief conversation?
+
+Best regards,
+Silven
+silven@apexstandardhq.com`
+
+    const response = await fetch('https://api.instantly.ai/api/v2/emails/test', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${INSTANTLY_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        eaccount: INSTANTLY_EMAIL,
+        to_address_email_list: lead.email,
+        subject: `Quick question about ${lead.business_name}`,
+        body: {
+          html: `<p>${emailBody.replace(/\n/g, '</p><p>')}</p>`,
+        },
+      }),
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(`Instantly API error: ${error.message || response.statusText}`)
+    }
+
+    return await response.json()
+  },
+
   persistLeads: () => {
     const user = useAuthStore.getState().user
     if (user) {
@@ -140,6 +300,8 @@ export const useLeadsStore = create((set, get) => ({
         callLeads: state.callLeads,
         emailLeads: state.emailLeads,
         nurtureLogs: state.nurtureLogs,
+        tasks: state.tasks,
+        events: state.events,
       }))
     }
   },
