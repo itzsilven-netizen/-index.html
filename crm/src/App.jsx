@@ -1,16 +1,22 @@
 import { useState, useEffect } from 'react'
 import { useAuthStore, useLeadsStore } from './store'
 import Auth from './components/Auth'
-import CRM from './components/CRM'
-import LeadGen from './components/LeadGen'
-import Nurture from './components/Nurture'
-import Pipeline from './components/Pipeline'
+import Sidebar from './components/Sidebar'
+import TopBar from './components/TopBar'
+import Dashboard from './components/Dashboard'
+import LeadsPage from './components/LeadsPage'
+import PipelinePage from './components/PipelinePage'
+import ComingSoon from './components/ComingSoon'
+import LeadDrawer from './components/LeadDrawer'
+import AddLeadForm from './components/AddLeadForm'
 import './App.css'
 
 export default function App() {
   const { user, login, logout } = useAuthStore()
-  const { initializeSync } = useLeadsStore()
-  const [activeTab, setActiveTab] = useState('crm')
+  const { initializeSync, callLeads, emailLeads } = useLeadsStore()
+  const [activePage, setActivePage] = useState('dashboard')
+  const [drawerLead, setDrawerLead] = useState(null)
+  const [showQuickAdd, setShowQuickAdd] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -22,46 +28,47 @@ export default function App() {
     return <Auth onLogin={login} />
   }
 
+  const openLead = (lead) => setDrawerLead(lead)
+
+  // Always render the live version of the drawer lead from the store,
+  // so status/notes changes made inside the drawer show immediately.
+  const liveDrawerLead = drawerLead
+    ? (drawerLead._type === 'calls' ? callLeads : emailLeads).find(l => l.id === drawerLead.id) || drawerLead
+    : null
+
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>Lead CRM</h1>
-        <button onClick={logout} className="logout-btn">Logout</button>
-      </header>
+    <div className="app-shell">
+      <Sidebar
+        activePage={activePage}
+        onNavigate={setActivePage}
+        user={user}
+        onLogout={logout}
+      />
 
-      <nav className="tabs">
-        <button
-          className={`tab ${activeTab === 'crm' ? 'active' : ''}`}
-          onClick={() => setActiveTab('crm')}
-        >
-          CRM
-        </button>
-        <button
-          className={`tab ${activeTab === 'leadgen' ? 'active' : ''}`}
-          onClick={() => setActiveTab('leadgen')}
-        >
-          Lead Gen
-        </button>
-        <button
-          className={`tab ${activeTab === 'nurture' ? 'active' : ''}`}
-          onClick={() => setActiveTab('nurture')}
-        >
-          Nurture
-        </button>
-        <button
-          className={`tab ${activeTab === 'pipeline' ? 'active' : ''}`}
-          onClick={() => setActiveTab('pipeline')}
-        >
-          Pipeline
-        </button>
-      </nav>
+      <div className="app-main">
+        <TopBar onOpenLead={openLead} onQuickAdd={() => setShowQuickAdd(true)} />
 
-      <main className="app-content">
-        {activeTab === 'crm' && <CRM />}
-        {activeTab === 'leadgen' && <LeadGen />}
-        {activeTab === 'nurture' && <Nurture />}
-        {activeTab === 'pipeline' && <Pipeline />}
-      </main>
+        <main className="app-content">
+          {activePage === 'dashboard' && <Dashboard onNavigate={setActivePage} onOpenLead={openLead} />}
+          {activePage === 'leads' && <LeadsPage onOpenLead={openLead} />}
+          {activePage === 'pipeline' && <PipelinePage onOpenLead={openLead} />}
+          {['tasks', 'calendar', 'automations', 'inbox', 'reports', 'settings'].includes(activePage) && (
+            <ComingSoon pageId={activePage} />
+          )}
+        </main>
+      </div>
+
+      {drawerLead && (
+        <LeadDrawer
+          lead={liveDrawerLead}
+          type={drawerLead._type}
+          onClose={() => setDrawerLead(null)}
+        />
+      )}
+
+      {showQuickAdd && (
+        <AddLeadForm type="calls" onClose={() => setShowQuickAdd(false)} />
+      )}
     </div>
   )
 }

@@ -1,0 +1,270 @@
+.page {
+  padding: 26px 28px 48px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.page-subtitle {
+  color: var(--text-muted);
+  font-size: 13.5px;
+  margin-top: 3px;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.kpi-card {
+  padding: 20px 22px;
+  transition: transform var(--transition), border-color var(--transition);
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  border-color: #263850;
+}
+
+.kpi-icon {
+  font-size: 18px;
+  margin-bottom: 10px;
+  opacity: 0.9;
+}
+
+.kpi-value {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1.1;
+}
+
+.kpi-accent .kpi-value {
+  color: var(--accent);
+}
+
+.kpi-label {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 1100px) {
+  .dash-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dash-panel {
+  padding: 20px 22px;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.panel-header h3 {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.panel-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 12.5px;
+  font-weight: 600;
+  transition: color var(--transition);
+}
+
+.panel-link:hover {
+  color: var(--accent-hover);
+}
+
+.panel-empty {
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 24px 0;
+  text-align: center;
+}
+
+/* pipeline bars */
+.pipeline-bars {
+  display: flex;
+  gap: 14px;
+  align-items: stretch;
+  height: 200px;
+}
+
+.pipeline-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.bar-count {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.bar-track {
+  flex: 1;
+  width: 100%;
+  max-width: 56px;
+  background: var(--bg-elevated);
+  border-radius: 8px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.bar-fill {
+  width: 100%;
+  border-radius: 8px 8px 0 0;
+  transition: height 400ms cubic-bezier(0.2, 0.8, 0.3, 1);
+  opacity: 0.85;
+}
+
+.pipeline-bar-col:hover .bar-fill {
+  opacity: 1;
+}
+
+.bar-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* activity */
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.activity-item {
+  display: flex;
+  gap: 11px;
+}
+
+.activity-dot {
+  width: 8px;
+  height: 8px;
+  min-width: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-top: 6px;
+}
+
+.activity-lead {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.activity-msg {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.activity-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+/* priority list */
+.priority-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.priority-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  text-align: left;
+  transition: border-color var(--transition), transform var(--transition);
+}
+
+.priority-item:hover {
+  border-color: var(--accent);
+  transform: translateX(2px);
+}
+
+.priority-score {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  background: var(--accent-glow);
+  color: var(--accent-hover);
+  border: 1px solid rgba(255, 122, 26, 0.3);
+}
+
+.priority-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.priority-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.priority-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.priority-phone {
+  font-size: 12.5px;
+  color: var(--accent-hover);
+  font-weight: 600;
+  white-space: nowrap;
+}
