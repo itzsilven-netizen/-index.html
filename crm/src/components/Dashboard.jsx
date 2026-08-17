@@ -7,7 +7,7 @@ const STAGE_LABELS = { new: 'New Lead', contacted: 'Contacted', qualified: 'Qual
 const STAGE_COLORS = { new: '#C9C5BD', contacted: '#FFC48A', qualified: '#FF9C4C', booked: 'var(--accent)', closed: 'var(--ink)' }
 
 export default function Dashboard({ onNavigate, onOpenLead }) {
-  const { callLeads, emailLeads, nurtureLogs } = useLeadsStore()
+  const { callLeads, emailLeads, nurtureLogs, tasks, completeTask } = useLeadsStore()
 
   const allLeads = useMemo(() => [
     ...callLeads.map(l => ({ ...l, _type: 'calls' })),
@@ -29,6 +29,11 @@ export default function Dashboard({ onNavigate, onOpenLead }) {
   const highPriority = allLeads
     .filter(l => (l.status || 'new') === 'new' && (l.priority_score || 0) >= 3)
     .sort((a, b) => (b.priority_score || 0) - (a.priority_score || 0))
+    .slice(0, 5)
+
+  const todaysTasks = [...tasks]
+    .filter(t => !t.completed)
+    .sort((a, b) => new Date(a.dueAt || 0) - new Date(b.dueAt || 0))
     .slice(0, 5)
 
   return (
@@ -102,6 +107,33 @@ export default function Dashboard({ onNavigate, onOpenLead }) {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="card dash-panel" style={{ marginBottom: 20 }}>
+        <div className="panel-header">
+          <h3>Today's Tasks</h3>
+          <button className="panel-link" onClick={() => onNavigate('tasks')}>All tasks →</button>
+        </div>
+        {todaysTasks.length === 0 ? (
+          <div className="panel-empty">No open tasks. Nice.</div>
+        ) : (
+          <div className="dash-task-list">
+            {todaysTasks.map(task => (
+              <div className="dash-task-item" key={task.id}>
+                <button className="task-check" onClick={() => completeTask(task.id)} />
+                <div className="dash-task-info">
+                  <div className="dash-task-title">{task.title}</div>
+                  {task.dueAt && (
+                    <div className="dash-task-due">
+                      {new Date(task.dueAt).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                    </div>
+                  )}
+                </div>
+                <span className={`priority-tag priority-${task.priority}`}>{task.priority}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="card dash-panel">

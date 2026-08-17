@@ -6,6 +6,7 @@ import TopBar from './components/TopBar'
 import Dashboard from './components/Dashboard'
 import LeadsPage from './components/LeadsPage'
 import PipelinePage from './components/PipelinePage'
+import TasksPage from './components/TasksPage'
 import ComingSoon from './components/ComingSoon'
 import LeadDrawer from './components/LeadDrawer'
 import AddLeadForm from './components/AddLeadForm'
@@ -52,7 +53,8 @@ export default function App() {
           {activePage === 'dashboard' && <Dashboard onNavigate={setActivePage} onOpenLead={openLead} />}
           {activePage === 'leads' && <LeadsPage onOpenLead={openLead} />}
           {activePage === 'pipeline' && <PipelinePage onOpenLead={openLead} />}
-          {['tasks', 'calendar', 'automations', 'inbox', 'reports', 'settings'].includes(activePage) && (
+          {activePage === 'tasks' && <TasksPage onOpenLead={openLead} />}
+          {['calendar', 'automations', 'inbox', 'reports', 'settings'].includes(activePage) && (
             <ComingSoon pageId={activePage} />
           )}
         </main>

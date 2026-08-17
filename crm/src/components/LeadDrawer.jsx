@@ -1,14 +1,16 @@
 import { useState } from 'react'
 import { useLeadsStore } from '../store'
+import CallResultModal from './CallResultModal'
 import './LeadDrawer.css'
 
 const STATUS_OPTIONS = ['new', 'contacted', 'qualified', 'booked', 'closed']
 const STATUS_LABELS = { new: 'New Lead', contacted: 'Contacted', qualified: 'Qualified', booked: 'Booked', closed: 'Closed Won' }
 
 export default function LeadDrawer({ lead, type, onClose }) {
-  const { updateCallLead, updateEmailLead, addNurtureLog, nurtureLogs } = useLeadsStore()
+  const { updateCallLead, updateEmailLead, addNurtureLog, addTask, nurtureLogs } = useLeadsStore()
   const [tab, setTab] = useState('activity')
   const [noteText, setNoteText] = useState('')
+  const [showCallResult, setShowCallResult] = useState(false)
 
   if (!lead) return null
 
@@ -57,7 +59,21 @@ export default function LeadDrawer({ lead, type, onClose }) {
 
           <div className="drawer-actions">
             {lead.phone && <a className="btn" href={`tel:${lead.phone}`}>Call</a>}
+            {lead.phone && <button className="btn btn-ghost" onClick={() => setShowCallResult(true)}>Log Result</button>}
             {lead.email && <a className="btn btn-ghost" href={`mailto:${lead.email}`}>Email</a>}
+            <button
+              className="btn btn-ghost"
+              onClick={() => addTask({
+                leadId: lead.id,
+                leadType: type,
+                title: `Follow up with ${lead.business_name}`,
+                type: 'call',
+                priority: 'medium',
+                dueAt: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
+              })}
+            >
+              + Task
+            </button>
             <select
               className="drawer-status-select"
               value={lead.status || 'new'}
@@ -141,6 +157,14 @@ export default function LeadDrawer({ lead, type, onClose }) {
           )}
         </div>
       </div>
+
+      {showCallResult && (
+        <CallResultModal
+          lead={lead}
+          leadType={type}
+          onClose={() => setShowCallResult(false)}
+        />
+      )}
     </>
   )
 }
