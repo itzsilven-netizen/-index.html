@@ -1,4 +1,4 @@
-# Apex Standard
+# Dream so Big it Scares you (Apex Standard)
 
 AI-powered growth agency helping businesses get 5X more leads in 30 days — or you don't pay.
 
