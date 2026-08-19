@@ -32,6 +32,77 @@ const writeLeads = (data) => {
   fs.writeFileSync(leadsFile, JSON.stringify(data, null, 2))
 }
 
+// AI Ark helpers (owner-email enrichment)
+const AI_ARK_BASE = 'https://api.ai-ark.com/api/developer-portal'
+
+const extractDomain = (url) => {
+  try {
+    const u = new URL(url.startsWith('http') ? url : `https://${url}`)
+    return u.hostname.replace(/^www\./, '')
+  } catch {
+    return null
+  }
+}
+
+// Response field names for the exported person aren't fixed in AI Ark's docs,
+// so scan for any key containing "email" whose value looks like an address.
+const findEmailInObject = (obj) => {
+  if (!obj || typeof obj !== 'object') return null
+  for (const [key, value] of Object.entries(obj)) {
+    if (typeof value === 'string' && /email/i.test(key) && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      return value
+    }
+    if (value && typeof value === 'object') {
+      const found = findEmailInObject(value)
+      if (found) return found
+    }
+  }
+  return null
+}
+
+const aiArkFindOwnerEmail = async (website) => {
+  const domain = extractDomain(website)
+  if (!domain) return { email: null, reason: 'invalid_website' }
+
+  const headers = {
+    'X-TOKEN': process.env.AI_ARK_API_KEY,
+    'Content-Type': 'application/json',
+  }
+
+  const searchRes = await fetch(`${AI_ARK_BASE}/v1/people`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      account: { domain: { any: { include: { mode: 'STRICT', content: [domain] } } } },
+      contact: { seniority: { any: { include: ['founder', 'owner', 'c_suite'] } } },
+      page: 0,
+      size: 1,
+    }),
+  })
+
+  if (searchRes.status === 402) return { email: null, reason: 'credits_exhausted' }
+  if (searchRes.status === 404) return { email: null, reason: 'no_person_found' }
+  if (!searchRes.ok) return { email: null, reason: `search_error_${searchRes.status}` }
+
+  const searchData = await searchRes.json()
+  const person = searchData?.content?.[0]
+  if (!person?.id) return { email: null, reason: 'no_person_found' }
+
+  const exportRes = await fetch(`${AI_ARK_BASE}/v1/people/export/single`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ id: person.id }),
+  })
+
+  if (exportRes.status === 402) return { email: null, reason: 'credits_exhausted' }
+  if (exportRes.status === 404) return { email: null, reason: 'no_email_found' }
+  if (!exportRes.ok) return { email: null, reason: `export_error_${exportRes.status}` }
+
+  const exportData = await exportRes.json()
+  const email = findEmailInObject(exportData)
+  return { email, reason: email ? 'found' : 'no_email_found' }
+}
+
 // GET /api/leads - Fetch all leads
 app.get('/api/leads', (req, res) => {
   const leads = readLeads()
@@ -170,6 +241,58 @@ silven@apexstandardhq.com`
     console.error('Error sending email via Instantly:', err)
     res.status(500).json({ error: 'Failed to send email' })
   }
+})
+
+// POST /api/backfill-emails - Bulk AI Ark owner-email enrichment for leads
+// that have a website but no email yet. Runs with real concurrency instead
+// of one lookup at a time.
+app.post('/api/backfill-emails', async (req, res) => {
+  if (!process.env.AI_ARK_API_KEY) {
+    return res.status(500).json({ error: 'AI_ARK_API_KEY not configured' })
+  }
+
+  const data = readLeads()
+  data.calls = data.calls || []
+
+  const targets = data.calls.filter((l) => l.website && !l.email)
+  const CONCURRENCY = 5 // matches AI Ark's 5 req/sec rate limit
+  let index = 0
+  let emailsFound = 0
+  let creditsExhausted = false
+  const errors = []
+
+  const worker = async () => {
+    while (index < targets.length && !creditsExhausted) {
+      const lead = targets[index]
+      index += 1
+      try {
+        const { email, reason } = await aiArkFindOwnerEmail(lead.website)
+        if (reason === 'credits_exhausted') {
+          creditsExhausted = true
+          break
+        }
+        if (email) {
+          lead.email = email
+          emailsFound += 1
+        }
+      } catch (err) {
+        errors.push({ leadId: lead.id, business_name: lead.business_name, error: err.message })
+      }
+    }
+  }
+
+  await Promise.all(Array.from({ length: CONCURRENCY }, worker))
+
+  writeLeads(data)
+
+  res.json({
+    success: true,
+    totalWithWebsite: targets.length,
+    checked: index,
+    emailsFound,
+    creditsExhausted,
+    errors,
+  })
 })
 
 // Health check
