@@ -5,5 +5,10 @@
 .claude-flow/data/
 .claude-flow/logs/
 .claude-flow/sessions/
+.claude-flow/daemon-state.json
+.claude-flow/daemon.pid
+.claude-flow/metrics/
+.claude-flow/policy/
+.claude-flow/security/
 .swarm/
 ruvector.db
