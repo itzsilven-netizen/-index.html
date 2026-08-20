@@ -12,47 +12,6 @@
   flex-wrap: wrap;
 }
 
-.leads-subtabs {
-  display: flex;
-  gap: 4px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 4px;
-}
-
-.subtab {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 14px;
-  background: transparent;
-  border: none;
-  border-radius: 7px;
-  color: var(--text-muted);
-  font-size: 13px;
-  font-weight: 600;
-  transition: background var(--transition), color var(--transition);
-}
-
-.subtab:hover {
-  color: var(--text-secondary);
-}
-
-.subtab.active {
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-}
-
-.subtab-count {
-  font-size: 11px;
-  background: var(--accent-glow);
-  color: var(--accent-hover);
-  border-radius: 999px;
-  padding: 1px 8px;
-  font-weight: 700;
-}
-
 .leads-filters {
   display: flex;
   align-items: center;

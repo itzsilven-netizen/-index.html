@@ -16,5 +16,3 @@ services:
     envVars:
       - key: VITE_API_URL
         value: https://lead-crm-api-1lw1.onrender.com
-      - key: VITE_COMPANY_MAILING_ADDRESS
-        sync: false

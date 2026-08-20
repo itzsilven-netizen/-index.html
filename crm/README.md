@@ -38,10 +38,7 @@ Create `.env.local`:
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_anon_key
 VITE_ANTHROPIC_API_KEY=your_claude_api_key
-VITE_COMPANY_MAILING_ADDRESS=your_business_mailing_address
 ```
-
-`VITE_COMPANY_MAILING_ADDRESS` gets appended to outgoing email drafts — CAN-SPAM requires a valid physical postal address in every commercial email. Without it, the Email tab shows a warning instead of silently sending without one.
 
 Works without these — local storage is the default.
 
@@ -57,7 +54,7 @@ Production files go to `dist/`.
 
 ### Import Leads
 
-**CRM** → **Calls** or **Emails** → **+ Import Leads**
+**CRM** → **Leads** → **Import**
 
 Upload JSON file with this structure:
 
@@ -68,14 +65,11 @@ Upload JSON file with this structure:
     "niche": "plumbing",
     "phone": "555-0123",
     "email": "info@abc.com",
-    "email_draft": "Subject: Quick question for ABC Plumbing\n\nHi John, ...",
     "contact_name": "John",
     "priority_score": 4
   }
 ]
 ```
-
-`email_draft` is optional — when present it shows up editable in the Lead Drawer's Email tab with a one-click "Send Email" button (opens Gmail pre-filled; you still hit Send yourself).
 
 ### Update Status
 
