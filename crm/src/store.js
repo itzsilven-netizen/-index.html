@@ -7,6 +7,56 @@ export const voicemailFollowUpMessage = (lead) => {
   return `Hi, this is Silven — just left you a voicemail${angle}. Text me back here if that's easier, happy to answer any questions. Reply STOP to opt out.`
 }
 
+// CAN-SPAM requires a working opt-out mechanism in every commercial email.
+// Cold-sourced drafts from the lead-gen routine aren't guaranteed to include
+// one, so we append a reply-based opt-out line whenever the draft doesn't
+// already mention unsubscribing.
+const EMAIL_OPT_OUT_LINE = "If you'd rather not hear from us again, just reply and say so — we'll take you off the list."
+
+export const ensureOptOutLine = (body) => {
+  if (!body) return ''
+  if (/unsubscribe|opt.?out|reply.*stop|take you off/i.test(body)) return body
+  return `${body.trim()}\n\n${EMAIL_OPT_OUT_LINE}`
+}
+
+// CAN-SPAM also requires a valid physical postal address in every commercial
+// email. Nothing in this repo has one on file, so this stays blank until set —
+// the drawer surfaces that gap instead of silently shipping without an address.
+export const COMPANY_MAILING_ADDRESS = import.meta.env.VITE_COMPANY_MAILING_ADDRESS || ''
+
+export const ensureMailingAddress = (body) => {
+  if (!COMPANY_MAILING_ADDRESS || body.includes(COMPANY_MAILING_ADDRESS)) return body
+  return `${body.trim()}\n\n${COMPANY_MAILING_ADDRESS}`
+}
+
+export const prepareEmailDraft = (draft) => ensureMailingAddress(ensureOptOutLine(draft || ''))
+
+// A draft that starts with "Subject: ..." gets split so the subject line
+// lands in the compose window's subject field instead of the body.
+const splitDraftSubject = (draft) => {
+  const match = draft.match(/^subject:\s*(.+)\n+([\s\S]*)$/i)
+  return match ? { subject: match[1].trim(), body: match[2].trim() } : { subject: '', body: draft }
+}
+
+// Opens Gmail's web compose window pre-filled with the (possibly edited) draft,
+// addressed to the lead. Intentionally NOT sent through any API — the user
+// still reviews the compose window in their own signed-in Gmail tab and taps
+// Send themselves, same manual-send posture as the SMS follow-up below
+// (openVoicemailFollowUpText), just without needing a copy/paste step since
+// Gmail's compose URL accepts prefilled fields directly.
+export const openEmailSendCompose = (lead, draft) => {
+  if (!lead.email) return
+  const { subject, body } = splitDraftSubject(draft)
+  const params = new URLSearchParams({
+    view: 'cm',
+    fs: '1',
+    to: lead.email,
+    su: subject || `Quick note for ${lead.business_name}`,
+    body,
+  })
+  window.open(`https://mail.google.com/mail/?${params.toString()}`, '_blank')
+}
+
 // Copies the lead's number to the clipboard and opens Google Voice's message
 // inbox in a new tab, ready to paste in. Intentionally NOT automatic-send —
 // you still paste the number, type/paste the message, and tap Send yourself,
@@ -131,6 +181,44 @@ export const useLeadsStore = create((set, get) => ({
     const { emailLeads } = get()
     set({ emailLeads: emailLeads.map(l => l.id === id ? { ...l, ...updates } : l) })
     get().persistLeads()
+  },
+
+  // Opens the pre-filled Gmail compose window for the (possibly edited) draft,
+  // then records that a send was initiated. Same deliberately-manual posture
+  // as logCallResult's text follow-up: the app never calls Gmail's API itself.
+  sendEmailDraft: (lead, leadType, draft) => {
+    const { updateCallLead, updateEmailLead, addNurtureLog } = get()
+    const update = leadType === 'calls' ? updateCallLead : updateEmailLead
+
+    openEmailSendCompose(lead, draft)
+    update(lead.id, {
+      email_draft: draft,
+      emailSentAt: new Date().toISOString(),
+      lastContact: new Date().toLocaleString(),
+      status: (!lead.status || lead.status === 'new') ? 'contacted' : lead.status,
+    })
+    addNurtureLog({
+      leadId: lead.id,
+      leadType,
+      message: 'Opened email follow-up in Gmail (Send Email)',
+      type: 'note',
+    })
+  },
+
+  // There's no backend Gmail access to detect replies automatically yet, so
+  // this stays a manual log entry the user makes after checking their inbox.
+  markEmailReplied: (lead, leadType) => {
+    const { updateCallLead, updateEmailLead, addNurtureLog } = get()
+    const update = leadType === 'calls' ? updateCallLead : updateEmailLead
+    update(lead.id, { repliedAt: new Date().toISOString() })
+    addNurtureLog({ leadId: lead.id, leadType, message: 'Marked as replied', type: 'status' })
+  },
+
+  markEmailOptedOut: (lead, leadType) => {
+    const { updateCallLead, updateEmailLead, addNurtureLog } = get()
+    const update = leadType === 'calls' ? updateCallLead : updateEmailLead
+    update(lead.id, { optedOut: true })
+    addNurtureLog({ leadId: lead.id, leadType, message: 'Marked opted out — excluded from future sends', type: 'status' })
   },
 
   importCallLeads: (leads) => {

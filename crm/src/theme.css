@@ -199,3 +199,6 @@ select {
 .badge-booked    { background: var(--accent); color: #fff; }
 .badge-closed    { background: var(--ink); color: #fff; }
 .badge-lost      { background: #EBE9E4; color: #8C8880; text-decoration: line-through; }
+.badge-sent      { background: #FFF3E8; color: #C05C08; }
+.badge-replied   { background: var(--accent); color: #fff; }
+.badge-optedout  { background: #EBE9E4; color: #8C8880; }

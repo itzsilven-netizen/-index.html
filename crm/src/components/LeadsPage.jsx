@@ -10,6 +10,7 @@ export default function LeadsPage({ onOpenLead }) {
   const [subTab, setSubTab] = useState('calls')
   const [statusFilter, setStatusFilter] = useState('all')
   const [nicheFilter, setNicheFilter] = useState('all')
+  const [emailFilter, setEmailFilter] = useState('all')
   const [showAddForm, setShowAddForm] = useState(false)
   const fileInputRef = useRef(null)
 
@@ -21,8 +22,14 @@ export default function LeadsPage({ onOpenLead }) {
   const filtered = useMemo(() => leads.filter(l => {
     if (statusFilter !== 'all' && (l.status || 'new') !== statusFilter) return false
     if (nicheFilter !== 'all' && l.niche !== nicheFilter) return false
+    if (subTab === 'emails' && emailFilter !== 'all') {
+      if (emailFilter === 'sent' && !l.emailSentAt) return false
+      if (emailFilter === 'not_sent' && l.emailSentAt) return false
+      if (emailFilter === 'replied' && !l.repliedAt) return false
+      if (emailFilter === 'opted_out' && !l.optedOut) return false
+    }
     return true
-  }), [leads, statusFilter, nicheFilter])
+  }), [leads, statusFilter, nicheFilter, emailFilter, subTab])
 
   const handleImport = (e) => {
     const file = e.target.files?.[0]
@@ -80,8 +87,17 @@ export default function LeadsPage({ onOpenLead }) {
             <option value="all">All niches</option>
             {niches.map(n => <option key={n} value={n}>{n}</option>)}
           </select>
-          {(statusFilter !== 'all' || nicheFilter !== 'all') && (
-            <button className="btn-clear" onClick={() => { setStatusFilter('all'); setNicheFilter('all') }}>
+          {subTab === 'emails' && (
+            <select value={emailFilter} onChange={(e) => setEmailFilter(e.target.value)}>
+              <option value="all">All emails</option>
+              <option value="sent">Sent</option>
+              <option value="not_sent">Not sent</option>
+              <option value="replied">Replied</option>
+              <option value="opted_out">Opted out</option>
+            </select>
+          )}
+          {(statusFilter !== 'all' || nicheFilter !== 'all' || emailFilter !== 'all') && (
+            <button className="btn-clear" onClick={() => { setStatusFilter('all'); setNicheFilter('all'); setEmailFilter('all') }}>
               Clear filters
             </button>
           )}
@@ -103,6 +119,7 @@ export default function LeadsPage({ onOpenLead }) {
                 <th>Niche</th>
                 <th>{subTab === 'calls' ? 'Phone' : 'Email'}</th>
                 {subTab === 'calls' && <th>Priority</th>}
+                {subTab === 'emails' && <th>Sent</th>}
                 <th>Status</th>
                 <th>Last Contact</th>
               </tr>
@@ -121,6 +138,19 @@ export default function LeadsPage({ onOpenLead }) {
                   {subTab === 'calls' && (
                     <td>
                       <span className={`score score-${lead.priority_score || 0}`}>{lead.priority_score ?? 0}</span>
+                    </td>
+                  )}
+                  {subTab === 'emails' && (
+                    <td>
+                      {lead.optedOut ? (
+                        <span className="badge badge-optedout">Opted out</span>
+                      ) : lead.repliedAt ? (
+                        <span className="badge badge-replied">Replied</span>
+                      ) : lead.emailSentAt ? (
+                        <span className="badge badge-sent">Sent</span>
+                      ) : (
+                        <span className="cell-muted">—</span>
+                      )}
                     </td>
                   )}
                   <td onClick={(e) => e.stopPropagation()}>
