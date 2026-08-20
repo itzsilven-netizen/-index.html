@@ -109,6 +109,10 @@
   text-decoration: none;
 }
 
+.meta-no-email {
+  color: var(--text-muted);
+}
+
 
 .drawer-actions {
   display: flex;

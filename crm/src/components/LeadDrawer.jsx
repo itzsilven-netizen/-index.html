@@ -58,7 +58,7 @@ export default function LeadDrawer({ lead, type, onClose }) {
     sendEmailDraft(lead, type, draftText)
   }
 
-  const tabs = lead.email ? ['activity', 'email', 'notes', 'info'] : ['activity', 'notes', 'info']
+  const tabs = type === 'emails' && lead.email ? ['activity', 'email', 'notes', 'info'] : ['activity', 'notes', 'info']
   const TAB_LABELS = { activity: 'Activity', email: 'Email', notes: 'Notes', info: 'Information' }
 
   return (
@@ -82,7 +82,12 @@ export default function LeadDrawer({ lead, type, onClose }) {
           <div className="drawer-meta">
             {lead.contact_name && <MetaRow label="Contact" value={lead.contact_name} />}
             {lead.phone && <MetaRow label="Phone" value={<a href={`tel:${lead.phone}`}>{lead.phone}</a>} />}
-            {lead.email && <MetaRow label="Email" value={<a href={`mailto:${lead.email}`}>{lead.email}</a>} />}
+            <MetaRow
+              label="Email"
+              value={lead.email
+                ? <a href={`mailto:${lead.email}`}>✓ {lead.email}</a>
+                : <span className="meta-no-email">✗ No email available</span>}
+            />
             {lead.website && <MetaRow label="Website" value={<a href={lead.website} target="_blank" rel="noreferrer">{lead.website.replace(/^https?:\/\//, '')}</a>} />}
             {lead.city && <MetaRow label="Location" value={`${lead.city}${lead.state ? ', ' + lead.state : ''}`} />}
             {lead.pitch_angle && <MetaRow label="Pitch" value={lead.pitch_angle} />}

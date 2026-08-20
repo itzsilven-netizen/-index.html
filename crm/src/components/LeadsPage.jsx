@@ -11,6 +11,7 @@ export default function LeadsPage({ onOpenLead }) {
   const [statusFilter, setStatusFilter] = useState('all')
   const [nicheFilter, setNicheFilter] = useState('all')
   const [emailFilter, setEmailFilter] = useState('all')
+  const [hasEmailFilter, setHasEmailFilter] = useState('all')
   const [showAddForm, setShowAddForm] = useState(false)
   const fileInputRef = useRef(null)
 
@@ -28,8 +29,12 @@ export default function LeadsPage({ onOpenLead }) {
       if (emailFilter === 'replied' && !l.repliedAt) return false
       if (emailFilter === 'opted_out' && !l.optedOut) return false
     }
+    if (subTab === 'calls' && hasEmailFilter !== 'all') {
+      if (hasEmailFilter === 'has_email' && !l.email) return false
+      if (hasEmailFilter === 'no_email' && l.email) return false
+    }
     return true
-  }), [leads, statusFilter, nicheFilter, emailFilter, subTab])
+  }), [leads, statusFilter, nicheFilter, emailFilter, hasEmailFilter, subTab])
 
   const handleImport = (e) => {
     const file = e.target.files?.[0]
@@ -96,8 +101,15 @@ export default function LeadsPage({ onOpenLead }) {
               <option value="opted_out">Opted out</option>
             </select>
           )}
-          {(statusFilter !== 'all' || nicheFilter !== 'all' || emailFilter !== 'all') && (
-            <button className="btn-clear" onClick={() => { setStatusFilter('all'); setNicheFilter('all'); setEmailFilter('all') }}>
+          {subTab === 'calls' && (
+            <select value={hasEmailFilter} onChange={(e) => setHasEmailFilter(e.target.value)}>
+              <option value="all">All leads</option>
+              <option value="has_email">Has email</option>
+              <option value="no_email">No email</option>
+            </select>
+          )}
+          {(statusFilter !== 'all' || nicheFilter !== 'all' || emailFilter !== 'all' || hasEmailFilter !== 'all') && (
+            <button className="btn-clear" onClick={() => { setStatusFilter('all'); setNicheFilter('all'); setEmailFilter('all'); setHasEmailFilter('all') }}>
               Clear filters
             </button>
           )}
@@ -119,6 +131,7 @@ export default function LeadsPage({ onOpenLead }) {
                 <th>Niche</th>
                 <th>{subTab === 'calls' ? 'Phone' : 'Email'}</th>
                 {subTab === 'calls' && <th>Priority</th>}
+                {subTab === 'calls' && <th>Email</th>}
                 {subTab === 'emails' && <th>Sent</th>}
                 <th>Status</th>
                 <th>Last Contact</th>
@@ -138,6 +151,15 @@ export default function LeadsPage({ onOpenLead }) {
                   {subTab === 'calls' && (
                     <td>
                       <span className={`score score-${lead.priority_score || 0}`}>{lead.priority_score ?? 0}</span>
+                    </td>
+                  )}
+                  {subTab === 'calls' && (
+                    <td onClick={(e) => e.stopPropagation()}>
+                      {lead.email ? (
+                        <a className="cell-link" href={`mailto:${lead.email}`} title={lead.email}>✓ Email</a>
+                      ) : (
+                        <span className="cell-muted">No email available</span>
+                      )}
                     </td>
                   )}
                   {subTab === 'emails' && (
