@@ -55,6 +55,15 @@ const SUBJECTS = {
 
 const credibilityLine = (l) => `I run Casava — we help local ${l.niche} businesses fix stuff like this.`
 
+// The ask across all 4 formats: offer a no-cost breakdown instead of asking
+// for a call. Cleverly's research found low-friction offers (audits,
+// benchmarks) outperform demo/call requests, and Tomba found "should I send
+// you a document?" beats "give me 30 minutes" on replies — same idea. Says
+// "no charge," never the literal word "free": that word is flagged by name
+// in multiple sources as a spam-filter trigger, and "no charge" conveys the
+// identical thing without it.
+const SEND_OFFER = `Want me to send over a quick breakdown of what this could be costing you? No charge.`
+
 // 4 named structures pulled from the cold-email copywriting research. Each
 // `build` returns the email as labeled sentences/beats, so the role of every
 // line is explicit rather than implied. `sentences` is for display only
@@ -69,7 +78,7 @@ export const FORMATS = [
     build: (l, notice) => [
       { label: 'Observation', text: notice },
       { label: 'Credibility', text: credibilityLine(l) },
-      { label: 'Ask', text: `Worth a quick call to see if it's costing you anything?` },
+      { label: 'Ask', text: SEND_OFFER },
     ],
   },
   {
@@ -80,7 +89,7 @@ export const FORMATS = [
     build: (l, notice) => [
       { label: 'Problem', text: `Hey — I run Casava. A lot of ${l.niche} businesses lose jobs to stuff like this without noticing.` },
       { label: 'Agitate', text: notice },
-      { label: 'Solve', text: `I'm not pitching anything specific yet. I just want to hop on a quick call and see if it's worth fixing for ${l.business_name}. You free this week?` },
+      { label: 'Solve', text: `I'm not pitching anything yet — I put together a quick breakdown of what this could be costing ${l.business_name}. Want me to send it over? No charge.` },
     ],
   },
   {
@@ -91,7 +100,7 @@ export const FORMATS = [
     build: (l, notice) => [
       { label: 'Before', text: notice },
       { label: 'After', text: `Shops that fix this usually pick up more jobs without much extra work.` },
-      { label: 'Bridge', text: `${credibilityLine(l)} Not pitching anything specific yet. Just want to see if it's worth a quick call.` },
+      { label: 'Bridge', text: `${credibilityLine(l)} ${SEND_OFFER}` },
     ],
   },
   {
@@ -103,7 +112,7 @@ export const FORMATS = [
       { label: 'Hook', text: `Hey — quick one about ${l.business_name}.` },
       { label: 'Pain Point', text: notice },
       { label: 'Credibility', text: credibilityLine(l) },
-      { label: 'CTA', text: `Want to jump on a quick call and see if it's worth fixing?` },
+      { label: 'CTA', text: SEND_OFFER },
     ],
   },
 ]
