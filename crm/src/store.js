@@ -4,9 +4,10 @@ import { generateEmailDraft } from './emailDrafts'
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
 // CAN-SPAM requires a valid physical postal address in every commercial email.
-// Nothing in this repo has one on file, so this stays blank until set — the
-// drawer surfaces that gap instead of silently shipping without an address.
-export const COMPANY_MAILING_ADDRESS = import.meta.env.VITE_COMPANY_MAILING_ADDRESS || ''
+// It's meant to be printed in every outgoing email anyway, so there's no
+// confidentiality reason to keep it out of the source — the env var just
+// lets it be overridden without a code change if it ever moves.
+export const COMPANY_MAILING_ADDRESS = import.meta.env.VITE_COMPANY_MAILING_ADDRESS || 'Apex Standard, PO Box 1093, Willow Creek, CA 95573'
 
 const appendMailingAddress = (draft) => {
   if (!COMPANY_MAILING_ADDRESS || draft.includes(COMPANY_MAILING_ADDRESS)) return draft
