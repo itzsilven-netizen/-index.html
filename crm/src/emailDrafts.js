@@ -120,7 +120,7 @@ export const generateEmailDraft = (lead) => {
   const notice = buildNotice(lead)
   const subject = SUBJECTS[lead.pitch_angle] || SUBJECTS['AI Receptionist']
   const sentences = format.build(lead, notice)
-  const body = `${sentences.map(s => s.text).join(' ')}\n\n${OPT_OUT_LINE}`
+  const body = `${sentences.map(s => s.text).join('\n\n')}\n\n${OPT_OUT_LINE}`
   const draft = `Subject: ${subject}\n\n${body}`
   return { draft, sentences, format }
 }
