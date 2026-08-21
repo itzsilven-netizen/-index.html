@@ -30,25 +30,30 @@ const buildNotice = (lead) => {
   }
 }
 
+// Subject lines kept to 2-4 lowercase, colleague-style words — research on cold
+// email opens (Gong's 85M-email analysis) found short, low-key subjects that
+// reference the prospect's own situation outperform longer or marketing-toned
+// ones by a wide margin, and phrases like "partnership," "exclusive," or
+// "introducing" measurably hurt opens.
 const TEMPLATES = {
   'AI Receptionist': {
-    subject: (l) => `quick one about ${l.business_name}`,
+    subject: () => `quick question`,
     body: (l, notice) => `Hey — I run Casava, we work with ${l.niche} companies in ${l.city} on tightening up stuff that's quietly costing them jobs. ${notice} Not pitching anything specific yet — just want to hop on a quick call and see if it's even worth solving for you. You open this week?`,
   },
   Website: {
-    subject: (l) => `${l.business_name} isn't showing up online`,
+    subject: () => `your website`,
     body: (l, notice) => `Hey — Casava here, we help local ${l.niche} businesses fix the stuff that's costing them calls. ${notice} Might not even be worth fixing depending on how you get most of your work — figured I'd ask before assuming. Got 10 minutes this week?`,
   },
   'Website Chatbot': {
-    subject: (l) => `noticed something on ${l.business_name}'s site`,
+    subject: () => `your website visitors`,
     body: (l, notice) => `Hey — I run Casava, we look at how local service businesses are leaking leads without realizing it. ${notice} Could be a non-issue for you, could be a few jobs a month. Want to jump on a quick call and figure out which?`,
   },
   'Review Automation': {
-    subject: (l) => `${l.business_name}'s reviews are working for you`,
+    subject: () => `your reviews`,
     body: (l, notice) => `Hey — Casava here. ${notice} Not sure if that's actually a priority for you right now — wanted to ask before pitching anything. Open to a quick call?`,
   },
   'Lead Follow-Up AI': {
-    subject: (l) => `what happens to old leads at ${l.business_name}?`,
+    subject: () => `your old leads`,
     body: (l, notice) => `Hey — I run Casava, we help ${l.niche} businesses in ${l.city} plug the gaps where jobs quietly slip through. ${notice} Might be nothing for you — figured it's worth a quick call to see if that's actually costing you money before I say more.`,
   },
 }
