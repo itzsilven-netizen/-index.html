@@ -57,6 +57,12 @@ export const useLeadsStore = create((set, get) => ({
     }
   },
 
+  // Pulls the latest data from the backend. Leads already known locally get their
+  // enrichment fields (email, website, rating, etc.) refreshed from the server, since
+  // that's where imports/backfills land — but status and lastContact stay whatever the
+  // browser has, because status changes made in the UI are only ever saved to
+  // localStorage (updateCallLead/updateEmailLead never push to the backend), so
+  // overwriting them from the server would silently revert a user's own status edits.
   syncFromServer: async () => {
     const response = await fetch(`${API_URL}/api/leads`)
     if (!response.ok) throw new Error(`Server responded ${response.status}`)
@@ -65,20 +71,30 @@ export const useLeadsStore = create((set, get) => ({
     const dedupeKey = (lead) =>
       lead.phone || lead.email || `${lead.business_name}-${lead.website || ''}`
 
+    const mergeWithServer = (localLeads, serverLeads) => {
+      const serverByKey = new Map(serverLeads.map(l => [dedupeKey(l), l]))
+      const matchedKeys = new Set()
+
+      const merged = localLeads.map(local => {
+        const key = dedupeKey(local)
+        const server = serverByKey.get(key)
+        if (!server) return local
+        matchedKeys.add(key)
+        return { ...local, ...server, id: local.id, status: local.status, lastContact: local.lastContact }
+      })
+
+      const newLeads = serverLeads.filter(l => !matchedKeys.has(dedupeKey(l)))
+      return [...merged, ...newLeads]
+    }
+
     const { callLeads, emailLeads } = get()
-    const existingCallKeys = new Set(callLeads.map(dedupeKey))
-    const existingEmailKeys = new Set(emailLeads.map(dedupeKey))
+    const mergedCallLeads = mergeWithServer(callLeads, data.calls || [])
+    const mergedEmailLeads = mergeWithServer(emailLeads, data.emails || [])
 
-    const newCallLeads = (data.calls || []).filter(l => !existingCallKeys.has(dedupeKey(l)))
-    const newEmailLeads = (data.emails || []).filter(l => !existingEmailKeys.has(dedupeKey(l)))
-
-    set({
-      callLeads: [...callLeads, ...newCallLeads],
-      emailLeads: [...emailLeads, ...newEmailLeads],
-    })
+    set({ callLeads: mergedCallLeads, emailLeads: mergedEmailLeads })
     get().persistLeads()
 
-    return { newCallLeads: newCallLeads.length, newEmailLeads: newEmailLeads.length }
+    return { callLeads: mergedCallLeads.length, emailLeads: mergedEmailLeads.length }
   },
 
   addCallLead: (lead) => {
