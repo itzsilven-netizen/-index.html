@@ -115,6 +115,18 @@ export const FORMATS = [
       { label: 'CTA', text: SEND_OFFER },
     ],
   },
+  {
+    // Single-sentence direct offer — if we could connect you with more
+    // customers in the next couple weeks, worth a conversation? No
+    // observation/notice at all, deliberately as short as this gets.
+    id: 'direct_offer',
+    name: 'Direct Offer',
+    structure: 'Direct Offer (single sentence)',
+    wordRange: '20-30 words',
+    build: (l) => [
+      { label: 'Direct Offer', text: `Hey — if we could connect ${l.business_name} with more ${l.niche} customers in the next couple weeks, would that be worth a quick conversation?` },
+    ],
+  },
 ]
 
 const pickFormat = (lead) => FORMATS[Math.abs(Number(lead.id) || 0) % FORMATS.length]
