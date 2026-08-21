@@ -108,13 +108,17 @@ export default function LeadsPage({ onOpenLead }) {
 
       <div className="card format-stats">
         {formatStats.map(f => (
-          <div className="format-stat" key={f.id}>
+          <button
+            key={f.id}
+            className={`format-stat ${formatFilter === f.id ? 'active' : ''}`}
+            onClick={() => setFormatFilter(formatFilter === f.id ? 'all' : f.id)}
+          >
             <div className="format-stat-name">{f.name}</div>
             <div className="format-stat-structure">{f.structure}</div>
             <div className="format-stat-numbers">
               {f.sent} sent · {f.replied} replied{f.replyRate != null && ` · ${f.replyRate}%`}
             </div>
-          </div>
+          </button>
         ))}
       </div>
 
