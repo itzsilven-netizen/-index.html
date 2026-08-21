@@ -1,12 +1,15 @@
-// Deterministic, no-API-key draft generator. Picks one of 5 angles based on the
-// lead's pitch_angle (already assigned by the lead-gen routine) and personalizes
-// the opening line from real fields on the lead (website presence, rating,
-// review_count) instead of a flat mail-merge. Runs entirely client-side.
+// Deterministic, no-API-key draft generator. Every lead gets a personalized
+// `notice` line built from real fields on it (website presence, rating,
+// review_count — whatever its pitch_angle points at), then that notice gets
+// arranged into one of 4 named cold-email structures below. Format is
+// assigned per-lead by a stable rotation (lead.id % 4), not randomly on every
+// open, so it's evenly split across the lead pool and reproducible — the
+// point is to compare reply rates by FORMAT, with personalization held
+// constant, not to re-roll the format every time someone reopens a lead.
 //
-// Copy is deliberately short-sentence, plain-word, ~5th-7th grade reading level —
-// research on cold email response rates found copy at that level gets 53% more
-// replies than denser writing. Keep edits to this file at that same level: short
-// sentences, common words, no subordinate clauses.
+// Copy is deliberately short-sentence, plain-word, ~5th-7th grade reading
+// level — research on cold email response rates found copy at that level
+// gets 53% more replies than denser writing. Keep edits at that same level.
 
 const buildNotice = (lead) => {
   const { business_name, niche, city, rating, review_count } = lead
@@ -39,36 +42,85 @@ const buildNotice = (lead) => {
 // email opens (Gong's 85M-email analysis) found short, low-key subjects that
 // reference the prospect's own situation outperform longer or marketing-toned
 // ones by a wide margin, and phrases like "partnership," "exclusive," or
-// "introducing" measurably hurt opens.
-const TEMPLATES = {
-  'AI Receptionist': {
-    subject: () => `quick question`,
-    body: (l, notice) => `Hey — I run Casava. We help ${l.niche} companies in ${l.city} stop losing jobs to small stuff that adds up. ${notice} I'm not selling anything yet. I just want to hop on a quick call and see if this is even worth fixing for you. You free this week?`,
-  },
-  Website: {
-    subject: () => `your website`,
-    body: (l, notice) => `Hey — Casava here. We help local ${l.niche} businesses fix the stuff that's costing them calls. ${notice} This might not even matter, depending on how you get most of your work. I didn't want to assume. Got 10 minutes this week?`,
-  },
-  'Website Chatbot': {
-    subject: () => `your website visitors`,
-    body: (l, notice) => `Hey — I run Casava. We look at how local service businesses lose leads without knowing it. ${notice} This might be nothing for you. Or it could be a few jobs a month. Want to hop on a quick call and find out?`,
-  },
-  'Review Automation': {
-    subject: () => `your reviews`,
-    body: (l, notice) => `Hey — Casava here. ${notice} Not sure if that's a priority for you right now. I wanted to ask before pitching anything. Open to a quick call?`,
-  },
-  'Lead Follow-Up AI': {
-    subject: () => `your old leads`,
-    body: (l, notice) => `Hey — I run Casava. We help ${l.niche} businesses in ${l.city} plug the gaps where jobs slip through. ${notice} This might be nothing for you. But it's worth a quick call to check if it's costing you money before I say more.`,
-  },
+// "introducing" measurably hurt opens. Subject varies by pitch_angle only —
+// format (below) is a separate, independently-tested variable, so mixing the
+// two together would make it impossible to tell which one moved the numbers.
+const SUBJECTS = {
+  'AI Receptionist': 'quick question',
+  Website: 'your website',
+  'Website Chatbot': 'your website visitors',
+  'Review Automation': 'your reviews',
+  'Lead Follow-Up AI': 'your old leads',
 }
+
+const credibilityLine = (l) => `I run Casava — we help local ${l.niche} businesses fix stuff like this.`
+
+// 4 named structures pulled from the cold-email copywriting research. Each
+// `build` returns the email as labeled sentences/beats, so the role of every
+// line is explicit rather than implied. `sentences` is for display only
+// (e.g. showing the structure in the UI) — the actual draft is always sent
+// as plain text.
+export const FORMATS = [
+  {
+    id: 'three_sentence',
+    name: '3-Sentence',
+    structure: 'Observation → Credibility → Ask',
+    wordRange: '45-75 words',
+    build: (l, notice) => [
+      { label: 'Observation', text: notice },
+      { label: 'Credibility', text: credibilityLine(l) },
+      { label: 'Ask', text: `Worth a quick call to see if it's costing you anything?` },
+    ],
+  },
+  {
+    id: 'pas',
+    name: 'PAS',
+    structure: 'Problem → Agitate → Solve',
+    wordRange: '90-120 words',
+    build: (l, notice) => [
+      { label: 'Problem', text: `Hey — I run Casava. A lot of ${l.niche} businesses lose jobs to stuff like this without noticing.` },
+      { label: 'Agitate', text: notice },
+      { label: 'Solve', text: `I'm not pitching anything specific yet. I just want to hop on a quick call and see if it's worth fixing for ${l.business_name}. You free this week?` },
+    ],
+  },
+  {
+    id: 'bab',
+    name: 'BAB',
+    structure: 'Before → After → Bridge',
+    wordRange: '100-140 words',
+    build: (l, notice) => [
+      { label: 'Before', text: notice },
+      { label: 'After', text: `Shops that fix this usually pick up more jobs without much extra work.` },
+      { label: 'Bridge', text: `${credibilityLine(l)} Not pitching anything specific yet. Just want to see if it's worth a quick call.` },
+    ],
+  },
+  {
+    id: 'story',
+    name: 'Story',
+    structure: 'Hook → Pain Point → Credibility → CTA',
+    wordRange: '60-90 words',
+    build: (l, notice) => [
+      { label: 'Hook', text: `Hey — quick one about ${l.business_name}.` },
+      { label: 'Pain Point', text: notice },
+      { label: 'Credibility', text: credibilityLine(l) },
+      { label: 'CTA', text: `Want to jump on a quick call and see if it's worth fixing?` },
+    ],
+  },
+]
+
+const pickFormat = (lead) => FORMATS[Math.abs(Number(lead.id) || 0) % FORMATS.length]
 
 const OPT_OUT_LINE = "If you'd rather not hear from us again, just reply and say so — we'll take you off the list."
 
+// Returns { draft, sentences, format } — draft is the plain-text email ready
+// to send, sentences is the labeled breakdown (Hook/Pain Point/CTA/etc.) for
+// display, format is which of the 4 structures this lead was assigned.
 export const generateEmailDraft = (lead) => {
-  const template = TEMPLATES[lead.pitch_angle] || TEMPLATES['AI Receptionist']
+  const format = pickFormat(lead)
   const notice = buildNotice(lead)
-  const subject = template.subject(lead)
-  const body = `${template.body(lead, notice)}\n\n${OPT_OUT_LINE}`
-  return `Subject: ${subject}\n\n${body}`
+  const subject = SUBJECTS[lead.pitch_angle] || SUBJECTS['AI Receptionist']
+  const sentences = format.build(lead, notice)
+  const body = `${sentences.map(s => s.text).join(' ')}\n\n${OPT_OUT_LINE}`
+  const draft = `Subject: ${subject}\n\n${body}`
+  return { draft, sentences, format }
 }

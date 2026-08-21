@@ -14,7 +14,13 @@ const appendMailingAddress = (draft) => {
   return `${draft.trim()}\n\n${COMPANY_MAILING_ADDRESS}`
 }
 
-export const draftForLead = (lead) => appendMailingAddress(generateEmailDraft(lead))
+// Returns { draft, format } — format carries id/name/structure so the caller
+// can persist which of the 4 tested structures this lead got, alongside the
+// draft text itself.
+export const draftForLead = (lead) => {
+  const { draft, format } = generateEmailDraft(lead)
+  return { draft: appendMailingAddress(draft), format }
+}
 
 // A draft that starts with "Subject: ..." gets split so the subject line
 // lands in the compose window's subject field instead of the body.

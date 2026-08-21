@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef } from 'react'
 import { useLeadsStore } from '../store'
+import { FORMATS } from '../emailDrafts'
 import AddLeadForm from './AddLeadForm'
 import './LeadsPage.css'
 
@@ -10,6 +11,7 @@ export default function LeadsPage({ onOpenLead }) {
   const [statusFilter, setStatusFilter] = useState('all')
   const [nicheFilter, setNicheFilter] = useState('all')
   const [hasEmailFilter, setHasEmailFilter] = useState('all')
+  const [formatFilter, setFormatFilter] = useState('all')
   const [showAddForm, setShowAddForm] = useState(false)
   const fileInputRef = useRef(null)
 
@@ -24,8 +26,18 @@ export default function LeadsPage({ onOpenLead }) {
     if (hasEmailFilter === 'not_sent' && (!l.email || l.emailSentAt)) return false
     if (hasEmailFilter === 'replied' && !l.repliedAt) return false
     if (hasEmailFilter === 'opted_out' && !l.optedOut) return false
+    if (formatFilter !== 'all' && l.emailFormat !== formatFilter) return false
     return true
-  }), [callLeads, statusFilter, nicheFilter, hasEmailFilter])
+  }), [callLeads, statusFilter, nicheFilter, hasEmailFilter, formatFilter])
+
+  // Sent/replied counts per format, so it's possible to see which of the 4
+  // tested structures is actually performing without leaving the list.
+  const formatStats = useMemo(() => FORMATS.map(f => {
+    const leads = callLeads.filter(l => l.emailFormat === f.id)
+    const sent = leads.filter(l => l.emailSentAt).length
+    const replied = leads.filter(l => l.repliedAt).length
+    return { ...f, sent, replied, replyRate: sent ? Math.round((replied / sent) * 100) : null }
+  }), [callLeads])
 
   const handleImport = (e) => {
     const file = e.target.files?.[0]
@@ -82,12 +94,28 @@ export default function LeadsPage({ onOpenLead }) {
             <option value="replied">Replied</option>
             <option value="opted_out">Opted out</option>
           </select>
-          {(statusFilter !== 'all' || nicheFilter !== 'all' || hasEmailFilter !== 'all') && (
-            <button className="btn-clear" onClick={() => { setStatusFilter('all'); setNicheFilter('all'); setHasEmailFilter('all') }}>
+          <select value={formatFilter} onChange={(e) => setFormatFilter(e.target.value)}>
+            <option value="all">All formats</option>
+            {FORMATS.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
+          </select>
+          {(statusFilter !== 'all' || nicheFilter !== 'all' || hasEmailFilter !== 'all' || formatFilter !== 'all') && (
+            <button className="btn-clear" onClick={() => { setStatusFilter('all'); setNicheFilter('all'); setHasEmailFilter('all'); setFormatFilter('all') }}>
               Clear filters
             </button>
           )}
         </div>
+      </div>
+
+      <div className="card format-stats">
+        {formatStats.map(f => (
+          <div className="format-stat" key={f.id}>
+            <div className="format-stat-name">{f.name}</div>
+            <div className="format-stat-structure">{f.structure}</div>
+            <div className="format-stat-numbers">
+              {f.sent} sent · {f.replied} replied{f.replyRate != null && ` · ${f.replyRate}%`}
+            </div>
+          </div>
+        ))}
       </div>
 
       {filtered.length === 0 ? (

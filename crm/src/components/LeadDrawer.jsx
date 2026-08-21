@@ -6,6 +6,7 @@ import {
   draftForLead,
   COMPANY_MAILING_ADDRESS,
 } from '../store'
+import { FORMATS } from '../emailDrafts'
 import CallResultModal from './CallResultModal'
 import './LeadDrawer.css'
 
@@ -59,11 +60,13 @@ export default function LeadDrawer({ lead, type, onClose }) {
   const handleTabClick = (t) => {
     setTab(t)
     if (t === 'email' && !lead.email_draft) {
-      const generated = draftForLead(lead)
-      setDraftText(generated)
-      update({ email_draft: generated })
+      const { draft, format } = draftForLead(lead)
+      setDraftText(draft)
+      update({ email_draft: draft, emailFormat: format.id })
     }
   }
+
+  const draftFormat = FORMATS.find(f => f.id === lead.emailFormat)
 
   const handleSendEmail = () => {
     if (!draftText.trim() || lead.optedOut) return
@@ -165,6 +168,11 @@ export default function LeadDrawer({ lead, type, onClose }) {
                   CAN-SPAM requires a valid physical postal address in every commercial email — none is configured yet. Set <code>VITE_COMPANY_MAILING_ADDRESS</code> and it'll be added to drafts automatically; until then, add one manually before sending.
                 </div>
               )}
+              {draftFormat && (
+                <div className="email-sent-note">
+                  Format: <strong>{draftFormat.name}</strong> ({draftFormat.structure}) · {draftFormat.wordRange}
+                </div>
+              )}
               {lead.emailSentAt && (
                 <div className="email-sent-note">
                   ✓ Sent {new Date(lead.emailSentAt).toLocaleString()}
@@ -194,7 +202,7 @@ export default function LeadDrawer({ lead, type, onClose }) {
                 )}
               </div>
               <p className="email-panel-hint">
-                Auto-generated from this lead's pitch angle — edit as needed, then Send opens Gmail addressed to this lead and copies the draft to your clipboard. Paste it in, then send it yourself.
+                Auto-generated from this lead's pitch angle, arranged in one of 4 tested formats (assigned per-lead so results are comparable) — edit as needed, then Send opens Gmail addressed to this lead and copies the draft to your clipboard. Paste it in, then send it yourself.
               </p>
             </div>
           )}

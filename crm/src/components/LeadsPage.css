@@ -12,6 +12,43 @@
   flex-wrap: wrap;
 }
 
+.format-stats {
+  display: flex;
+  gap: 0;
+  padding: 0;
+  margin-bottom: 16px;
+  overflow-x: auto;
+}
+
+.format-stat {
+  flex: 1;
+  min-width: 150px;
+  padding: 14px 16px;
+  border-right: 1px solid var(--border);
+}
+
+.format-stat:last-child {
+  border-right: none;
+}
+
+.format-stat-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.format-stat-structure {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.format-stat-numbers {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
 .leads-filters {
   display: flex;
   align-items: center;
