@@ -22,6 +22,7 @@ export default function LeadDrawer({ lead, type, onClose }) {
   const [showCallResult, setShowCallResult] = useState(false)
   const [numberCopied, setNumberCopied] = useState(false)
   const [draftText, setDraftText] = useState('')
+  const [draftCopied, setDraftCopied] = useState(false)
 
   useEffect(() => {
     setDraftText(lead?.email_draft || '')
@@ -67,6 +68,8 @@ export default function LeadDrawer({ lead, type, onClose }) {
   const handleSendEmail = () => {
     if (!draftText.trim() || lead.optedOut) return
     sendEmailDraft(lead, type, draftText)
+    setDraftCopied(true)
+    setTimeout(() => setDraftCopied(false), 6000)
   }
 
   const tabs = lead.email ? ['activity', 'email', 'notes', 'info'] : ['activity', 'notes', 'info']
@@ -168,6 +171,11 @@ export default function LeadDrawer({ lead, type, onClose }) {
                   {lead.repliedAt && ` — replied ${new Date(lead.repliedAt).toLocaleString()}`}
                 </div>
               )}
+              {draftCopied && (
+                <div className="email-sent-note">
+                  ✓ Draft copied — Gmail's subject/body prefill isn't reliable, so paste this into the compose window that opened.
+                </div>
+              )}
               <textarea
                 rows={12}
                 value={draftText}
@@ -186,7 +194,7 @@ export default function LeadDrawer({ lead, type, onClose }) {
                 )}
               </div>
               <p className="email-panel-hint">
-                Auto-generated from this lead's pitch angle — edit as needed, then Send opens Gmail pre-filled for you to review and send yourself.
+                Auto-generated from this lead's pitch angle — edit as needed, then Send opens Gmail addressed to this lead and copies the draft to your clipboard. Paste it in, then send it yourself.
               </p>
             </div>
           )}

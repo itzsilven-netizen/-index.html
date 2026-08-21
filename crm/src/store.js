@@ -23,22 +23,21 @@ const splitDraftSubject = (draft) => {
   return match ? { subject: match[1].trim(), body: match[2].trim() } : { subject: '', body: draft }
 }
 
-// Opens Gmail's web compose window pre-filled with the (possibly edited) draft,
-// addressed to the lead. Intentionally NOT sent through any API — the user
-// still reviews the compose window in their own signed-in Gmail tab and taps
-// Send themselves, same manual-send posture as the SMS follow-up below
-// (openVoicemailFollowUpText), just without needing a copy/paste step since
-// Gmail's compose URL accepts prefilled fields directly.
+// Opens Gmail's compose window addressed to the lead and copies the draft to
+// the clipboard. Gmail's su=/body= URL params turned out unreliable in
+// practice (they silently dropped, leaving only "to" filled in), so — same
+// fix already used below for the SMS follow-up (openVoicemailFollowUpText),
+// which hit the identical problem with Google Voice's URL — this copies the
+// text instead of trusting the deep link to fill it in. The user pastes it
+// into Gmail and taps Send themselves; nothing here sends anything.
 export const openEmailSendCompose = (lead, draft) => {
   if (!lead.email) return
   const { subject, body } = splitDraftSubject(draft)
-  const params = new URLSearchParams({
-    view: 'cm',
-    fs: '1',
-    to: lead.email,
-    su: subject || `Quick note for ${lead.business_name}`,
-    body,
-  })
+  const clipboardText = subject ? `Subject: ${subject}\n\n${body}` : body
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(clipboardText).catch(() => {})
+  }
+  const params = new URLSearchParams({ view: 'cm', fs: '1', to: lead.email })
   window.open(`https://mail.google.com/mail/?${params.toString()}`, '_blank')
 }
 
