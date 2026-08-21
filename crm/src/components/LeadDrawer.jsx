@@ -1,5 +1,11 @@
-import { useState } from 'react'
-import { useLeadsStore, openVoicemailFollowUpText, voicemailFollowUpMessage } from '../store'
+import { useState, useEffect } from 'react'
+import {
+  useLeadsStore,
+  openVoicemailFollowUpText,
+  voicemailFollowUpMessage,
+  draftForLead,
+  COMPANY_MAILING_ADDRESS,
+} from '../store'
 import CallResultModal from './CallResultModal'
 import './LeadDrawer.css'
 
@@ -7,11 +13,19 @@ const STATUS_OPTIONS = ['new', 'contacted', 'qualified', 'booked', 'closed']
 const STATUS_LABELS = { new: 'New Lead', contacted: 'Contacted', qualified: 'Qualified', booked: 'Booked', closed: 'Closed Won' }
 
 export default function LeadDrawer({ lead, type, onClose }) {
-  const { updateCallLead, updateEmailLead, addNurtureLog, addTask, nurtureLogs } = useLeadsStore()
+  const {
+    updateCallLead, updateEmailLead, addNurtureLog, addTask, nurtureLogs,
+    sendEmailDraft, markEmailReplied, markEmailOptedOut,
+  } = useLeadsStore()
   const [tab, setTab] = useState('activity')
   const [noteText, setNoteText] = useState('')
   const [showCallResult, setShowCallResult] = useState(false)
   const [numberCopied, setNumberCopied] = useState(false)
+  const [draftText, setDraftText] = useState('')
+
+  useEffect(() => {
+    setDraftText(lead?.email_draft || '')
+  }, [lead?.id])
 
   const handleText = () => {
     openVoicemailFollowUpText(lead)
@@ -39,8 +53,24 @@ export default function LeadDrawer({ lead, type, onClose }) {
     addNurtureLog({ leadId: lead.id, leadType: type, message: `Status changed to ${STATUS_LABELS[status]}`, type: 'status' })
   }
 
-  const tabs = ['activity', 'notes', 'info']
-  const TAB_LABELS = { activity: 'Activity', notes: 'Notes', info: 'Information' }
+  // Generates the draft the moment the Email tab is opened for a lead that
+  // doesn't have one yet, and saves it so it doesn't regenerate on every click.
+  const handleTabClick = (t) => {
+    setTab(t)
+    if (t === 'email' && !lead.email_draft) {
+      const generated = draftForLead(lead)
+      setDraftText(generated)
+      update({ email_draft: generated })
+    }
+  }
+
+  const handleSendEmail = () => {
+    if (!draftText.trim() || lead.optedOut) return
+    sendEmailDraft(lead, type, draftText)
+  }
+
+  const tabs = lead.email ? ['activity', 'email', 'notes', 'info'] : ['activity', 'notes', 'info']
+  const TAB_LABELS = { activity: 'Activity', email: 'Email', notes: 'Notes', info: 'Information' }
 
   return (
     <>
@@ -53,6 +83,9 @@ export default function LeadDrawer({ lead, type, onClose }) {
           </div>
           <div className="drawer-badges">
             <span className={`badge badge-${lead.status || 'new'}`}>{STATUS_LABELS[lead.status] || 'New Lead'}</span>
+            {lead.optedOut && <span className="badge badge-optedout">Opted Out</span>}
+            {lead.repliedAt && <span className="badge badge-replied">Replied</span>}
+            {!lead.repliedAt && lead.emailSentAt && <span className="badge badge-sent">Email Sent</span>}
             {lead.niche && <span className="drawer-niche">{lead.niche}</span>}
             {lead.priority_score != null && <span className="drawer-niche">Priority {lead.priority_score}</span>}
           </div>
@@ -114,7 +147,7 @@ export default function LeadDrawer({ lead, type, onClose }) {
             <button
               key={t}
               className={`drawer-tab ${tab === t ? 'active' : ''}`}
-              onClick={() => setTab(t)}
+              onClick={() => handleTabClick(t)}
             >
               {TAB_LABELS[t]}
             </button>
@@ -122,6 +155,42 @@ export default function LeadDrawer({ lead, type, onClose }) {
         </div>
 
         <div className="drawer-body">
+          {tab === 'email' && (
+            <div className="email-panel">
+              {!COMPANY_MAILING_ADDRESS && (
+                <div className="compliance-warning">
+                  CAN-SPAM requires a valid physical postal address in every commercial email — none is configured yet. Set <code>VITE_COMPANY_MAILING_ADDRESS</code> and it'll be added to drafts automatically; until then, add one manually before sending.
+                </div>
+              )}
+              {lead.emailSentAt && (
+                <div className="email-sent-note">
+                  ✓ Sent {new Date(lead.emailSentAt).toLocaleString()}
+                  {lead.repliedAt && ` — replied ${new Date(lead.repliedAt).toLocaleString()}`}
+                </div>
+              )}
+              <textarea
+                rows={12}
+                value={draftText}
+                onChange={(e) => setDraftText(e.target.value)}
+                placeholder="Generating draft…"
+              />
+              <div className="email-panel-actions">
+                <button className="btn" disabled={!draftText.trim() || lead.optedOut} onClick={handleSendEmail}>
+                  {lead.emailSentAt ? 'Resend Email' : 'Send Email'}
+                </button>
+                {lead.emailSentAt && !lead.repliedAt && (
+                  <button className="btn btn-ghost" onClick={() => markEmailReplied(lead, type)}>Mark Replied</button>
+                )}
+                {!lead.optedOut && (
+                  <button className="btn btn-ghost" onClick={() => markEmailOptedOut(lead, type)}>Mark Opted Out</button>
+                )}
+              </div>
+              <p className="email-panel-hint">
+                Auto-generated from this lead's pitch angle — edit as needed, then Send opens Gmail pre-filled for you to review and send yourself.
+              </p>
+            </div>
+          )}
+
           {tab === 'activity' && (
             <div className="timeline">
               {logs.length === 0 && (

@@ -20,6 +20,10 @@ export default function LeadsPage({ onOpenLead }) {
     if (nicheFilter !== 'all' && l.niche !== nicheFilter) return false
     if (hasEmailFilter === 'has_email' && !l.email) return false
     if (hasEmailFilter === 'no_email' && l.email) return false
+    if (hasEmailFilter === 'sent' && !l.emailSentAt) return false
+    if (hasEmailFilter === 'not_sent' && (!l.email || l.emailSentAt)) return false
+    if (hasEmailFilter === 'replied' && !l.repliedAt) return false
+    if (hasEmailFilter === 'opted_out' && !l.optedOut) return false
     return true
   }), [callLeads, statusFilter, nicheFilter, hasEmailFilter])
 
@@ -73,6 +77,10 @@ export default function LeadsPage({ onOpenLead }) {
             <option value="all">All leads</option>
             <option value="has_email">Has email</option>
             <option value="no_email">No email</option>
+            <option value="sent">Sent</option>
+            <option value="not_sent">Not sent (has email)</option>
+            <option value="replied">Replied</option>
+            <option value="opted_out">Opted out</option>
           </select>
           {(statusFilter !== 'all' || nicheFilter !== 'all' || hasEmailFilter !== 'all') && (
             <button className="btn-clear" onClick={() => { setStatusFilter('all'); setNicheFilter('all'); setHasEmailFilter('all') }}>
@@ -113,10 +121,16 @@ export default function LeadsPage({ onOpenLead }) {
                     <span className={`score score-${lead.priority_score || 0}`}>{lead.priority_score ?? 0}</span>
                   </td>
                   <td onClick={(e) => e.stopPropagation()}>
-                    {lead.email ? (
-                      <a className="cell-link" href={`mailto:${lead.email}`} title={lead.email}>✓ Email</a>
-                    ) : (
+                    {!lead.email ? (
                       <span className="cell-muted">No email available</span>
+                    ) : lead.optedOut ? (
+                      <span className="badge badge-optedout">Opted out</span>
+                    ) : lead.repliedAt ? (
+                      <span className="badge badge-replied">Replied</span>
+                    ) : lead.emailSentAt ? (
+                      <span className="badge badge-sent">Sent</span>
+                    ) : (
+                      <a className="cell-link" href={`mailto:${lead.email}`} title={lead.email}>✓ Email</a>
                     )}
                   </td>
                   <td onClick={(e) => e.stopPropagation()}>
