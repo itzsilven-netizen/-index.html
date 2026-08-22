@@ -42,7 +42,10 @@ const splitDraftSubject = (draft) => {
 // as the default handler there. subject/body are mailto's real, standard
 // query params (unlike su=/body=, which are Gmail-web-only), so they're far
 // more likely to actually land — but the clipboard copy stays as a fallback
-// paste in case a given mail app still drops them. The user still taps Send
+// paste in case a given mail app still drops them. Opened via window.open
+// (not location.href) so the CRM tab stays put — the mail app/compose window
+// lands in its own tab/window, so switching back is a tab-switch instead of
+// hitting Back through the CRM's own navigation. The user still taps Send
 // themselves; nothing here sends anything.
 export const openEmailSendCompose = (lead, draft) => {
   if (!lead.email) return
@@ -55,7 +58,7 @@ export const openEmailSendCompose = (lead, draft) => {
   if (subject) params.set('subject', subject)
   if (body) params.set('body', body)
   const query = params.toString()
-  window.location.href = `mailto:${lead.email}${query ? `?${query}` : ''}`
+  window.open(`mailto:${lead.email}${query ? `?${query}` : ''}`, '_blank')
 }
 
 export const voicemailFollowUpMessage = (lead) => {
