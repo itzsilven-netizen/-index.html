@@ -29,13 +29,21 @@ const splitDraftSubject = (draft) => {
   return match ? { subject: match[1].trim(), body: match[2].trim() } : { subject: '', body: draft }
 }
 
-// Opens Gmail's compose window addressed to the lead and copies the draft to
-// the clipboard. Gmail's su=/body= URL params turned out unreliable in
-// practice (they silently dropped, leaving only "to" filled in), so — same
-// fix already used below for the SMS follow-up (openVoicemailFollowUpText),
-// which hit the identical problem with Google Voice's URL — this copies the
-// text instead of trusting the deep link to fill it in. The user pastes it
-// into Gmail and taps Send themselves; nothing here sends anything.
+// Opens a compose window addressed to the lead and copies the draft to the
+// clipboard as a fallback. Two earlier approaches got tried and dropped here:
+// Gmail's web su=/body= URL params turned out unreliable (they silently
+// dropped, leaving only "to" filled in), and even after switching to a plain
+// mail.google.com link, that's an https:// URL — mobile OSes don't treat it
+// as a "compose an email" action, so it always opened Gmail in the browser
+// instead of handing off to the native Gmail app. mailto: is the actual OS-level
+// signal for "compose an email": the phone (or desktop) routes it to whatever
+// app is set as the default mail handler — the Gmail app on a phone where
+// Gmail is default, Gmail's web compose on desktop Chrome if that's been set
+// as the default handler there. subject/body are mailto's real, standard
+// query params (unlike su=/body=, which are Gmail-web-only), so they're far
+// more likely to actually land — but the clipboard copy stays as a fallback
+// paste in case a given mail app still drops them. The user still taps Send
+// themselves; nothing here sends anything.
 export const openEmailSendCompose = (lead, draft) => {
   if (!lead.email) return
   const { subject, body } = splitDraftSubject(draft)
@@ -43,8 +51,11 @@ export const openEmailSendCompose = (lead, draft) => {
   if (navigator.clipboard) {
     navigator.clipboard.writeText(clipboardText).catch(() => {})
   }
-  const params = new URLSearchParams({ view: 'cm', fs: '1', to: lead.email })
-  window.open(`https://mail.google.com/mail/?${params.toString()}`, '_blank')
+  const params = new URLSearchParams()
+  if (subject) params.set('subject', subject)
+  if (body) params.set('body', body)
+  const query = params.toString()
+  window.location.href = `mailto:${lead.email}${query ? `?${query}` : ''}`
 }
 
 export const voicemailFollowUpMessage = (lead) => {
