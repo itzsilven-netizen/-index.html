@@ -222,12 +222,13 @@ const credibilityLine = (l) => spinCombo(l, 'credibility', CREDIBILITY_OPENERS, 
 // reads like it was actually written for them.
 //
 // Website/Chatbot/Reviews are things that can actually be put together
-// without the lead's input, so those stay a "send it over" async offer.
-// Lead Follow-Up and AI Receptionist can't — there's no way to know how
-// many of their old leads are worth chasing or what their missed calls are
-// costing without asking them, so those two are a call ask instead of a
-// document promise; each gets its own closer to match ("grab 10 minutes"
-// rather than "send it over").
+// without the lead's input, so Website stays a "send it over" async offer.
+// Everything else routes to a call instead: Website Chatbot and AI
+// Receptionist are live demos of the actual product (better shown than
+// described), and Lead Follow-Up can't be answered without asking the lead
+// how many of their old leads are worth chasing in the first place. Those
+// three share a closer that asks for time instead of promising a document
+// ("grab 10 minutes" rather than "send it over").
 const SEND_OFFER_CLOSERS = [
   () => `No charge — want me to send it over?`,
   () => `No charge. Want me to send it your way?`,
@@ -255,13 +256,13 @@ const OFFER_POOLS = {
   },
   websiteChatbot: {
     openers: [
-      () => `I can put together a quick sample of what instant replies could look like on your site.`,
-      () => `I can send over a quick sample of what automatic replies could look like on your site.`,
-      () => `I can put together a sample of how instant replies could work on your site.`,
-      () => `I can pull together a quick sample of automatic replies for your site.`,
-      () => `Happy to put together a sample of what instant replies could look like on your site.`,
+      () => `I can hop on a quick call and show you how a chat agent like this would work on your site.`,
+      () => `Happy to hop on a quick call and break down how a chat agent could work for your site.`,
+      () => `I can jump on a call and show you how an automatic chat agent would handle it.`,
+      () => `I can hop on a call and walk you through how a chat agent could work on your site.`,
+      () => `Happy to jump on a quick call and show you how a chat agent would work for you.`,
     ],
-    closers: SEND_OFFER_CLOSERS,
+    closers: CALL_OFFER_CLOSERS,
   },
   reviews: {
     openers: [
@@ -285,11 +286,11 @@ const OFFER_POOLS = {
   },
   aiReceptionist: {
     openers: [
-      () => `I can hop on a quick call and walk through what missed calls might be costing you.`,
-      () => `Happy to hop on a quick call and walk through what missed calls might be costing you.`,
-      () => `I can jump on a quick call and take a look at what missed calls might be costing you.`,
-      () => `I can hop on a call and walk through what this might be costing you.`,
-      () => `Happy to jump on a quick call and walk through what missed calls could be costing you.`,
+      () => `I can hop on a quick call and show you how an AI receptionist would handle those calls.`,
+      () => `Happy to hop on a quick call and give you a live demo of the AI receptionist.`,
+      () => `I can jump on a call and show you the AI receptionist in action, so you can see how it'd work.`,
+      () => `I can hop on a call and give you a quick demo of how it answers calls.`,
+      () => `Happy to jump on a quick call and show you a live demo so you can check it out yourself.`,
     ],
     closers: CALL_OFFER_CLOSERS,
   },
@@ -326,13 +327,17 @@ const PAS_PROBLEM_CLOSERS = [
 
 // The Solve sentence composes this disclaimer with the same per-pitch-angle
 // sendOffer() every other format uses, instead of hand-writing its own
-// "breakdown" text — one offer pool to keep on-message, not two.
+// "breakdown" text — one offer pool to keep on-message, not two. Ends in a
+// period rather than a dash on purpose: sendOffer's openers are capitalized
+// (they also start sentences on their own in the other formats), and a
+// dash-continuation into a capitalized word reads as a typo — a period
+// makes the capital letter correct either way.
 const PAS_SOLVE_DISCLAIMER = [
-  () => `I'm not pitching anything yet —`,
-  () => `Not pitching anything yet —`,
-  () => `I'm not selling anything here —`,
-  () => `Nothing to pitch yet —`,
-  () => `I'm not trying to sell you anything yet —`,
+  () => `I'm not pitching anything yet.`,
+  () => `Not pitching anything yet.`,
+  () => `I'm not selling anything here.`,
+  () => `Nothing to pitch yet.`,
+  () => `I'm not trying to sell you anything yet.`,
 ]
 
 const BAB_AFTER_OPENERS = [
