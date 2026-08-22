@@ -45,8 +45,15 @@ const splitDraftSubject = (draft) => {
 // paste in case a given mail app still drops them. Opened via window.open
 // (not location.href) so the CRM tab stays put — the mail app/compose window
 // lands in its own tab/window, so switching back is a tab-switch instead of
-// hitting Back through the CRM's own navigation. The user still taps Send
-// themselves; nothing here sends anything.
+// hitting Back through the CRM's own navigation. Doing that with
+// window.open(mailto:..., '_blank') directly turned out unreliable, though —
+// since a mailto: URL has no page to render, several mobile browsers don't
+// treat it as "open a new tab" the way they do for a real http(s) URL, and
+// just hand it off in place, same as location.href would. Opening a genuine
+// blank tab first (still inside the click handler, so it isn't popup-blocked)
+// and then pointing THAT tab at the mailto: URL reliably creates a real,
+// separate tab, because the tab exists before the protocol hand-off happens.
+// The user still taps Send themselves; nothing here sends anything.
 export const openEmailSendCompose = (lead, draft) => {
   if (!lead.email) return
   const { subject, body } = splitDraftSubject(draft)
@@ -58,7 +65,13 @@ export const openEmailSendCompose = (lead, draft) => {
   if (subject) params.set('subject', subject)
   if (body) params.set('body', body)
   const query = params.toString()
-  window.open(`mailto:${lead.email}${query ? `?${query}` : ''}`, '_blank')
+  const mailtoUrl = `mailto:${lead.email}${query ? `?${query}` : ''}`
+  const composeTab = window.open('', '_blank')
+  if (composeTab) {
+    composeTab.location.href = mailtoUrl
+  } else {
+    window.location.href = mailtoUrl
+  }
 }
 
 export const voicemailFollowUpMessage = (lead) => {
