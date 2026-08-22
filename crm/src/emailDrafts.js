@@ -219,46 +219,15 @@ const credibilityLine = (l) => spinCombo(l, 'credibility', CREDIBILITY_OPENERS, 
 // generic "breakdown" read as templated once someone had seen more than one
 // of these, and a specific offer that matches the actual thing flagged in
 // the notice ("no site" -> a mockup, "so-so reviews" -> reply templates)
-// reads like it was actually written for them. The closer ("no charge, want
-// it?") stays one shared pool across all of them — only what's being
-// offered needs to change branch to branch, not how it's asked for.
-const OFFER_OPENERS = {
-  website: [
-    (l) => `I can put together a quick mockup of what a site could look like for ${l.business_name}.`,
-    () => `I can pull together a quick mockup of what your site could look like.`,
-    () => `Happy to put together a quick mockup of what a site could look like for you.`,
-    () => `I can send over a rough mockup of what your site could look like.`,
-    () => `I can pull together a quick sample of what a site could look like for you.`,
-  ],
-  websiteChatbot: [
-    () => `I can put together a quick sample of what instant replies could look like on your site.`,
-    () => `I can send over a quick sample of what automatic replies could look like on your site.`,
-    () => `I can put together a sample of how instant replies could work on your site.`,
-    () => `I can pull together a quick sample of automatic replies for your site.`,
-    () => `Happy to put together a sample of what instant replies could look like on your site.`,
-  ],
-  reviews: [
-    () => `I can put together a few reply templates you could use on your reviews.`,
-    () => `I can pull together a few reply templates for your reviews.`,
-    () => `Happy to put together a few reply templates you could use on your reviews.`,
-    () => `I can send over a few reply templates for your reviews.`,
-    () => `I can draft up a few reply templates you could use on your reviews.`,
-  ],
-  leadFollowUp: [
-    () => `I can take a quick look at how many of those old leads might still be worth a callback.`,
-    () => `I can pull together a quick look at how many old leads might still be worth a callback.`,
-    () => `Happy to take a quick look at how many of those old leads are still worth a callback.`,
-    () => `I can put together a quick look at which old leads might still be worth a callback.`,
-    () => `I can send over a quick look at how many of those old leads might still be worth chasing.`,
-  ],
-  aiReceptionist: [
-    () => `I can put together a quick breakdown of what missed calls might be costing you.`,
-    () => `I can pull together a quick breakdown of what this could be costing you.`,
-    () => `Happy to send a quick breakdown of what missed calls might be costing you.`,
-    () => `I can send over a quick breakdown of what this could be costing you.`,
-    () => `I can pull together a quick breakdown of what missed calls could be costing you.`,
-  ],
-}
+// reads like it was actually written for them.
+//
+// Website/Chatbot/Reviews are things that can actually be put together
+// without the lead's input, so those stay a "send it over" async offer.
+// Lead Follow-Up and AI Receptionist can't — there's no way to know how
+// many of their old leads are worth chasing or what their missed calls are
+// costing without asking them, so those two are a call ask instead of a
+// document promise; each gets its own closer to match ("grab 10 minutes"
+// rather than "send it over").
 const SEND_OFFER_CLOSERS = [
   () => `No charge — want me to send it over?`,
   () => `No charge. Want me to send it your way?`,
@@ -266,17 +235,79 @@ const SEND_OFFER_CLOSERS = [
   () => `No charge at all — want me to send it over?`,
   () => `No charge. Want it?`,
 ]
-const pickOfferOpeners = (lead) => {
+const CALL_OFFER_CLOSERS = [
+  () => `No charge — want to grab 10 minutes and go through it?`,
+  () => `No charge. Want to grab 10 minutes together?`,
+  () => `Won't cost you anything — want to grab 10 minutes?`,
+  () => `No charge at all — want to grab 10 minutes and go through it?`,
+  () => `No charge. Want to grab 10 minutes?`,
+]
+const OFFER_POOLS = {
+  website: {
+    openers: [
+      (l) => `I can put together a quick mockup of what a site could look like for ${l.business_name}.`,
+      () => `I can pull together a quick mockup of what your site could look like.`,
+      () => `Happy to put together a quick mockup of what a site could look like for you.`,
+      () => `I can send over a rough mockup of what your site could look like.`,
+      () => `I can pull together a quick sample of what a site could look like for you.`,
+    ],
+    closers: SEND_OFFER_CLOSERS,
+  },
+  websiteChatbot: {
+    openers: [
+      () => `I can put together a quick sample of what instant replies could look like on your site.`,
+      () => `I can send over a quick sample of what automatic replies could look like on your site.`,
+      () => `I can put together a sample of how instant replies could work on your site.`,
+      () => `I can pull together a quick sample of automatic replies for your site.`,
+      () => `Happy to put together a sample of what instant replies could look like on your site.`,
+    ],
+    closers: SEND_OFFER_CLOSERS,
+  },
+  reviews: {
+    openers: [
+      () => `I can put together a few reply templates you could use on your reviews.`,
+      () => `I can pull together a few reply templates for your reviews.`,
+      () => `Happy to put together a few reply templates you could use on your reviews.`,
+      () => `I can send over a few reply templates for your reviews.`,
+      () => `I can draft up a few reply templates you could use on your reviews.`,
+    ],
+    closers: SEND_OFFER_CLOSERS,
+  },
+  leadFollowUp: {
+    openers: [
+      () => `I can hop on a quick call and take a look at how many of those old leads might still be worth a callback.`,
+      () => `Happy to hop on a quick call and go through how many of those old leads might still be worth a callback.`,
+      () => `I can jump on a quick call and take a look at how many old leads might still be worth chasing.`,
+      () => `I can hop on a call and take a look at how many of those old leads might still be worth a callback.`,
+      () => `Happy to jump on a quick call and take a look at how many old leads might still be worth a callback.`,
+    ],
+    closers: CALL_OFFER_CLOSERS,
+  },
+  aiReceptionist: {
+    openers: [
+      () => `I can hop on a quick call and walk through what missed calls might be costing you.`,
+      () => `Happy to hop on a quick call and walk through what missed calls might be costing you.`,
+      () => `I can jump on a quick call and take a look at what missed calls might be costing you.`,
+      () => `I can hop on a call and walk through what this might be costing you.`,
+      () => `Happy to jump on a quick call and walk through what missed calls could be costing you.`,
+    ],
+    closers: CALL_OFFER_CLOSERS,
+  },
+}
+const pickOfferPool = (lead) => {
   switch (lead.pitch_angle) {
-    case 'Website': return OFFER_OPENERS.website
-    case 'Website Chatbot': return OFFER_OPENERS.websiteChatbot
-    case 'Review Automation': return OFFER_OPENERS.reviews
-    case 'Lead Follow-Up AI': return OFFER_OPENERS.leadFollowUp
+    case 'Website': return OFFER_POOLS.website
+    case 'Website Chatbot': return OFFER_POOLS.websiteChatbot
+    case 'Review Automation': return OFFER_POOLS.reviews
+    case 'Lead Follow-Up AI': return OFFER_POOLS.leadFollowUp
     case 'AI Receptionist':
-    default: return OFFER_OPENERS.aiReceptionist
+    default: return OFFER_POOLS.aiReceptionist
   }
 }
-const sendOffer = (l) => spinCombo(l, 'sendOffer', pickOfferOpeners(l), SEND_OFFER_CLOSERS)
+const sendOffer = (l) => {
+  const pool = pickOfferPool(l)
+  return spinCombo(l, 'sendOffer', pool.openers, pool.closers)
+}
 
 const PAS_PROBLEM_OPENERS = [
   () => `Hey — I run Casava.`,
