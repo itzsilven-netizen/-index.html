@@ -181,7 +181,7 @@ export default function LeadDrawer({ lead, type, onClose }) {
               )}
               {draftCopied && (
                 <div className="email-sent-note">
-                  ✓ Draft copied — it's also on your clipboard, so if the subject/body didn't come through in the compose window that opened, paste it in.
+                  ✓ Draft copied — Gmail opened in a new tab addressed to this lead. Paste the draft into the subject/body, then hit Send over there.
                 </div>
               )}
               <textarea
@@ -202,7 +202,7 @@ export default function LeadDrawer({ lead, type, onClose }) {
                 )}
               </div>
               <p className="email-panel-hint">
-                Auto-generated from this lead's pitch angle, arranged in one of 4 tested formats (assigned per-lead so results are comparable) — edit as needed, then Send opens a new email addressed to this lead (the Gmail app on your phone if it's your default mail app) with the draft copied to your clipboard as backup. Send it yourself once it looks right.
+                Auto-generated from this lead's pitch angle, arranged in one of 4 tested formats (assigned per-lead so results are comparable) — edit as needed, then Send opens Gmail addressed to this lead in a new tab and copies the draft to your clipboard. Paste it in over there, then send it yourself.
               </p>
             </div>
           )}

@@ -29,31 +29,20 @@ const splitDraftSubject = (draft) => {
   return match ? { subject: match[1].trim(), body: match[2].trim() } : { subject: '', body: draft }
 }
 
-// Opens a compose window addressed to the lead and copies the draft to the
-// clipboard as a fallback. Two earlier approaches got tried and dropped here:
-// Gmail's web su=/body= URL params turned out unreliable (they silently
-// dropped, leaving only "to" filled in), and even after switching to a plain
-// mail.google.com link, that's an https:// URL — mobile OSes don't treat it
-// as a "compose an email" action, so it always opened Gmail in the browser
-// instead of handing off to the native Gmail app. mailto: is the actual OS-level
-// signal for "compose an email": the phone (or desktop) routes it to whatever
-// app is set as the default mail handler — the Gmail app on a phone where
-// Gmail is default, Gmail's web compose on desktop Chrome if that's been set
-// as the default handler there. subject/body are mailto's real, standard
-// query params (unlike su=/body=, which are Gmail-web-only), so they're far
-// more likely to actually land — but the clipboard copy stays as a fallback
-// paste in case a given mail app still drops them. Opened via window.open
-// (not location.href) so the CRM tab stays put — the mail app/compose window
-// lands in its own tab/window, so switching back is a tab-switch instead of
-// hitting Back through the CRM's own navigation. Doing that with
-// window.open(mailto:..., '_blank') directly turned out unreliable, though —
-// since a mailto: URL has no page to render, several mobile browsers don't
-// treat it as "open a new tab" the way they do for a real http(s) URL, and
-// just hand it off in place, same as location.href would. Opening a genuine
-// blank tab first (still inside the click handler, so it isn't popup-blocked)
-// and then pointing THAT tab at the mailto: URL reliably creates a real,
-// separate tab, because the tab exists before the protocol hand-off happens.
-// The user still taps Send themselves; nothing here sends anything.
+// Opens Gmail's web compose addressed to the lead, in a real new tab, and
+// copies the draft to the clipboard as a fallback. mailto: got tried in
+// between — it's the "correct" OS-level way to say "compose an email," and
+// can hand off to the native Gmail app — but a mailto: URL has no page to
+// render, so mobile browsers don't treat it as "open a new tab" the way
+// they do a real http(s) URL; every variation tried (location.href,
+// window.open, even opening a blank tab first) still landed in the same
+// tab in practice. A plain https://mail.google.com/... link doesn't have
+// that problem — browsers reliably open real web links in an actual new
+// tab via window.open(url, '_blank'), which is the behavior that was
+// actually being asked for (switch tabs, don't get bounced through Back).
+// Gmail's su=/body= URL params are known-unreliable (confirmed earlier —
+// they silently dropped, leaving only "to" filled in), so this only sets
+// "to" and relies on the clipboard copy for the subject/body paste.
 export const openEmailSendCompose = (lead, draft) => {
   if (!lead.email) return
   const { subject, body } = splitDraftSubject(draft)
@@ -61,17 +50,8 @@ export const openEmailSendCompose = (lead, draft) => {
   if (navigator.clipboard) {
     navigator.clipboard.writeText(clipboardText).catch(() => {})
   }
-  const params = new URLSearchParams()
-  if (subject) params.set('subject', subject)
-  if (body) params.set('body', body)
-  const query = params.toString()
-  const mailtoUrl = `mailto:${lead.email}${query ? `?${query}` : ''}`
-  const composeTab = window.open('', '_blank')
-  if (composeTab) {
-    composeTab.location.href = mailtoUrl
-  } else {
-    window.location.href = mailtoUrl
-  }
+  const params = new URLSearchParams({ view: 'cm', fs: '1', to: lead.email })
+  window.open(`https://mail.google.com/mail/?${params.toString()}`, '_blank')
 }
 
 export const voicemailFollowUpMessage = (lead) => {
