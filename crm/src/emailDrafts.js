@@ -43,6 +43,10 @@ const spinCombo = (lead, slot, openers, closers, join = ' ') => {
   return `${a}${join}${b}`
 }
 
+// A single stable 5-way pick, for the cases (like the PAS disclaimer below)
+// that don't need spinCombo's opener+closer composition.
+const pickOne = (lead, slot, pool) => pool[hashStr(`${lead.id}:${slot}`) % pool.length](lead)
+
 const NOTICE_POOLS = {
   website: {
     openers: [
@@ -203,20 +207,58 @@ const CREDIBILITY_CLOSERS = [
 ]
 const credibilityLine = (l) => spinCombo(l, 'credibility', CREDIBILITY_OPENERS, CREDIBILITY_CLOSERS, ' — ')
 
-// The ask across 4 of the 5 formats: offer a no-cost breakdown instead of
+// The ask across 4 of the 5 formats: offer something no-cost instead of
 // asking for a call. Cleverly's research found low-friction offers (audits,
 // benchmarks) outperform demo/call requests, and Tomba found "should I send
 // you a document?" beats "give me 30 minutes" on replies — same idea. Says
 // "no charge," never the literal word "free": that word is flagged by name
 // in multiple sources as a spam-filter trigger, and "no charge" conveys the
 // identical thing without it.
-const SEND_OFFER_OPENERS = [
-  () => `I can send over a quick breakdown of what this could be costing you.`,
-  () => `I can put together a quick breakdown of what this might be costing you.`,
-  () => `Happy to send a quick breakdown of what this could be costing you.`,
-  () => `I put together quick breakdowns of what this kind of thing costs.`,
-  () => `I can pull together a quick breakdown of what this could be costing you.`,
-]
+//
+// What's on offer is picked per pitch_angle, same as the notice above — a
+// generic "breakdown" read as templated once someone had seen more than one
+// of these, and a specific offer that matches the actual thing flagged in
+// the notice ("no site" -> a mockup, "so-so reviews" -> reply templates)
+// reads like it was actually written for them. The closer ("no charge, want
+// it?") stays one shared pool across all of them — only what's being
+// offered needs to change branch to branch, not how it's asked for.
+const OFFER_OPENERS = {
+  website: [
+    (l) => `I can put together a quick mockup of what a site could look like for ${l.business_name}.`,
+    () => `I can pull together a quick mockup of what your site could look like.`,
+    () => `Happy to put together a quick mockup of what a site could look like for you.`,
+    () => `I can send over a rough mockup of what your site could look like.`,
+    () => `I can pull together a quick sample of what a site could look like for you.`,
+  ],
+  websiteChatbot: [
+    () => `I can put together a quick sample of what instant replies could look like on your site.`,
+    () => `I can send over a quick sample of what automatic replies could look like on your site.`,
+    () => `I can put together a sample of how instant replies could work on your site.`,
+    () => `I can pull together a quick sample of automatic replies for your site.`,
+    () => `Happy to put together a sample of what instant replies could look like on your site.`,
+  ],
+  reviews: [
+    () => `I can put together a few reply templates you could use on your reviews.`,
+    () => `I can pull together a few reply templates for your reviews.`,
+    () => `Happy to put together a few reply templates you could use on your reviews.`,
+    () => `I can send over a few reply templates for your reviews.`,
+    () => `I can draft up a few reply templates you could use on your reviews.`,
+  ],
+  leadFollowUp: [
+    () => `I can take a quick look at how many of those old leads might still be worth a callback.`,
+    () => `I can pull together a quick look at how many old leads might still be worth a callback.`,
+    () => `Happy to take a quick look at how many of those old leads are still worth a callback.`,
+    () => `I can put together a quick look at which old leads might still be worth a callback.`,
+    () => `I can send over a quick look at how many of those old leads might still be worth chasing.`,
+  ],
+  aiReceptionist: [
+    () => `I can put together a quick breakdown of what missed calls might be costing you.`,
+    () => `I can pull together a quick breakdown of what this could be costing you.`,
+    () => `Happy to send a quick breakdown of what missed calls might be costing you.`,
+    () => `I can send over a quick breakdown of what this could be costing you.`,
+    () => `I can pull together a quick breakdown of what missed calls could be costing you.`,
+  ],
+}
 const SEND_OFFER_CLOSERS = [
   () => `No charge — want me to send it over?`,
   () => `No charge. Want me to send it your way?`,
@@ -224,7 +266,17 @@ const SEND_OFFER_CLOSERS = [
   () => `No charge at all — want me to send it over?`,
   () => `No charge. Want it?`,
 ]
-const sendOffer = (l) => spinCombo(l, 'sendOffer', SEND_OFFER_OPENERS, SEND_OFFER_CLOSERS)
+const pickOfferOpeners = (lead) => {
+  switch (lead.pitch_angle) {
+    case 'Website': return OFFER_OPENERS.website
+    case 'Website Chatbot': return OFFER_OPENERS.websiteChatbot
+    case 'Review Automation': return OFFER_OPENERS.reviews
+    case 'Lead Follow-Up AI': return OFFER_OPENERS.leadFollowUp
+    case 'AI Receptionist':
+    default: return OFFER_OPENERS.aiReceptionist
+  }
+}
+const sendOffer = (l) => spinCombo(l, 'sendOffer', pickOfferOpeners(l), SEND_OFFER_CLOSERS)
 
 const PAS_PROBLEM_OPENERS = [
   () => `Hey — I run Casava.`,
@@ -241,19 +293,15 @@ const PAS_PROBLEM_CLOSERS = [
   (l) => `A lot of ${l.niche} businesses lose work to stuff like this and don't even notice.`,
 ]
 
-const PAS_SOLVE_OPENERS = [
+// The Solve sentence composes this disclaimer with the same per-pitch-angle
+// sendOffer() every other format uses, instead of hand-writing its own
+// "breakdown" text — one offer pool to keep on-message, not two.
+const PAS_SOLVE_DISCLAIMER = [
   () => `I'm not pitching anything yet —`,
   () => `Not pitching anything yet —`,
   () => `I'm not selling anything here —`,
   () => `Nothing to pitch yet —`,
   () => `I'm not trying to sell you anything yet —`,
-]
-const PAS_SOLVE_CLOSERS = [
-  (l) => `I put together a quick breakdown of what this could be costing ${l.business_name}. Want me to send it over? No charge.`,
-  (l) => `I put together a quick breakdown of what this could be costing ${l.business_name}. Want it sent over? No charge.`,
-  (l) => `just put together a quick breakdown of what this might be costing ${l.business_name}. Want me to send it? No charge.`,
-  (l) => `I pulled together a quick breakdown of what this could be costing ${l.business_name}. Want me to send it over? No charge.`,
-  (l) => `I put together a quick breakdown on what this might be costing ${l.business_name}. Want it? No charge.`,
 ]
 
 const BAB_AFTER_OPENERS = [
@@ -341,7 +389,7 @@ export const FORMATS = [
     build: (l, notice) => [
       { label: 'Problem', text: spinCombo(l, 'pasProblem', PAS_PROBLEM_OPENERS, PAS_PROBLEM_CLOSERS) },
       { label: 'Agitate', text: notice },
-      { label: 'Solve', text: spinCombo(l, 'pasSolve', PAS_SOLVE_OPENERS, PAS_SOLVE_CLOSERS) },
+      { label: 'Solve', text: `${pickOne(l, 'pasSolveDisclaimer', PAS_SOLVE_DISCLAIMER)} ${sendOffer(l)}` },
     ],
   },
   {
