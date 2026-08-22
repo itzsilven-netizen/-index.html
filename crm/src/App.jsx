@@ -19,6 +19,7 @@ export default function App() {
   const [activePage, setActivePage] = useState('dashboard')
   const [drawerLead, setDrawerLead] = useState(null)
   const [showQuickAdd, setShowQuickAdd] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -45,10 +46,16 @@ export default function App() {
         onNavigate={setActivePage}
         user={user}
         onLogout={logout}
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
 
       <div className="app-main">
-        <TopBar onOpenLead={openLead} onQuickAdd={() => setShowQuickAdd(true)} />
+        <TopBar
+          onOpenLead={openLead}
+          onQuickAdd={() => setShowQuickAdd(true)}
+          onMenuClick={() => setSidebarOpen(true)}
+        />
 
         <main className="app-content">
           {activePage === 'dashboard' && <Dashboard onNavigate={setActivePage} onOpenLead={openLead} />}

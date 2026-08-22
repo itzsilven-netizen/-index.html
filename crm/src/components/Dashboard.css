@@ -23,6 +23,17 @@
   margin-top: 3px;
 }
 
+@media (max-width: 860px) {
+  .page {
+    padding: 18px 14px 32px;
+  }
+
+  .page-header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

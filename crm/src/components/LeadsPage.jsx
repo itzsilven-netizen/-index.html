@@ -182,6 +182,52 @@ export default function LeadsPage({ onOpenLead }) {
         </div>
       )}
 
+      {filtered.length > 0 && (
+        <div className="leads-mobile">
+          {filtered.map(lead => (
+            <div className="lead-card" key={lead.id} onClick={() => onOpenLead({ ...lead, _type: 'calls' })}>
+              <div className="lead-card-top">
+                <span className="cell-lead">{lead.business_name}</span>
+                <span className={`score score-${lead.priority_score || 0}`}>{lead.priority_score ?? 0}</span>
+              </div>
+              <div className="lead-card-niche">{lead.niche || '—'}</div>
+              <div className="lead-card-bottom" onClick={(e) => e.stopPropagation()}>
+                {lead.phone ? (
+                  <a className="lead-card-call" href={`tel:${lead.phone}`}>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                      <path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
+                    </svg>
+                    {lead.phone}
+                  </a>
+                ) : (
+                  <span className="cell-muted">No phone</span>
+                )}
+                <select
+                  className={`status-pill status-${lead.status || 'new'}`}
+                  value={lead.status || 'new'}
+                  onChange={(e) => updateCallLead(lead.id, { status: e.target.value, lastContact: new Date().toLocaleString() })}
+                >
+                  {Object.entries(STATUS_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+                </select>
+              </div>
+              {lead.email && (
+                <div className="lead-card-email">
+                  {lead.optedOut ? (
+                    <span className="badge badge-optedout">Opted out</span>
+                  ) : lead.repliedAt ? (
+                    <span className="badge badge-replied">Replied</span>
+                  ) : lead.emailSentAt ? (
+                    <span className="badge badge-sent">Email sent</span>
+                  ) : (
+                    <span className="cell-muted">✓ Email on file</span>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
       {showAddForm && (
         <AddLeadForm type="calls" onClose={() => setShowAddForm(false)} />
       )}
