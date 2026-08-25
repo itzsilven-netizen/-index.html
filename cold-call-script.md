@@ -18,7 +18,7 @@ Built from: Micah's Noble Cyber "screenplay" structure + Alex Hormozi's cold-cal
 
 ## 1. The Opener (word-for-word, permission-based — THIS is your first 7 seconds)
 
-> "Hey [Name], it's [Your Name] over at [Agency Name]. I know I'm an interruption here, but was hoping to grab a quick half minute. I'll let you know why I called, and you can let me know if it's relevant or not."
+> "Hey [Name], it's [Your Name] over at [Agency Name]. I know I'm catching you out of the blue here, but was hoping to grab a quick half minute. I'll let you know why I called, and you can let me know if it's relevant or not."
 
 *(Then STOP TALKING. The pause after "relevant or not" is doing the work — it hands control back to them and signals you're not about to steamroll them with a pitch. This is the trust bridge. Say it slightly slower than feels natural, don't rush into the pitch.)*
 
