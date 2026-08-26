@@ -27,7 +27,7 @@ Built from: Micah's Noble Cyber "screenplay" structure + Alex Hormozi's cold-cal
 ## 2. The Pitch (word-for-word — credibility → problem → solution)
 
 **Credibility:**
-> "Quick background on us: we're [Agency Name], a team that builds AI receptionists, chatbots, and websites for businesses in [niche] — we've helped [X] businesses stop losing customers to missed calls and slow response times."
+> "Quick background on us: we're [Agency Name], and we help optimize service-based industries — think AI receptionists, chatbots, and websites — so businesses in [niche] stop losing customers to missed calls and slow response times."
 
 *(Swap in a real proof point once you have one — a client result, a number, an award/recognition — same slot Micah fills with "Cyber Security Excellence Award." A stranger needs a reason to believe you in the first 30 seconds.)*
 
