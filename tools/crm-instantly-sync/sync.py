@@ -36,7 +36,7 @@ from pathlib import Path
 
 CRM_API_BASE = os.environ.get("CRM_API_BASE", "https://lead-crm-api-1lw1.onrender.com")
 INSTANTLY_API_KEY = os.environ.get("INSTANTLY_API_KEY", "")
-INSTANTLY_CAMPAIGN_ID = os.environ.get("INSTANTLY_CAMPAIGN_ID", "")
+INSTANTLY_CAMPAIGN_ID = os.environ.get("INSTANTLY_CAMPAIGN_ID", "89c7d82b-e44f-4186-87a7-a51dc4e8c979")
 INSTANTLY_LEADS_URL = "https://api.instantly.ai/api/v2/leads"
 
 STATE_PATH = Path(__file__).parent / "state" / "synced_leads.json"
@@ -97,6 +97,10 @@ def push_to_instantly(lead: dict) -> dict:
         headers={
             "Authorization": f"Bearer {INSTANTLY_API_KEY}",
             "Content-Type": "application/json",
+            "Accept": "application/json",
+            # Default urllib User-Agent gets fingerprint-blocked (Cloudflare
+            # error 1010) before it reaches Instantly's API logic.
+            "User-Agent": "Mozilla/5.0 (compatible; crm-instantly-sync/1.0)",
         },
         method="POST",
     )
