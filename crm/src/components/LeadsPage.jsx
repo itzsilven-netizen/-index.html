@@ -1,10 +1,62 @@
 import { useState, useMemo, useRef } from 'react'
-import { useLeadsStore } from '../store'
+import { useLeadsStore, draftForLead } from '../store'
 import { FORMATS } from '../emailDrafts'
 import AddLeadForm from './AddLeadForm'
 import './LeadsPage.css'
 
 const STATUS_LABELS = { new: 'New', contacted: 'Contacted', qualified: 'Qualified', booked: 'Booked', closed: 'Closed Won' }
+
+// A call queue for whatever's been emailed today: business name, the exact
+// draft that went out (regenerated deterministically per lead.id, same
+// output the send used, so no separate storage needed), and a Call button
+// right on the row — the "email first, call right after" workflow in one
+// list instead of hunting through the full Calls table.
+function SentTodayQueue({ leads }) {
+  const [expandedId, setExpandedId] = useState(null)
+
+  if (leads.length === 0) {
+    return (
+      <div className="card leads-empty">
+        <h3>Nothing sent today yet</h3>
+        <p>Once you send a batch, it'll show up here as a call queue.</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="card sent-today-list">
+      {leads.map(lead => {
+        const isOpen = expandedId === lead.id
+        const { draft } = draftForLead(lead)
+        const sentTime = lead.emailSentAt
+          ? new Date(lead.emailSentAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+          : ''
+        return (
+          <div key={lead.id} className="sent-today-item">
+            <div className="sent-today-row" onClick={() => setExpandedId(isOpen ? null : lead.id)}>
+              <div className="sent-today-info">
+                <div className="cell-lead">{lead.business_name}</div>
+                <div className="cell-muted">{lead.niche || '—'} · emailed {sentTime}</div>
+              </div>
+              {lead.phone ? (
+                <a
+                  className="lead-card-call"
+                  href={`tel:${lead.phone}`}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Call
+                </a>
+              ) : (
+                <span className="cell-muted">No phone</span>
+              )}
+            </div>
+            {isOpen && <pre className="sent-today-draft">{draft}</pre>}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
 
 // One button that sends the next N unsent, has-email leads (by priority) to
 // Instantly in one server-side request — the batch alternative to opening
@@ -15,6 +67,7 @@ function EmailBatchPanel({ onOpenLead }) {
   const [sending, setSending] = useState(false)
   const [result, setResult] = useState(null)
   const [err, setErr] = useState(null)
+  const [showSentToday, setShowSentToday] = useState(false)
 
   const ready = useMemo(
     () =>
@@ -24,9 +77,11 @@ function EmailBatchPanel({ onOpenLead }) {
     [callLeads]
   )
 
-  const sentToday = useMemo(() => {
+  const sentTodayLeads = useMemo(() => {
     const todayStr = new Date().toDateString()
-    return callLeads.filter(l => l.emailSentAt && new Date(l.emailSentAt).toDateString() === todayStr).length
+    return callLeads
+      .filter(l => l.emailSentAt && new Date(l.emailSentAt).toDateString() === todayStr)
+      .sort((a, b) => new Date(b.emailSentAt) - new Date(a.emailSentAt))
   }, [callLeads])
 
   const preview = ready.slice(0, batchSize)
@@ -52,11 +107,16 @@ function EmailBatchPanel({ onOpenLead }) {
           <div className="ebs-value">{ready.length}</div>
           <div className="ebs-label">Ready to send</div>
         </div>
-        <div className="ebs-stat">
-          <div className="ebs-value">{sentToday}</div>
-          <div className="ebs-label">Sent today</div>
-        </div>
+        <button
+          className={`ebs-stat ebs-stat-clickable ${showSentToday ? 'active' : ''}`}
+          onClick={() => setShowSentToday(v => !v)}
+        >
+          <div className="ebs-value">{sentTodayLeads.length}</div>
+          <div className="ebs-label">Sent today {sentTodayLeads.length > 0 && (showSentToday ? '▴' : '▾')}</div>
+        </button>
       </div>
+
+      {showSentToday && <SentTodayQueue leads={sentTodayLeads} />}
 
       <div className="card email-batch-controls">
         <label htmlFor="batch-size">Batch size</label>
