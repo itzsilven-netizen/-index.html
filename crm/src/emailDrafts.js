@@ -472,7 +472,7 @@ const pickFormat = (lead) => FORMATS[Math.abs(Number(lead.id) || 0) % FORMATS.le
 // ~25 offer-line variants above) so it stays in sync everywhere the draft is
 // used: manual sends, the batch-to-Instantly path, and the drawer preview.
 const CALENDLY_LINK = 'https://calendly.com/itz-silven-apexstandard/30min'
-const calendlyLine = () => `Or just grab a free 15 minutes that works for you here: ${CALENDLY_LINK}`
+const calendlyLine = () => `Or just grab a free 30 minutes that works for you here: ${CALENDLY_LINK}`
 
 // Returns { draft, sentences, format } — draft is the plain-text email ready
 // to send, sentences is the labeled breakdown (Hook/Pain Point/CTA/etc.) for
