@@ -36,7 +36,7 @@ from pathlib import Path
 
 CRM_API_BASE = os.environ.get("CRM_API_BASE", "https://lead-crm-api-1lw1.onrender.com")
 INSTANTLY_API_KEY = os.environ.get("INSTANTLY_API_KEY", "")
-INSTANTLY_CAMPAIGN_ID = os.environ.get("INSTANTLY_CAMPAIGN_ID", "89c7d82b-e44f-4186-87a7-a51dc4e8c979")
+INSTANTLY_CAMPAIGN_ID = os.environ.get("INSTANTLY_CAMPAIGN_ID", "05b11c0b-5c35-4419-a0e4-0dc050dacafe")
 INSTANTLY_LEADS_URL = "https://api.instantly.ai/api/v2/leads"
 
 STATE_PATH = Path(__file__).parent / "state" / "synced_leads.json"
