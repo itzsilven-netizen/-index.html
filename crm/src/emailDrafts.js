@@ -467,6 +467,13 @@ export const FORMATS = [
 
 const pickFormat = (lead) => FORMATS[Math.abs(Number(lead.id) || 0) % FORMATS.length]
 
+// Real public booking link — lets a recipient self-book instead of having to
+// reply first. One constant here (rather than a link baked into each of the
+// ~25 offer-line variants above) so it stays in sync everywhere the draft is
+// used: manual sends, the batch-to-Instantly path, and the drawer preview.
+const CALENDLY_LINK = 'https://calendly.com/itz-silven-apexstandard/30min'
+const calendlyLine = () => `Or just grab a free 15 minutes that works for you here: ${CALENDLY_LINK}`
+
 // Returns { draft, sentences, format } — draft is the plain-text email ready
 // to send, sentences is the labeled breakdown (Hook/Pain Point/CTA/etc.) for
 // display, format is which of the 5 structures this lead was assigned.
@@ -476,7 +483,7 @@ export const generateEmailDraft = (lead) => {
   const subject = SUBJECTS[lead.pitch_angle] || SUBJECTS['AI Receptionist']
   const sentences = format.build(lead, notice)
   const optOut = spinCombo(lead, 'optOut', OPT_OUT_OPENERS, OPT_OUT_CLOSERS)
-  const body = `${sentences.map(s => s.text).join('\n\n')}\n\n${optOut}`
+  const body = `${sentences.map(s => s.text).join('\n\n')}\n\n${calendlyLine()}\n\n${optOut}`
   const draft = `Subject: ${subject}\n\n${body}`
   return { draft, sentences, format }
 }
