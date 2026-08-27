@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import { createClient } from '@supabase/supabase-js'
+import { generateEmailDraft } from './src/emailDrafts.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -15,6 +16,29 @@ const supabase = createClient(
 
 const dedupeKey = (lead) =>
   lead.phone || lead.email || `${lead.business_name}|${lead.website || ''}`
+
+// Same generator the UI uses for a manual per-lead send, so a batch push and
+// a solo "Send Email" click read identically to a recipient.
+const INSTANTLY_API_KEY = process.env.INSTANTLY_API_KEY
+const INSTANTLY_CAMPAIGN_ID = process.env.INSTANTLY_CAMPAIGN_ID
+const INSTANTLY_LEADS_URL = 'https://api.instantly.ai/api/v2/leads'
+const COMPANY_MAILING_ADDRESS =
+  process.env.COMPANY_MAILING_ADDRESS || 'Apex Standard, PO Box 1093, Willow Creek, CA 95573'
+
+// CAN-SPAM requires a physical mailing address in every commercial email —
+// mirrors the same appendMailingAddress used for the manual-send path in
+// src/store.js, so batch sends carry it too.
+const appendMailingAddress = (draft) => {
+  if (!COMPANY_MAILING_ADDRESS || draft.includes(COMPANY_MAILING_ADDRESS)) return draft
+  return `${draft.trim()}\n\n${COMPANY_MAILING_ADDRESS}`
+}
+
+// generateEmailDraft() returns "Subject: ...\n\n<body>" — split it so the
+// subject lands in Instantly's own subject merge-variable instead of the body.
+const splitDraftSubject = (draft) => {
+  const match = draft.match(/^subject:\s*(.+)\n+([\s\S]*)$/i)
+  return match ? { subject: match[1].trim(), body: match[2].trim() } : { subject: '', body: draft }
+}
 
 // GET /api/leads - Fetch all leads, grouped by type
 app.get('/api/leads', async (req, res) => {
@@ -111,6 +135,86 @@ app.post('/api/update-lead', async (req, res) => {
   } catch (err) {
     console.error('Error updating lead:', err.message)
     res.status(500).json({ error: 'Failed to update lead' })
+  }
+})
+
+// POST /api/send-to-instantly - push the next N unsent, has-email "calls"
+// leads into an Instantly campaign, ranked by priority_score. Replaces
+// clicking "Send Email" one lead at a time: one call handles a whole day's
+// ramp batch, marking each lead sent in the same place the manual send does.
+app.post('/api/send-to-instantly', async (req, res) => {
+  if (!INSTANTLY_API_KEY || !INSTANTLY_CAMPAIGN_ID) {
+    return res.status(500).json({
+      error: 'INSTANTLY_API_KEY / INSTANTLY_CAMPAIGN_ID not set on the server (Render env vars).',
+    })
+  }
+
+  const limit = Math.max(1, Math.min(200, Number(req.body?.limit) || 25))
+
+  try {
+    const { data, error } = await supabase.from('leads').select('*').eq('type', 'calls')
+    if (error) throw error
+
+    const candidates = data
+      .map(row => ({ row, lead: { id: row.id, ...row.data } }))
+      .filter(({ lead }) => lead.email && !lead.emailSentAt && !lead.optedOut)
+      .sort((a, b) => (b.lead.priority_score || 0) - (a.lead.priority_score || 0))
+      .slice(0, limit)
+
+    let pushed = 0
+    let failed = 0
+    const details = []
+
+    for (const { row, lead } of candidates) {
+      try {
+        const { draft } = generateEmailDraft(lead)
+        const { subject, body } = splitDraftSubject(appendMailingAddress(draft))
+
+        const resp = await fetch(INSTANTLY_LEADS_URL, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${INSTANTLY_API_KEY}`,
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            // Instantly's Cloudflare front-end fingerprint-blocks the
+            // default fetch/undici User-Agent (error 1010) without this.
+            'User-Agent': 'Mozilla/5.0 (compatible; claude-crm/1.0)',
+          },
+          body: JSON.stringify({
+            campaign: INSTANTLY_CAMPAIGN_ID,
+            email: lead.email,
+            company_name: lead.business_name,
+            custom_variables: {
+              company_name: lead.business_name,
+              subject,
+              full_body: body,
+            },
+            skip_if_in_workspace: true,
+          }),
+        })
+
+        if (!resp.ok) {
+          const text = await resp.text()
+          throw new Error(`HTTP ${resp.status}: ${text.slice(0, 200)}`)
+        }
+
+        await supabase
+          .from('leads')
+          .update({ data: { ...row.data, emailSentAt: new Date().toISOString(), instantlySynced: true } })
+          .eq('id', row.id)
+
+        pushed++
+        details.push({ id: lead.id, business_name: lead.business_name, status: 'sent' })
+      } catch (err) {
+        failed++
+        details.push({ id: lead.id, business_name: lead.business_name, status: 'failed', error: err.message })
+      }
+    }
+
+    res.json({ success: true, candidates: candidates.length, pushed, failed, details })
+  } catch (err) {
+    console.error('Error sending batch to Instantly:', err.message)
+    res.status(500).json({ error: 'Failed to send batch to Instantly' })
   }
 })
 

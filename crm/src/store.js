@@ -189,6 +189,25 @@ export const useLeadsStore = create((set, get) => ({
     return result
   },
 
+  // Pushes the next `limit` unsent, has-email call leads (ranked by
+  // priority_score) into the configured Instantly campaign in one request —
+  // the batch alternative to clicking "Send Email" on each lead in the
+  // drawer. The server generates each draft and marks leads sent, so a
+  // syncFromServer() after this picks up the new emailSentAt values.
+  sendBatchToInstantly: async (limit) => {
+    const response = await fetch(`${API_URL}/api/send-to-instantly`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ limit }),
+    })
+    const result = await response.json()
+    if (!response.ok) throw new Error(result.error || `Server responded ${response.status}`)
+    if (result.pushed > 0) {
+      await get().syncFromServer()
+    }
+    return result
+  },
+
   updateCallLead: (id, updates) => {
     const { callLeads } = get()
     set({ callLeads: callLeads.map(l => l.id === id ? { ...l, ...updates } : l) })

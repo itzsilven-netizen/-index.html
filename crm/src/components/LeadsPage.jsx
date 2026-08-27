@@ -6,8 +6,118 @@ import './LeadsPage.css'
 
 const STATUS_LABELS = { new: 'New', contacted: 'Contacted', qualified: 'Qualified', booked: 'Booked', closed: 'Closed Won' }
 
+// One button that sends the next N unsent, has-email leads (by priority) to
+// Instantly in one server-side request — the batch alternative to opening
+// each lead's drawer and clicking "Send Email" one at a time.
+function EmailBatchPanel({ onOpenLead }) {
+  const { callLeads, sendBatchToInstantly } = useLeadsStore()
+  const [batchSize, setBatchSize] = useState(25)
+  const [sending, setSending] = useState(false)
+  const [result, setResult] = useState(null)
+  const [err, setErr] = useState(null)
+
+  const ready = useMemo(
+    () =>
+      callLeads
+        .filter(l => l.email && !l.emailSentAt && !l.optedOut)
+        .sort((a, b) => (b.priority_score || 0) - (a.priority_score || 0)),
+    [callLeads]
+  )
+
+  const sentToday = useMemo(() => {
+    const todayStr = new Date().toDateString()
+    return callLeads.filter(l => l.emailSentAt && new Date(l.emailSentAt).toDateString() === todayStr).length
+  }, [callLeads])
+
+  const preview = ready.slice(0, batchSize)
+
+  const handleSend = async () => {
+    setSending(true)
+    setErr(null)
+    setResult(null)
+    try {
+      const res = await sendBatchToInstantly(batchSize)
+      setResult(res)
+    } catch (e) {
+      setErr(e.message)
+    } finally {
+      setSending(false)
+    }
+  }
+
+  return (
+    <div>
+      <div className="card email-batch-stats">
+        <div className="ebs-stat">
+          <div className="ebs-value">{ready.length}</div>
+          <div className="ebs-label">Ready to send</div>
+        </div>
+        <div className="ebs-stat">
+          <div className="ebs-value">{sentToday}</div>
+          <div className="ebs-label">Sent today</div>
+        </div>
+      </div>
+
+      <div className="card email-batch-controls">
+        <label htmlFor="batch-size">Batch size</label>
+        <input
+          id="batch-size"
+          type="number"
+          min="1"
+          max={ready.length || 1}
+          value={batchSize}
+          onChange={(e) => setBatchSize(Math.max(1, Number(e.target.value) || 1))}
+        />
+        <button className="btn" disabled={sending || ready.length === 0} onClick={handleSend}>
+          {sending ? 'Sending…' : `Send ${Math.min(batchSize, ready.length)} to Instantly`}
+        </button>
+      </div>
+
+      {err && <div className="card email-batch-error">{err}</div>}
+      {result && (
+        <div className="card email-batch-result">
+          <b>{result.pushed}</b> sent, <b>{result.failed}</b> failed (of {result.candidates} attempted).
+        </div>
+      )}
+
+      {ready.length === 0 ? (
+        <div className="card leads-empty">
+          <h3>Nothing to send</h3>
+          <p>No leads with an email are waiting — either the pipeline needs new leads, or everything's already been sent.</p>
+        </div>
+      ) : (
+        <div className="card table-card">
+          <table className="leads-table">
+            <thead>
+              <tr>
+                <th>Up next</th>
+                <th>Niche</th>
+                <th>Pitch</th>
+                <th>Priority</th>
+              </tr>
+            </thead>
+            <tbody>
+              {preview.map(lead => (
+                <tr key={lead.id} onClick={() => onOpenLead({ ...lead, _type: 'calls' })}>
+                  <td className="cell-lead">{lead.business_name}</td>
+                  <td className="cell-muted">{lead.niche || '—'}</td>
+                  <td className="cell-muted">{lead.pitch_angle || '—'}</td>
+                  <td>
+                    <span className={`score score-${lead.priority_score || 0}`}>{lead.priority_score ?? 0}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function LeadsPage({ onOpenLead }) {
   const { callLeads, updateCallLead, importCallLeads } = useLeadsStore()
+  const [view, setView] = useState('calls')
   const [statusFilter, setStatusFilter] = useState('all')
   const [nicheFilter, setNicheFilter] = useState('all')
   const [hasEmailFilter, setHasEmailFilter] = useState('all')
@@ -75,6 +185,19 @@ export default function LeadsPage({ onOpenLead }) {
         </div>
       </div>
 
+      <div className="view-tabs">
+        <button className={`view-tab ${view === 'calls' ? 'active' : ''}`} onClick={() => setView('calls')}>
+          Calls
+        </button>
+        <button className={`view-tab ${view === 'emails' ? 'active' : ''}`} onClick={() => setView('emails')}>
+          Emails
+        </button>
+      </div>
+
+      {view === 'emails' ? (
+        <EmailBatchPanel onOpenLead={onOpenLead} />
+      ) : (
+      <>
       <div className="leads-toolbar">
         <div className="leads-filters">
           <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
@@ -152,7 +275,7 @@ export default function LeadsPage({ onOpenLead }) {
                   <td>
                     <span className={`score score-${lead.priority_score || 0}`}>{lead.priority_score ?? 0}</span>
                   </td>
-                  <td onClick={(e) => e.stopPropagation()}>
+                  <td>
                     {!lead.email ? (
                       <span className="cell-muted">No email available</span>
                     ) : lead.optedOut ? (
@@ -162,7 +285,9 @@ export default function LeadsPage({ onOpenLead }) {
                     ) : lead.emailSentAt ? (
                       <span className="badge badge-sent">Sent</span>
                     ) : (
-                      <a className="cell-link" href={`mailto:${lead.email}`} title={lead.email}>✓ Email</a>
+                      // Batch sending (Emails tab) is the normal path now —
+                      // this just shows the lead is eligible, no click-to-send.
+                      <span className="cell-muted">Ready</span>
                     )}
                   </td>
                   <td onClick={(e) => e.stopPropagation()}>
@@ -219,13 +344,15 @@ export default function LeadsPage({ onOpenLead }) {
                   ) : lead.emailSentAt ? (
                     <span className="badge badge-sent">Email sent</span>
                   ) : (
-                    <span className="cell-muted">✓ Email on file</span>
+                    <span className="cell-muted">Ready</span>
                   )}
                 </div>
               )}
             </div>
           ))}
         </div>
+      )}
+      </>
       )}
 
       {showAddForm && (
