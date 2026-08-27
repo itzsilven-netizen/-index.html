@@ -83,6 +83,11 @@ def push_to_instantly(lead: dict) -> dict:
         "email": lead["email"],
         "company_name": lead.get("business_name", ""),
         "custom_variables": {
+            # Duplicated here (not just the top-level field above) so the
+            # {{company_name}} merge tag resolves in Instantly's editor —
+            # top-level fields don't always register as custom-variable
+            # merge tags the way keys inside custom_variables do.
+            "company_name": lead.get("business_name", ""),
             "niche": lead.get("niche", ""),
             "city_state": f"{lead.get('city', '')}, {lead.get('state', '')}".strip(", "),
             "value_prop": value_prop,
