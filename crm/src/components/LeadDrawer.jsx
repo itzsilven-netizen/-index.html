@@ -7,6 +7,7 @@ import {
   COMPANY_MAILING_ADDRESS,
 } from '../store'
 import { FORMATS } from '../emailDrafts'
+import { scriptForLead, scriptText } from '../callScripts'
 import CallResultModal from './CallResultModal'
 import './LeadDrawer.css'
 
@@ -24,6 +25,7 @@ export default function LeadDrawer({ lead, type, onClose }) {
   const [numberCopied, setNumberCopied] = useState(false)
   const [draftText, setDraftText] = useState('')
   const [draftCopied, setDraftCopied] = useState(false)
+  const [scriptCopied, setScriptCopied] = useState(false)
 
   useEffect(() => {
     setDraftText(lead?.email_draft || '')
@@ -75,8 +77,20 @@ export default function LeadDrawer({ lead, type, onClose }) {
     setTimeout(() => setDraftCopied(false), 6000)
   }
 
-  const tabs = lead.email ? ['activity', 'email', 'notes', 'info'] : ['activity', 'notes', 'info']
-  const TAB_LABELS = { activity: 'Activity', email: 'Email', notes: 'Notes', info: 'Information' }
+  const tabs = lead.email
+    ? ['activity', 'script', 'email', 'notes', 'info']
+    : ['activity', 'script', 'notes', 'info']
+  const TAB_LABELS = { activity: 'Activity', script: 'Script', email: 'Email', notes: 'Notes', info: 'Information' }
+
+  const script = scriptForLead(lead)
+
+  const handleCopyScript = () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(scriptText(lead)).catch(() => {})
+    }
+    setScriptCopied(true)
+    setTimeout(() => setScriptCopied(false), 4000)
+  }
 
   return (
     <>
@@ -161,6 +175,36 @@ export default function LeadDrawer({ lead, type, onClose }) {
         </div>
 
         <div className="drawer-body">
+          {tab === 'script' && (
+            <div className="script-panel">
+              <p className="script-panel-hint">
+                Auto-generated for {lead.business_name} from its niche and pitch angle. The opener stays fixed on every call — that's the 7-second trust bridge — everything below it is personalized.
+              </p>
+              <ScriptBlock label="Opener" text={script.opener} />
+              <ScriptBlock label="Credibility" text={script.credibility} />
+              <ScriptBlock label="Problem" text={script.problem} />
+              <ScriptBlock label="Solution" text={script.solution} />
+              <ScriptBlock label="Call to Action" text={script.cta} />
+              <div className="script-block">
+                <span className="script-label">Objections</span>
+                <div className="script-objections">
+                  {script.objections.map((o) => (
+                    <div className="script-objection" key={o.q}>
+                      <div className="script-objection-q">"{o.q}"</div>
+                      <div className="script-objection-a">{o.a}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <ScriptBlock label="Close" text={script.close} />
+              <div className="script-panel-actions">
+                <button className="btn" onClick={handleCopyScript}>
+                  {scriptCopied ? 'Copied!' : 'Copy Script'}
+                </button>
+              </div>
+            </div>
+          )}
+
           {tab === 'email' && (
             <div className="email-panel">
               {!COMPANY_MAILING_ADDRESS && (
@@ -284,6 +328,15 @@ function MetaRow({ label, value }) {
     <div className="meta-row">
       <span className="meta-label">{label}</span>
       <span className="meta-value">{value}</span>
+    </div>
+  )
+}
+
+function ScriptBlock({ label, text }) {
+  return (
+    <div className="script-block">
+      <span className="script-label">{label}</span>
+      <p className="script-text">{text}</p>
     </div>
   )
 }
