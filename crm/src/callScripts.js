@@ -62,6 +62,41 @@ const PITCH_ANGLE_CONTENT = {
       `So what we do is put an AI follow-up system on those old leads, so they get worked automatically instead of going cold.`,
     impact: 'reviving old, unworked leads',
   },
+  'AI SMS Sales Chat': {
+    problem: (l) =>
+      `Most businesses like ${l.business_name} get texts from customers that sit unanswered for hours — and a text that doesn't get a fast reply usually just goes to whoever answers first.`,
+    solution: () =>
+      `So what we do is put an AI sales chat on your texts, so inbound messages get answered, qualified, and booked instantly instead of sitting in the inbox.`,
+    impact: 'text-based lead conversion',
+  },
+  'Appointment Reminders': {
+    problem: (l) =>
+      `A lot of businesses like ${l.business_name} lose real revenue to no-shows and late cancellations that a simple reminder would've caught.`,
+    solution: () =>
+      `So what we do is automate appointment reminders by text and call, so no-shows drop without anyone having to manually chase people down.`,
+    impact: 'cutting no-shows and late cancellations',
+  },
+  'Client Reactivation': {
+    problem: (l) =>
+      `Most businesses like ${l.business_name} have a list of past clients who haven't come back in a while — and without active outreach, they usually just stay cold.`,
+    solution: () =>
+      `So what we do is run automated reactivation campaigns to that past-client list, so old customers start booking again without extra work on your end.`,
+    impact: 'reactivating past clients',
+  },
+  'Facebook Ads Management': {
+    problem: (l) =>
+      `A lot of businesses like ${l.business_name} either aren't running ads or are running them without much optimization, which usually just burns budget without much to show for it.`,
+    solution: () =>
+      `So what we do is manage Facebook ad campaigns end-to-end, built to bring in qualified leads directly instead of just impressions.`,
+    impact: 'paid lead generation',
+  },
+  'Custom Automation': {
+    problem: (l) =>
+      `A lot of what's slowing ${l.business_name} down day to day is repetitive manual work — the kind that eats staff time without needing a person doing it.`,
+    solution: () =>
+      `So what we do is build a custom automation around your specific workflow, so that manual work runs itself instead.`,
+    impact: 'workflow automation',
+  },
 }
 
 const contentFor = (lead) => PITCH_ANGLE_CONTENT[lead.pitch_angle] || PITCH_ANGLE_CONTENT['AI Receptionist']
