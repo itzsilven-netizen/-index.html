@@ -58,6 +58,51 @@ function SentTodayQueue({ leads }) {
   )
 }
 
+// Mirrors SentTodayQueue's layout for leads that have replied — name, when
+// they replied, and a Call button, so responses are visible without digging
+// through the full filtered table.
+function RepliedQueue({ leads, onOpenLead }) {
+  if (leads.length === 0) {
+    return (
+      <div className="card leads-empty">
+        <h3>No replies yet</h3>
+        <p>Once a lead replies to an email, they'll show up here.</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="card sent-today-list">
+      {leads.map(lead => {
+        const repliedTime = lead.repliedAt
+          ? new Date(lead.repliedAt).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+          : ''
+        return (
+          <div key={lead.id} className="sent-today-item">
+            <div className="sent-today-row" onClick={() => onOpenLead({ ...lead, _type: 'calls' })}>
+              <div className="sent-today-info">
+                <div className="cell-lead">{lead.business_name}</div>
+                <div className="cell-muted">{lead.niche || '—'} · replied {repliedTime}</div>
+              </div>
+              {lead.phone ? (
+                <a
+                  className="lead-card-call"
+                  href={`tel:${lead.phone}`}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Call
+                </a>
+              ) : (
+                <span className="cell-muted">No phone</span>
+              )}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 // One button that sends the next N unsent, has-email leads (by priority) to
 // Instantly in one server-side request — the batch alternative to opening
 // each lead's drawer and clicking "Send Email" one at a time.
@@ -68,6 +113,7 @@ function EmailBatchPanel({ onOpenLead }) {
   const [result, setResult] = useState(null)
   const [err, setErr] = useState(null)
   const [showSentToday, setShowSentToday] = useState(false)
+  const [showReplied, setShowReplied] = useState(false)
 
   const ready = useMemo(
     () =>
@@ -83,6 +129,11 @@ function EmailBatchPanel({ onOpenLead }) {
       .filter(l => l.emailSentAt && new Date(l.emailSentAt).toDateString() === todayStr)
       .sort((a, b) => new Date(b.emailSentAt) - new Date(a.emailSentAt))
   }, [callLeads])
+
+  const repliedLeads = useMemo(
+    () => callLeads.filter(l => l.repliedAt).sort((a, b) => new Date(b.repliedAt) - new Date(a.repliedAt)),
+    [callLeads]
+  )
 
   const preview = ready.slice(0, batchSize)
 
@@ -109,14 +160,22 @@ function EmailBatchPanel({ onOpenLead }) {
         </div>
         <button
           className={`ebs-stat ebs-stat-clickable ${showSentToday ? 'active' : ''}`}
-          onClick={() => setShowSentToday(v => !v)}
+          onClick={() => { setShowSentToday(v => !v); setShowReplied(false) }}
         >
           <div className="ebs-value">{sentTodayLeads.length}</div>
           <div className="ebs-label">Sent today {sentTodayLeads.length > 0 && (showSentToday ? '▴' : '▾')}</div>
         </button>
+        <button
+          className={`ebs-stat ebs-stat-clickable ${showReplied ? 'active' : ''}`}
+          onClick={() => { setShowReplied(v => !v); setShowSentToday(false) }}
+        >
+          <div className="ebs-value">{repliedLeads.length}</div>
+          <div className="ebs-label">Replied {repliedLeads.length > 0 && (showReplied ? '▴' : '▾')}</div>
+        </button>
       </div>
 
       {showSentToday && <SentTodayQueue leads={sentTodayLeads} />}
+      {showReplied && <RepliedQueue leads={repliedLeads} onOpenLead={onOpenLead} />}
 
       <div className="card email-batch-controls">
         <label htmlFor="batch-size">Batch size</label>
