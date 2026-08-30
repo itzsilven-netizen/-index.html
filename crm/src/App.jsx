@@ -28,6 +28,17 @@ export default function App() {
     }
   }, [user])
 
+  // Polls the backend every 2 minutes so replies coming in via the Instantly
+  // webhook (which writes repliedAt server-side, not through this browser)
+  // show up in the Replied panel without a manual page reload.
+  useEffect(() => {
+    if (!user) return
+    const id = setInterval(() => {
+      useLeadsStore.getState().syncFromServer().catch(() => {})
+    }, 120000)
+    return () => clearInterval(id)
+  }, [user])
+
   if (!user) {
     return <Auth onLogin={login} />
   }

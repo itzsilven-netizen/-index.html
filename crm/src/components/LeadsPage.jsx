@@ -107,13 +107,14 @@ function RepliedQueue({ leads, onOpenLead }) {
 // Instantly in one server-side request — the batch alternative to opening
 // each lead's drawer and clicking "Send Email" one at a time.
 function EmailBatchPanel({ onOpenLead }) {
-  const { callLeads, sendBatchToInstantly } = useLeadsStore()
+  const { callLeads, sendBatchToInstantly, syncFromServer } = useLeadsStore()
   const [batchSize, setBatchSize] = useState(25)
   const [sending, setSending] = useState(false)
   const [result, setResult] = useState(null)
   const [err, setErr] = useState(null)
   const [showSentToday, setShowSentToday] = useState(false)
   const [showReplied, setShowReplied] = useState(false)
+  const [checking, setChecking] = useState(false)
 
   const ready = useMemo(
     () =>
@@ -134,6 +135,17 @@ function EmailBatchPanel({ onOpenLead }) {
     () => callLeads.filter(l => l.repliedAt).sort((a, b) => new Date(b.repliedAt) - new Date(a.repliedAt)),
     [callLeads]
   )
+
+  const handleCheckReplies = async () => {
+    setChecking(true)
+    try {
+      await syncFromServer()
+    } catch {
+      // best-effort — the 2-minute background poll will pick it up next pass
+    } finally {
+      setChecking(false)
+    }
+  }
 
   const preview = ready.slice(0, batchSize)
 
@@ -175,7 +187,14 @@ function EmailBatchPanel({ onOpenLead }) {
       </div>
 
       {showSentToday && <SentTodayQueue leads={sentTodayLeads} />}
-      {showReplied && <RepliedQueue leads={repliedLeads} onOpenLead={onOpenLead} />}
+      {showReplied && (
+        <>
+          <button className="btn btn-ghost check-replies-btn" disabled={checking} onClick={handleCheckReplies}>
+            {checking ? 'Checking…' : 'Check for new replies'}
+          </button>
+          <RepliedQueue leads={repliedLeads} onOpenLead={onOpenLead} />
+        </>
+      )}
 
       <div className="card email-batch-controls">
         <label htmlFor="batch-size">Batch size</label>

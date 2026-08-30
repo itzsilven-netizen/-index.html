@@ -218,6 +218,52 @@ app.post('/api/send-to-instantly', async (req, res) => {
   }
 })
 
+// POST /api/webhooks/instantly-reply - Instantly calls this the moment a
+// lead replies (configured as a campaign webhook in the Instantly dashboard,
+// event "Reply Received"). Looks the lead up by email across both lead
+// types and stamps repliedAt, same field the manual "Mark Replied" button
+// sets — so a webhook-driven reply and a manually-logged one look identical
+// to the rest of the app, and the Replied panel picks it up on next sync
+// with no separate code path.
+//
+// Instantly's exact payload shape isn't pinned down in code here, so this
+// accepts whichever of the common field names shows up (lead_email, email,
+// contact_email, or a nested lead.email) rather than a single hardcoded key.
+app.post('/api/webhooks/instantly-reply', async (req, res) => {
+  const secret = process.env.INSTANTLY_WEBHOOK_SECRET
+  if (secret && req.query.secret !== secret) {
+    return res.status(401).json({ error: 'Unauthorized' })
+  }
+
+  const body = req.body || {}
+  const email = body.lead_email || body.email || body.contact_email || body.lead?.email
+  if (!email) {
+    return res.status(400).json({ error: 'No lead email found in webhook payload', received: body })
+  }
+
+  try {
+    const { data, error } = await supabase.from('leads').select('*')
+    if (error) throw error
+
+    const row = data.find(r => (r.data.email || '').toLowerCase() === email.toLowerCase())
+    if (!row) {
+      return res.status(404).json({ error: 'No lead found with that email', email })
+    }
+
+    if (!row.data.repliedAt) {
+      await supabase
+        .from('leads')
+        .update({ data: { ...row.data, repliedAt: new Date().toISOString() } })
+        .eq('id', row.id)
+    }
+
+    res.json({ success: true, leadId: row.id, business_name: row.data.business_name })
+  } catch (err) {
+    console.error('Error handling Instantly reply webhook:', err.message)
+    res.status(500).json({ error: 'Failed to process webhook' })
+  }
+})
+
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
 })
