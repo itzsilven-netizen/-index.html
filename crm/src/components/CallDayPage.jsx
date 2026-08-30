@@ -5,18 +5,18 @@ import './CallDayPage.css'
 // The day's routine — recovery/mindset prep leading into two call blocks,
 // same shape as the standalone Call Day tracker this page replaces.
 const BLOCKS = [
-  { id: 'wake', start: '6:00', end: '6:15', label: 'Wake Up / Cold Plunge', cat: 'prep' },
-  { id: 'train', start: '6:15', end: '7:00', label: 'Stretch, Workout', cat: 'prep' },
-  { id: 'sauna', start: '7:00', end: '7:45', label: 'Walk, Sauna, Shower', cat: 'prep' },
-  { id: 'dress', start: '7:45', end: '8:00', label: 'Get Dressed, Skincare, Make Coffee', cat: 'prep' },
-  { id: 'breath', start: '8:00', end: '8:15', label: 'Wim Hof Breathing', cat: 'mind' },
-  { id: 'script', start: '8:15', end: '9:00', label: 'Run Script — Sobriety, Tonality', cat: 'mind' },
-  { id: 'email', start: '9:00', end: '9:00', label: 'Send Emails', cat: 'mind' },
-  { id: 'amcall', start: '9:00', end: '11:00', label: 'Calls', cat: 'call' },
-  { id: 'lunch', start: '11:00', end: '12:00', label: 'Make Lunch', cat: 'reset' },
-  { id: 'pmcall1', start: '12:00', end: '13:30', label: 'Cold Calls', cat: 'call' },
-  { id: 'workout', start: '13:30', end: '14:30', label: 'Workout', cat: 'reset' },
-  { id: 'pmcall2', start: '14:30', end: '15:30', label: 'Cold Calls', cat: 'call' },
+  { id: 'wake', start: '5:00', end: '5:15', label: 'Wake Up / Cold Plunge', cat: 'prep' },
+  { id: 'train', start: '5:15', end: '6:00', label: 'Stretch, Workout', cat: 'prep' },
+  { id: 'sauna', start: '6:00', end: '6:45', label: 'Walk, Sauna, Shower', cat: 'prep' },
+  { id: 'dress', start: '6:45', end: '7:00', label: 'Get Dressed, Skincare, Make Coffee', cat: 'prep' },
+  { id: 'breath', start: '7:00', end: '7:15', label: 'Wim Hof Breathing', cat: 'mind' },
+  { id: 'script', start: '7:15', end: '8:00', label: 'Run Script — Sobriety, Tonality', cat: 'mind' },
+  { id: 'email', start: '8:00', end: '8:00', label: 'Send Emails', cat: 'mind' },
+  { id: 'amcall', start: '8:00', end: '10:00', label: 'Calls', cat: 'call' },
+  { id: 'lunch', start: '10:00', end: '11:00', label: 'Make Lunch', cat: 'reset' },
+  { id: 'pmcall1', start: '11:00', end: '12:30', label: 'Cold Calls', cat: 'call' },
+  { id: 'workout', start: '12:30', end: '13:30', label: 'Workout', cat: 'reset' },
+  { id: 'pmcall2', start: '13:30', end: '14:30', label: 'Cold Calls', cat: 'call' },
 ]
 const CAT_NAMES = { prep: 'Recovery', mind: 'Mindset', call: 'Calls', reset: 'Reset' }
 const RING_CIRCUMFERENCE = 169.6 // 2π × r(27), matches the SVG below
@@ -109,7 +109,7 @@ export default function CallDayPage() {
     <div className="callday-page">
       <div className="callday-top">
         <div>
-          <p className="callday-kicker">6:00 AM &rarr; 3:30 PM</p>
+          <p className="callday-kicker">5:00 AM &rarr; 2:30 PM</p>
           <h1 className="callday-h1">Call Day</h1>
         </div>
         <div className="callday-datebar">
@@ -168,10 +168,10 @@ export default function CallDayPage() {
               </div>
             </div>
 
-            <div className="callday-block-h">9:00 – 11:00 · AM Calls</div>
+            <div className="callday-block-h">8:00 – 10:00 · AM Calls</div>
             <MetricRow period="am" values={day.am} onChange={setMetric} />
 
-            <div className="callday-block-h">12:00–1:30 &amp; 2:30–3:30 · Cold Calls</div>
+            <div className="callday-block-h">11:00–12:30 &amp; 1:30–2:30 · Cold Calls</div>
             <MetricRow period="pm" values={day.pm} onChange={setMetric} />
 
             <p className="callday-hint">Total: {totals.dials} dials · {totals.contacts} contacts · {totals.appts} appts</p>
