@@ -13,7 +13,8 @@ const BLOCKS = [
   { id: 'script', start: '8:15', end: '9:00', label: 'Run Script — Sobriety, Tonality', cat: 'mind' },
   { id: 'email', start: '9:00', end: '9:00', label: 'Send Emails', cat: 'mind' },
   { id: 'amcall', start: '9:00', end: '10:30', label: 'Cold Calls', cat: 'call' },
-  { id: 'pmcall1', start: '10:30', end: '12:00', label: 'Cold Calls', cat: 'call' },
+  { id: 'detox', start: '10:30', end: '10:45', label: 'Dopamine Detox', cat: 'reset' },
+  { id: 'pmcall1', start: '10:45', end: '12:15', label: 'Cold Calls', cat: 'call' },
 ]
 const CAT_NAMES = { prep: 'Recovery', mind: 'Mindset', call: 'Calls', reset: 'Reset' }
 const RING_CIRCUMFERENCE = 169.6 // 2π × r(27), matches the SVG below
@@ -106,7 +107,7 @@ export default function CallDayPage() {
     <div className="callday-page">
       <div className="callday-top">
         <div>
-          <p className="callday-kicker">6:00 AM &rarr; 12:00 PM</p>
+          <p className="callday-kicker">6:00 AM &rarr; 12:15 PM</p>
           <h1 className="callday-h1">Call Day</h1>
         </div>
         <div className="callday-datebar">
@@ -168,7 +169,7 @@ export default function CallDayPage() {
             <div className="callday-block-h">9:00 – 10:30 · Cold Calls (Block 1)</div>
             <MetricRow period="am" values={day.am} onChange={setMetric} />
 
-            <div className="callday-block-h">10:30 – 12:00 · Cold Calls (Block 2)</div>
+            <div className="callday-block-h">10:45 – 12:15 · Cold Calls (Block 2)</div>
             <MetricRow period="pm" values={day.pm} onChange={setMetric} />
 
             <p className="callday-hint">Total: {totals.dials} dials · {totals.contacts} contacts · {totals.appts} appts</p>
