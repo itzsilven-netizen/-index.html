@@ -189,7 +189,14 @@ app.post('/api/send-to-instantly', async (req, res) => {
               subject,
               full_body: body,
             },
-            skip_if_in_workspace: true,
+            // false, not true: "skip if in workspace" checks the whole
+            // workspace, not just this campaign — with it on, a lead that
+            // already existed anywhere in Instantly (a different campaign,
+            // an earlier test push) got silently skipped from actually
+            // being enrolled here, while the API still returned success.
+            // That mismatch is why the CRM showed way more "sent" than
+            // Instantly's campaign ever actually had leads for.
+            skip_if_in_workspace: false,
           }),
         })
 
@@ -261,6 +268,33 @@ app.post('/api/webhooks/instantly-reply', async (req, res) => {
   } catch (err) {
     console.error('Error handling Instantly reply webhook:', err.message)
     res.status(500).json({ error: 'Failed to process webhook' })
+  }
+})
+
+// POST /api/admin/reset-instantly-sent - one-time recovery for the
+// skip_if_in_workspace bug above: clears emailSentAt/instantlySynced on
+// every "calls" lead that was marked sent via the Instantly batch push
+// (instantlySynced === true), so they re-enter the "ready to send" queue
+// and get pushed again now that the fix actually enrolls them in the
+// campaign. Only touches instantlySynced leads — leads sent manually via
+// the per-lead "Send Email" button (Gmail compose) never set that flag,
+// so they're untouched.
+app.post('/api/admin/reset-instantly-sent', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('leads').select('*').eq('type', 'calls')
+    if (error) throw error
+
+    const toReset = data.filter(row => row.data.instantlySynced === true)
+
+    for (const row of toReset) {
+      const { emailSentAt, instantlySynced, ...rest } = row.data
+      await supabase.from('leads').update({ data: rest }).eq('id', row.id)
+    }
+
+    res.json({ success: true, reset: toReset.length })
+  } catch (err) {
+    console.error('Error resetting Instantly-sent leads:', err.message)
+    res.status(500).json({ error: 'Failed to reset leads' })
   }
 })
 
