@@ -8,6 +8,7 @@ import LeadsPage from './components/LeadsPage'
 import PipelinePage from './components/PipelinePage'
 import TasksPage from './components/TasksPage'
 import CalendarPage, { CreateEventModal } from './components/CalendarPage'
+import CallDayPage from './components/CallDayPage'
 import ComingSoon from './components/ComingSoon'
 import LeadDrawer from './components/LeadDrawer'
 import AddLeadForm from './components/AddLeadForm'
@@ -63,6 +64,7 @@ export default function App() {
           {activePage === 'pipeline' && <PipelinePage onOpenLead={openLead} />}
           {activePage === 'tasks' && <TasksPage onOpenLead={openLead} />}
           {activePage === 'calendar' && <CalendarPage onOpenLead={openLead} />}
+          {activePage === 'callday' && <CallDayPage />}
           {['automations', 'inbox', 'reports', 'settings'].includes(activePage) && (
             <ComingSoon pageId={activePage} />
           )}
