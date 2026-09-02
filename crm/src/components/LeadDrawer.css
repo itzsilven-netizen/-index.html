@@ -131,7 +131,7 @@
 
 .text-helper {
   background: var(--accent-soft);
-  border: 1px solid #FFD9B5;
+  border: 1px solid var(--warning);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
   margin-bottom: 18px;
@@ -215,7 +215,7 @@
 
 .timeline-dot.note   { background: var(--ink-soft); }
 .timeline-dot.status { background: var(--accent); }
-.timeline-dot.follow-up { background: #FF9C4C; }
+.timeline-dot.follow-up { background: var(--warning); }
 
 .timeline-message {
   font-size: 13.5px;
@@ -296,9 +296,9 @@
 
 .compliance-warning {
   font-size: 12px;
-  color: #A94F04;
+  color: var(--warning);
   background: var(--accent-soft);
-  border: 1px solid #FFD9B5;
+  border: 1px solid var(--warning);
   border-radius: var(--radius-sm);
   padding: 10px 12px;
 }

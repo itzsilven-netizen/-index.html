@@ -116,9 +116,9 @@
 }
 
 /* event type colors — grayscale to orange ramp only */
-.type-call       { background: #F1EFEB; color: var(--ink); border-left: 3px solid var(--text-muted); }
-.type-follow-up  { background: #EDEBE6; color: var(--ink); border-left: 3px solid var(--ink-soft); }
-.type-demo       { background: #FFE3C4; color: #A94F04; border-left: 3px solid #FF9C4C; }
+.type-call       { background: var(--bg-elevated); color: var(--ink); border-left: 3px solid var(--text-muted); }
+.type-follow-up  { background: var(--bg-elevated); color: var(--ink); border-left: 3px solid var(--ink-soft); }
+.type-demo       { background: var(--warning-soft); color: var(--warning); border-left: 3px solid var(--warning); }
 .type-meeting    { background: var(--accent); color: #fff; border-left: 3px solid var(--accent-hover); }
 
 .cal-legend {
@@ -144,7 +144,7 @@
 
 .cal-legend-dot.type-call      { background: var(--text-muted); }
 .cal-legend-dot.type-follow-up { background: var(--ink-soft); }
-.cal-legend-dot.type-demo      { background: #FF9C4C; }
+.cal-legend-dot.type-demo      { background: var(--warning); }
 .cal-legend-dot.type-meeting   { background: var(--accent); }
 
 /* event modals */

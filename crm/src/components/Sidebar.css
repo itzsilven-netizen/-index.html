@@ -147,7 +147,7 @@
 }
 
 .user-logout:hover {
-  color: #C0392B;
+  color: var(--error);
 }
 
 @media (max-width: 860px) {

@@ -486,6 +486,6 @@
 }
 
 .priority-low    { background: var(--bg-elevated); color: var(--text-muted); }
-.priority-medium { background: #FFE3C4; color: #A94F04; }
+.priority-medium { background: var(--warning-soft); color: var(--warning); }
 .priority-high   { background: var(--accent); color: #fff; }
-.priority-urgent { background: var(--ink); color: #fff; }
+.priority-urgent { background: var(--error); color: #fff; }

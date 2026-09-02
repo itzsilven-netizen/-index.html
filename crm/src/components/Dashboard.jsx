@@ -4,7 +4,7 @@ import './Dashboard.css'
 
 const STAGES = ['new', 'contacted', 'qualified', 'booked', 'closed']
 const STAGE_LABELS = { new: 'New Lead', contacted: 'Contacted', qualified: 'Qualified', booked: 'Booked', closed: 'Closed Won' }
-const STAGE_COLORS = { new: '#C9C5BD', contacted: '#FFC48A', qualified: '#FF9C4C', booked: 'var(--accent)', closed: 'var(--ink)' }
+const STAGE_COLORS = { new: 'var(--border)', contacted: 'var(--warning)', qualified: 'var(--warning)', booked: 'var(--accent)', closed: 'var(--success)' }
 
 export default function Dashboard({ onNavigate, onOpenLead }) {
   const { callLeads, emailLeads, nurtureLogs, tasks, completeTask } = useLeadsStore()

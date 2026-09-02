@@ -1,29 +1,36 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --bg: #EFECE9;
-  --bg-sidebar: #FFFFFF;
-  --bg-card: #FFFFFF;
-  --bg-elevated: #D0D5CE;
-  --bg-hover: #D1EBDB;
-  --border: rgba(25,37,36,.14);
-  --border-strong: rgba(25,37,36,.24);
-  --text-primary: #192524;
-  --text-secondary: #3C5759;
-  --text-muted: #959D90;
-  --accent: #3C5759;
-  --accent-hover: #192524;
-  --accent-soft: #D1EBDB;
-  --accent-glow: rgba(60, 87, 89, 0.16);
-  --ink: #192524;
-  --ink-soft: #2C4142;
+  --bg: #070A12;
+  --bg-sidebar: #0B1020;
+  --bg-card: #101725;
+  --bg-elevated: #151E30;
+  --bg-hover: #1B2740;
+  --border: #263249;
+  --border-strong: #34435F;
+  --text-primary: #F7F9FC;
+  --text-secondary: #A7B0C0;
+  --text-muted: #697386;
+  --accent: #4D7CFF;
+  --accent-hover: #3D63D9;
+  --accent-soft: rgba(77, 124, 255, 0.16);
+  --accent-glow: rgba(77, 124, 255, 0.22);
+  --accent-2: #67E8F9;
+  --success: #34D399;
+  --success-soft: rgba(52, 211, 153, 0.16);
+  --warning: #FBBF24;
+  --warning-soft: rgba(251, 191, 36, 0.16);
+  --error: #FB7185;
+  --error-soft: rgba(251, 113, 133, 0.16);
+  --ink: #F7F9FC;
+  --ink-soft: #A7B0C0;
 
   --radius: 14px;
   --radius-sm: 10px;
   --transition: 180ms ease;
-  --shadow-card: 0 1px 3px rgba(26, 25, 21, 0.05);
-  --shadow-pop: 0 12px 40px rgba(26, 25, 21, 0.14);
-  --shadow-drawer: -12px 0 40px rgba(26, 25, 21, 0.12);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-pop: 0 12px 40px rgba(0, 0, 0, 0.5);
+  --shadow-drawer: -12px 0 40px rgba(0, 0, 0, 0.45);
 }
 
 * {
@@ -193,12 +200,12 @@ select {
 }
 
 /* stage colors: strictly grayscale → orange ramp → ink */
-.badge-new       { background: #F1EFEB; color: #6B675F; }
-.badge-contacted { background: #FFEFDD; color: #C05C08; }
-.badge-qualified { background: #FFE3C4; color: #A94F04; }
+.badge-new       { background: var(--bg-elevated); color: var(--text-secondary); }
+.badge-contacted { background: var(--warning-soft); color: var(--warning); }
+.badge-qualified { background: var(--warning-soft); color: var(--warning); }
 .badge-booked    { background: var(--accent); color: #fff; }
-.badge-closed    { background: var(--ink); color: #fff; }
-.badge-lost      { background: #EBE9E4; color: #8C8880; text-decoration: line-through; }
-.badge-sent      { background: #D1EBDB; color: #C05C08; }
+.badge-closed    { background: var(--success); color: #fff; }
+.badge-lost      { background: var(--bg-elevated); color: var(--text-muted); text-decoration: line-through; }
+.badge-sent      { background: var(--success-soft); color: var(--success); }
 .badge-replied   { background: var(--accent); color: #fff; }
-.badge-optedout  { background: #EBE9E4; color: #8C8880; }
+.badge-optedout  { background: var(--bg-elevated); color: var(--text-muted); }
