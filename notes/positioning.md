@@ -12,8 +12,8 @@
   skill is the product I'm building for myself, not the tech.
 
 ## The deal with the company I work with
-- Company: Kasava (kasava.app) — spelled K-A-S-A-V-A (note: distinct from
-  Kassava's own name, which is spelled with a double S — easy to mix up).
+- Company: Casava (casava.app) — spelled C-A-S-A-V-A (note: distinct from
+  Kassava's own name, which starts with K and has a double S — easy to mix up).
 - Channel: cold calling (provided as "warm" but is actually cold — corrected
   expectation). Hate cold calling but doing it deliberately to build sales skill.
 - Commission: 50% commission on sales I close.

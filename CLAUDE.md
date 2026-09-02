@@ -12,7 +12,7 @@ session in this repo. Keep it short — put depth in `notes/` and link out.
 ## Business Snapshot
 - **Name:** Apex Standard
 - **Who:** Kassava — sales closer (not a builder), working commission-based
-  (50%) selling AI systems for Kasava (kasava.app) via cold calling.
+  (50%) selling AI systems for Casava (casava.app) via cold calling.
 - **What it is now:** A personal sales operation / brand, not a product
   company. Long-term possibility: a middleman/agency layer listing AI
   systems rather than building them — undecided.
