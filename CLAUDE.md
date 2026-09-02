@@ -10,13 +10,21 @@ session in this repo. Keep it short — put depth in `notes/` and link out.
   the business. May differ from what's currently live on the site.
 
 ## Business Snapshot
-*(fill in / correct — this is a placeholder based on the old README)*
 - **Name:** Apex Standard
-- **What it is:** TBD — update this
-- **Offer:** TBD
-- **Target customer (ICP):** TBD
-- **Pricing / model:** TBD
-- **Current stage:** TBD (pre-launch / active clients / pivoting / etc.)
+- **Who:** Kassava — sales closer (not a builder), working commission-based
+  (50%) selling AI systems for an existing company via cold calling.
+- **What it is now:** A personal sales operation / brand, not a product
+  company. Long-term possibility: a middleman/agency layer listing AI
+  systems rather than building them — undecided.
+- **Offer:** ROI-driven AI systems for service businesses (lead scrape →
+  email campaign → cold call close), NOT the old "5X more leads in 30 days"
+  claim, and pushing away from the company's default "sell websites" angle.
+- **Target customer (ICP):** High-ticket service businesses — HVAC,
+  electrical, roofing, plumbing (ideally $500–$1,000+ client value).
+  Long-term direction: real estate, once reputation/results exist.
+- **Pricing / model:** Using company's existing pricing as a floor; belief
+  it's underpriced. 50% commission on closes. See `notes/pricing.md`.
+- **Current stage:** Early — no closed clients yet, building first proof.
 - **Contact:** itz.silven@apexstandard.biz
 
 ## Notes Index
