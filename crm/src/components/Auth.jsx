@@ -29,7 +29,7 @@ export default function Auth({ onLogin }) {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <h1>Claude CRM</h1>
+          <h1>Signal</h1>
           <p>Manage your leads and follow-ups with AI</p>
         </div>
 

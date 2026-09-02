@@ -40,8 +40,56 @@ export default function Dashboard({ onNavigate, onOpenLead }) {
     <div className="page">
       <div className="page-header">
         <div>
-          <h1>Welcome back 👋</h1>
-          <p className="page-subtitle">Here's what's happening with your CRM today.</p>
+          <h1>Signal</h1>
+          <p className="page-subtitle">Kassava &middot; closer for Casava (casava.app) &middot; 50% commission &middot; ROI-driven AI systems for high-ticket trades.</p>
+        </div>
+      </div>
+
+      <div className="card signal-brief">
+        <div className="signal-brief-grid">
+          <div className="signal-stat">
+            <div className="signal-stat-k">Role</div>
+            <div className="signal-stat-v">Closer</div>
+            <div className="signal-stat-d">Not a builder &mdash; commission-based</div>
+          </div>
+          <div className="signal-stat">
+            <div className="signal-stat-k">Partner</div>
+            <div className="signal-stat-v accent">Casava</div>
+            <div className="signal-stat-d">casava.app &middot; cold-call channel</div>
+          </div>
+          <div className="signal-stat">
+            <div className="signal-stat-k">Commission</div>
+            <div className="signal-stat-v accent">50%</div>
+            <div className="signal-stat-d">Per closed deal</div>
+          </div>
+          <div className="signal-stat">
+            <div className="signal-stat-k">ICP min. value</div>
+            <div className="signal-stat-v">$500&ndash;$1K+</div>
+            <div className="signal-stat-d">Per client, service trades</div>
+          </div>
+        </div>
+
+        <div className="signal-brief-body">
+          <div className="signal-rules">
+            <h3>Operating Rules</h3>
+            <ul>
+              <li><b>Outcome, not mechanism.</b> Prospects don't care what the system is &mdash; they care what it fixes for them.</li>
+              <li><b>ROI service over website.</b> A closed AI-systems deal beats a website sale, even if it's what gets pushed by default.</li>
+              <li><b>Email is underrated.</b> Scalable and time-efficient &mdash; run it in parallel with calling, not instead of it.</li>
+              <li><b>Reputation before scale.</b> No proof yet, only word. Bank results in trades first, then move up to real estate.</li>
+              <li><b>Price signals value.</b> Untested hypothesis: raising price can raise close rate, not just margin. Test with real data.</li>
+            </ul>
+            <div className="signal-tags">
+              <span>HVAC</span><span>Electrical</span><span>Roofing</span><span>Plumbing</span><span>&rarr; Real Estate (later)</span>
+            </div>
+          </div>
+          <div className="signal-log">
+            <h3>Decision Log</h3>
+            <ul>
+              <li><span className="signal-log-date">2026-09-02</span><span>Model pivot: closer role via Casava, 50% commission, ICP set to high-ticket trades.</span></li>
+              <li><span className="signal-log-date">2026-09-02</span><span>Signal and the CRM merged into one app &mdash; the CRM was already the dashboard.</span></li>
+            </ul>
+          </div>
         </div>
       </div>
 

@@ -64,7 +64,7 @@ export default function Sidebar({ activePage, onNavigate, user, onLogout, open, 
       <aside className={`sidebar ${open ? 'open' : ''}`}>
         <div className="sidebar-logo">
           <Starburst />
-          <span>Claude CRM</span>
+          <span>Signal</span>
           <button className="sidebar-close" onClick={onClose} aria-label="Close menu">×</button>
         </div>
 

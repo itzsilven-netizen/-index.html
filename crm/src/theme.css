@@ -1,22 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --bg: #FFFFFF;
-  --bg-sidebar: #FAF9F7;
+  --bg: #F3F5F9;
+  --bg-sidebar: #FFFFFF;
   --bg-card: #FFFFFF;
-  --bg-elevated: #F6F5F2;
-  --bg-hover: #F1EFEB;
-  --border: #E8E6E1;
-  --border-strong: #D9D6CF;
-  --text-primary: #1A1915;
-  --text-secondary: #55524B;
-  --text-muted: #8C8880;
-  --accent: #FF7A1A;
-  --accent-hover: #F06A0A;
-  --accent-soft: #FFF3E8;
-  --accent-glow: rgba(255, 122, 26, 0.14);
-  --ink: #1A1915;
-  --ink-soft: #3A3833;
+  --bg-elevated: #F2F2F0;
+  --bg-hover: #EAEEF2;
+  --border: rgba(13,13,13,.12);
+  --border-strong: rgba(13,13,13,.2);
+  --text-primary: #0D0D0D;
+  --text-secondary: #5B6E74;
+  --text-muted: #819FA7;
+  --accent: #5B6E74;
+  --accent-hover: #46565B;
+  --accent-soft: #EAF0F1;
+  --accent-glow: rgba(91, 110, 116, 0.14);
+  --ink: #0D0D0D;
+  --ink-soft: #2A2F31;
 
   --radius: 14px;
   --radius-sm: 10px;
@@ -199,6 +199,6 @@ select {
 .badge-booked    { background: var(--accent); color: #fff; }
 .badge-closed    { background: var(--ink); color: #fff; }
 .badge-lost      { background: #EBE9E4; color: #8C8880; text-decoration: line-through; }
-.badge-sent      { background: #FFF3E8; color: #C05C08; }
+.badge-sent      { background: #EAF0F1; color: #C05C08; }
 .badge-replied   { background: var(--accent); color: #fff; }
 .badge-optedout  { background: #EBE9E4; color: #8C8880; }
