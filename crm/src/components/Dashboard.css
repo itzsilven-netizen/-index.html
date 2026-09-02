@@ -398,7 +398,7 @@
   font-size: 14px;
   background: var(--accent-glow);
   color: var(--accent-hover);
-  border: 1px solid rgba(91, 110, 116, 0.3);
+  border: 1px solid rgba(60, 87, 89, 0.3);
 }
 
 .priority-info {

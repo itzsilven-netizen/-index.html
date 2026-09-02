@@ -1,0 +1,139 @@
+.visual-card {
+  padding: 24px 24px 20px;
+}
+
+.visual-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.vnode circle {
+  fill: var(--bg-card);
+  stroke: var(--border-strong);
+  stroke-width: 2;
+}
+
+.vnode-accent circle {
+  fill: var(--accent-soft);
+  stroke: var(--accent);
+}
+
+.vnode-hub circle {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+
+.vnode-ghost circle {
+  fill: var(--bg-card);
+  stroke: var(--border);
+  stroke-dasharray: 4 4;
+}
+
+.vnode-ghost .vnode-label,
+.vnode-ghost .vnode-sub {
+  fill: var(--text-muted);
+}
+
+.vnode-label {
+  font-size: 15px;
+  font-weight: 700;
+  fill: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.vnode-hub .vnode-label {
+  fill: #fff;
+  font-size: 16px;
+  letter-spacing: 0.04em;
+}
+
+.vnode-accent .vnode-label {
+  fill: var(--ink);
+}
+
+.vnode-sub {
+  font-size: 10.5px;
+  fill: var(--text-muted);
+}
+
+.vnode-hub .vnode-sub {
+  fill: rgba(255, 255, 255, 0.75);
+}
+
+.vedge-flow {
+  stroke: var(--accent);
+  stroke-width: 2.5;
+}
+
+.vedge-module {
+  stroke: var(--border-strong);
+  stroke-width: 1.5;
+  stroke-dasharray: 2 4;
+}
+
+.vedge-ghost {
+  stroke: var(--text-muted);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 5;
+  opacity: 0.6;
+}
+
+.varrow {
+  fill: var(--accent);
+}
+
+.vedge-label {
+  font-size: 10.5px;
+  fill: var(--text-muted);
+  font-weight: 600;
+}
+
+.vgroup-label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  fill: var(--text-muted);
+  font-weight: 700;
+}
+
+.visual-legend {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.visual-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.v-swatch {
+  width: 16px;
+  height: 2.5px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.v-swatch-flow {
+  background: var(--accent);
+}
+
+.v-swatch-module {
+  background: repeating-linear-gradient(90deg, var(--border-strong) 0 2px, transparent 2px 5px);
+}
+
+.v-swatch-ghost {
+  background: repeating-linear-gradient(90deg, var(--text-muted) 0 4px, transparent 4px 8px);
+}
+
+@media (max-width: 700px) {
+  .visual-legend {
+    gap: 12px;
+  }
+}

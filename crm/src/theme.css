@@ -1,22 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --bg: #F3F5F9;
+  --bg: #EFECE9;
   --bg-sidebar: #FFFFFF;
   --bg-card: #FFFFFF;
-  --bg-elevated: #F2F2F0;
-  --bg-hover: #EAEEF2;
-  --border: rgba(13,13,13,.12);
-  --border-strong: rgba(13,13,13,.2);
-  --text-primary: #0D0D0D;
-  --text-secondary: #5B6E74;
-  --text-muted: #819FA7;
-  --accent: #5B6E74;
-  --accent-hover: #46565B;
-  --accent-soft: #EAF0F1;
-  --accent-glow: rgba(91, 110, 116, 0.14);
-  --ink: #0D0D0D;
-  --ink-soft: #2A2F31;
+  --bg-elevated: #D0D5CE;
+  --bg-hover: #D1EBDB;
+  --border: rgba(25,37,36,.14);
+  --border-strong: rgba(25,37,36,.24);
+  --text-primary: #192524;
+  --text-secondary: #3C5759;
+  --text-muted: #959D90;
+  --accent: #3C5759;
+  --accent-hover: #192524;
+  --accent-soft: #D1EBDB;
+  --accent-glow: rgba(60, 87, 89, 0.16);
+  --ink: #192524;
+  --ink-soft: #2C4142;
 
   --radius: 14px;
   --radius-sm: 10px;
@@ -199,6 +199,6 @@ select {
 .badge-booked    { background: var(--accent); color: #fff; }
 .badge-closed    { background: var(--ink); color: #fff; }
 .badge-lost      { background: #EBE9E4; color: #8C8880; text-decoration: line-through; }
-.badge-sent      { background: #EAF0F1; color: #C05C08; }
+.badge-sent      { background: #D1EBDB; color: #C05C08; }
 .badge-replied   { background: var(--accent); color: #fff; }
 .badge-optedout  { background: #EBE9E4; color: #8C8880; }
