@@ -42,7 +42,7 @@ export default function DialQueuePage() {
       <div className="page-header">
         <div>
           <h1>Dial Queue</h1>
-          <p className="page-subtitle">Straight down the imported list, highest priority first. Copy the number into TextNow (or dial from your phone), log the result, next lead loads automatically.</p>
+          <p className="page-subtitle">Straight down the imported list, highest priority first. Copy the number, paste into TextNow, log the result — next lead loads automatically.</p>
         </div>
       </div>
 
@@ -70,12 +70,11 @@ export default function DialQueuePage() {
             </div>
 
             <div className="dial-phone-row">
-              <a className="dial-phone" href={`tel:${current.phone}`}>{current.phone}</a>
-              <button className="btn btn-ghost dial-copy" onClick={copyNumber}>{copied ? 'Copied' : 'Copy'}</button>
+              <span className="dial-phone">{current.phone}</span>
             </div>
 
             <div className="dial-actions">
-              <a className="btn dial-call-btn" href={`tel:${current.phone}`}>Call {current.phone}</a>
+              <button className="btn dial-copy-btn" onClick={copyNumber}>{copied ? 'Copied — paste into TextNow' : 'Copy Number'}</button>
               <button className="btn btn-ghost" onClick={() => setShowResult(true)}>Log Result</button>
               <button className="btn btn-ghost" onClick={skip}>Skip</button>
             </div>

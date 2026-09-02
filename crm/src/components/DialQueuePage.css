@@ -93,11 +93,6 @@
   letter-spacing: 0.5px;
 }
 
-.dial-copy {
-  padding: 6px 14px;
-  font-size: 12px;
-}
-
 .dial-actions {
   display: flex;
   justify-content: center;
@@ -105,8 +100,8 @@
   flex-wrap: wrap;
 }
 
-.dial-call-btn {
-  text-decoration: none;
+.dial-copy-btn {
+  min-width: 200px;
 }
 
 .dial-upnext {

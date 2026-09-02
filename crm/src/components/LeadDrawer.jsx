@@ -37,6 +37,17 @@ export default function LeadDrawer({ lead, type, onClose }) {
     setTimeout(() => setNumberCopied(false), 4000)
   }
 
+  // tel: links hand off to Chrome's Android phone-linking prompt, which is a
+  // dead end on iPhone (or any Chromebook without a paired Android phone) —
+  // copy-to-clipboard for pasting into TextNow works everywhere instead.
+  const [callCopied, setCallCopied] = useState(false)
+  const handleCopyPhone = () => {
+    if (!lead.phone) return
+    navigator.clipboard?.writeText(lead.phone).catch(() => {})
+    setCallCopied(true)
+    setTimeout(() => setCallCopied(false), 2000)
+  }
+
   if (!lead) return null
 
   const update = (updates) => {
@@ -112,7 +123,7 @@ export default function LeadDrawer({ lead, type, onClose }) {
 
           <div className="drawer-meta">
             {lead.contact_name && <MetaRow label="Contact" value={lead.contact_name} />}
-            {lead.phone && <MetaRow label="Phone" value={<a href={`tel:${lead.phone}`}>{lead.phone}</a>} />}
+            {lead.phone && <MetaRow label="Phone" value={lead.phone} />}
             <MetaRow
               label="Email"
               value={lead.email
@@ -126,7 +137,7 @@ export default function LeadDrawer({ lead, type, onClose }) {
           </div>
 
           <div className="drawer-actions">
-            {lead.phone && <a className="btn" href={`tel:${lead.phone}`}>Call</a>}
+            {lead.phone && <button className="btn" onClick={handleCopyPhone}>{callCopied ? 'Copied' : 'Copy Number'}</button>}
             {lead.phone && <button className="btn btn-ghost" onClick={() => setShowCallResult(true)}>Log Result</button>}
             {lead.phone && <button className="btn btn-ghost" onClick={handleText}>Text</button>}
             {lead.email && <a className="btn btn-ghost" href={`mailto:${lead.email}`}>Email</a>}
