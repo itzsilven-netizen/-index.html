@@ -9,6 +9,7 @@ import PipelinePage from './components/PipelinePage'
 import TasksPage from './components/TasksPage'
 import CalendarPage, { CreateEventModal } from './components/CalendarPage'
 import CallDayPage from './components/CallDayPage'
+import DialQueuePage from './components/DialQueuePage'
 import VisualPage from './components/VisualPage'
 import StackPage from './components/StackPage'
 import OffersPage from './components/OffersPage'
@@ -79,6 +80,7 @@ export default function App() {
           {activePage === 'tasks' && <TasksPage onOpenLead={openLead} />}
           {activePage === 'calendar' && <CalendarPage onOpenLead={openLead} />}
           {activePage === 'callday' && <CallDayPage />}
+          {activePage === 'dialqueue' && <DialQueuePage />}
           {activePage === 'visual' && <VisualPage />}
           {activePage === 'stack' && <StackPage />}
           {activePage === 'offers' && <OffersPage />}

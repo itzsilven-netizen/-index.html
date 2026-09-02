@@ -1,0 +1,149 @@
+.dial-empty {
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.dial-empty h3 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.dial-empty p {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.dial-progress {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.dial-progress-track {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-elevated);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.dial-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+  transition: width 300ms ease;
+}
+
+.dial-progress-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.dial-card {
+  padding: 28px 28px 24px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.dial-priority {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 999px;
+  padding: 4px 12px;
+  margin-bottom: 14px;
+}
+
+.dial-business {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  margin-bottom: 8px;
+}
+
+.dial-meta {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.dial-phone-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.dial-phone {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-decoration: none;
+  letter-spacing: 0.5px;
+}
+
+.dial-copy {
+  padding: 6px 14px;
+  font-size: 12px;
+}
+
+.dial-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dial-call-btn {
+  text-decoration: none;
+}
+
+.dial-upnext {
+  padding: 4px 4px;
+}
+
+.dial-upnext-label {
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 700;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.dial-upnext-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.dial-upnext-item {
+  display: flex;
+  justify-content: space-between;
+  background: var(--bg-card);
+  padding: 9px 14px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.dial-upnext-score {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
