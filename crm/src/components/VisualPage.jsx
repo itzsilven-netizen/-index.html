@@ -4,8 +4,7 @@ import './VisualPage.css'
 // together: who's involved, the signal path (scrape -> email -> call -> close),
 // which CRM pages are modules of the same system, and where the ICP grows next.
 const NODES = {
-  kassava:    { x: 110,  y: 300, r: 42, label: 'Kassava',    sub: 'Closer' },
-  casava:     { x: 320,  y: 300, r: 46, label: 'Casava',     sub: 'casava.app', accent: true },
+  casava:     { x: 220,  y: 300, r: 46, label: 'Casava',     sub: 'casava.app', accent: true },
   signal:     { x: 640,  y: 300, r: 64, label: 'SIGNAL',     sub: 'the system', hub: true },
   scrape:     { x: 900,  y: 130, r: 36, label: 'Scrape',     sub: 'leads' },
   email:      { x: 1050, y: 130, r: 36, label: 'Email',      sub: 'campaign' },
@@ -21,8 +20,7 @@ const NODES = {
 }
 
 const FLOW_EDGES = [
-  ['kassava', 'casava', '50%'],
-  ['casava', 'signal', 'cold call channel'],
+  ['casava', 'signal', '50% · cold call channel'],
   ['signal', 'scrape', ''],
   ['scrape', 'email', ''],
   ['email', 'call', ''],
@@ -64,7 +62,7 @@ export default function VisualPage() {
       </div>
 
       <div className="card visual-card">
-        <svg viewBox="0 0 1300 700" className="visual-svg" role="img" aria-label="Business system map: Kassava closes for Casava; Signal runs the scrape, email, call, close path; the CRM pages are modules of Signal; ICP is service trades now, real estate later.">
+        <svg viewBox="0 0 1300 700" className="visual-svg" role="img" aria-label="Business system map: Casava feeds Signal on a 50% commission cold call channel; Signal runs the scrape, email, call, close path; the CRM pages are modules of Signal; ICP is service trades now, real estate later.">
           {/* module spokes (drawn first, sit behind flow edges) */}
           {MODULE_EDGES.map(id => {
             const p = edgePath(NODES.signal, NODES[id])
