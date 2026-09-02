@@ -69,6 +69,22 @@ export default function Dashboard({ onNavigate, onOpenLead }) {
           </div>
         </div>
 
+        <div className="signal-casava">
+          <div className="signal-casava-head">
+            <h3>About Casava</h3>
+            <button className="panel-link" onClick={() => onNavigate('offers')}>Full offers &rarr;</button>
+          </div>
+          <p>
+            Casava (casava.app) is a Long Island tech services firm, est. 2024, that automates business
+            operations with AI and digital tooling. Four offers: <b>AI Agents</b> (call handling, bookings,
+            lead qualification, 24/7 — salons, medical/dental, restaurants, gyms, law firms),{' '}
+            <b>Workflow Automation</b> (connects tools, kills manual work — any multi-tool business),{' '}
+            <b>Web Design</b> ($97/mo, conversion-focused sites — Casava's default push), and{' '}
+            <b>Facebook Ads Management</b> ($697/mo, done-for-you campaigns). This is who I close deals
+            through, on a 50% commission, cold-call channel.
+          </p>
+        </div>
+
         <div className="signal-brief-body">
           <div className="signal-rules">
             <h3>Operating Rules</h3>
