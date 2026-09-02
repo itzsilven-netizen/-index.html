@@ -11,6 +11,7 @@ import CalendarPage, { CreateEventModal } from './components/CalendarPage'
 import CallDayPage from './components/CallDayPage'
 import VisualPage from './components/VisualPage'
 import StackPage from './components/StackPage'
+import OffersPage from './components/OffersPage'
 import ComingSoon from './components/ComingSoon'
 import LeadDrawer from './components/LeadDrawer'
 import AddLeadForm from './components/AddLeadForm'
@@ -80,6 +81,7 @@ export default function App() {
           {activePage === 'callday' && <CallDayPage />}
           {activePage === 'visual' && <VisualPage />}
           {activePage === 'stack' && <StackPage />}
+          {activePage === 'offers' && <OffersPage />}
           {['automations', 'inbox', 'reports', 'settings'].includes(activePage) && (
             <ComingSoon pageId={activePage} />
           )}
