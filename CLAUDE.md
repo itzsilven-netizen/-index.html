@@ -16,9 +16,11 @@ session in this repo. Keep it short — put depth in `notes/` and link out.
 - **What it is now:** A personal sales operation / brand, not a product
   company. Long-term possibility: a middleman/agency layer listing AI
   systems rather than building them — undecided.
-- **Offer:** ROI-driven AI systems for service businesses (lead scrape →
-  email campaign → cold call close), NOT the old "5X more leads in 30 days"
-  claim, and pushing away from the company's default "sell websites" angle.
+- **Offer:** Business optimization — fixing service businesses' workflows and
+  tech so owners buy back their time (AI/automation is the mechanism, not
+  the pitch). Lead scrape → email campaign → cold call close. NOT the old
+  "5X more leads in 30 days" claim, and pushing away from the company's
+  default "sell websites" angle.
 - **Target customer (ICP):** High-ticket service businesses — HVAC,
   electrical, roofing, plumbing (ideally $500–$1,000+ client value).
   Long-term direction: real estate, once reputation/results exist.

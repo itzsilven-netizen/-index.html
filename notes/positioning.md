@@ -26,8 +26,13 @@
 
 ## What I'm actually selling (the offer)
 - NOT the old "5X more leads in 30 days" claim — dropped.
-- Selling: AI systems for service-based businesses, framed entirely around
-  ROI / results, not the tech itself.
+- Core positioning: **business optimization** — helping service businesses
+  fix their workflows and tech so the owner buys back their time. AI/
+  automation is the mechanism, not the pitch. Selling the outcome (time
+  back, fewer dropped balls, less manual work), not "AI systems."
+- Practically this is Casava's 4 offers (AI Agents, Workflow Automation,
+  Web Design, Facebook Ads — see `pricing.md`/Signal's Offers page), framed
+  entirely around ROI/results, not the tech itself.
 - Core motion: lead scrape → automated/CRM-driven email outreach campaigns →
   phone follow-up (cold call) to close.
 - Belief: email outreach is underrated — scalable, time-efficient, most
