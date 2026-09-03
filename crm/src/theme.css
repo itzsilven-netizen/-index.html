@@ -1,36 +1,36 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --bg: #070A12;
-  --bg-sidebar: #0B1020;
-  --bg-card: #101725;
-  --bg-elevated: #151E30;
-  --bg-hover: #1B2740;
-  --border: #263249;
-  --border-strong: #34435F;
-  --text-primary: #F7F9FC;
-  --text-secondary: #A7B0C0;
-  --text-muted: #697386;
-  --accent: #4D7CFF;
-  --accent-hover: #3D63D9;
-  --accent-soft: rgba(77, 124, 255, 0.16);
-  --accent-glow: rgba(77, 124, 255, 0.22);
-  --accent-2: #67E8F9;
-  --success: #34D399;
-  --success-soft: rgba(52, 211, 153, 0.16);
-  --warning: #FBBF24;
-  --warning-soft: rgba(251, 191, 36, 0.16);
-  --error: #FB7185;
-  --error-soft: rgba(251, 113, 133, 0.16);
-  --ink: #F7F9FC;
-  --ink-soft: #A7B0C0;
+  --bg: #F3EEE3;
+  --bg-sidebar: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #E7DFCC;
+  --bg-hover: #ECE6D8;
+  --border: rgba(60, 66, 78, 0.16);
+  --border-strong: rgba(60, 66, 78, 0.28);
+  --text-primary: #1B2230;
+  --text-secondary: #5B6472;
+  --text-muted: #99A1AE;
+  --accent: #1E3A5F;
+  --accent-hover: #14283F;
+  --accent-soft: rgba(30, 58, 95, 0.12);
+  --accent-glow: rgba(30, 58, 95, 0.18);
+  --accent-2: #3E6BA3;
+  --success: #1F8A5D;
+  --success-soft: rgba(31, 138, 93, 0.14);
+  --warning: #B8790A;
+  --warning-soft: rgba(184, 121, 10, 0.14);
+  --error: #C0392B;
+  --error-soft: rgba(192, 57, 43, 0.14);
+  --ink: #1B2230;
+  --ink-soft: #5B6472;
 
   --radius: 14px;
   --radius-sm: 10px;
   --transition: 180ms ease;
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-pop: 0 12px 40px rgba(0, 0, 0, 0.5);
-  --shadow-drawer: -12px 0 40px rgba(0, 0, 0, 0.45);
+  --shadow-card: 0 1px 3px rgba(27, 34, 48, 0.06);
+  --shadow-pop: 0 12px 40px rgba(27, 34, 48, 0.16);
+  --shadow-drawer: -12px 0 40px rgba(27, 34, 48, 0.14);
 }
 
 * {
