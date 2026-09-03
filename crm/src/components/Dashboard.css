@@ -34,6 +34,43 @@
   }
 }
 
+/* quick nav — dashboard as the home base for every page */
+.quick-nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.quick-nav-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 8px;
+  color: var(--text-secondary);
+  transition: border-color var(--transition), color var(--transition), transform var(--transition);
+}
+
+.quick-nav-tile svg {
+  color: var(--accent);
+}
+
+.quick-nav-tile span {
+  font-size: 11.5px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.quick-nav-tile:hover {
+  border-color: var(--accent);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
 /* signal brief */
 .signal-brief {
   padding: 22px 24px 24px;
