@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useLeadsStore } from '../store'
 import './TopBar.css'
 
-export default function TopBar({ onOpenLead, onQuickAdd, onMenuClick }) {
+export default function TopBar({ activePage, onNavigate, onOpenLead, onQuickAdd, onLogout }) {
   const { callLeads, emailLeads } = useLeadsStore()
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
@@ -51,10 +51,14 @@ export default function TopBar({ onOpenLead, onQuickAdd, onMenuClick }) {
 
   return (
     <header className="topbar">
-      <button className="menu-btn" onClick={onMenuClick} aria-label="Open menu">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-          <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" />
+      <button
+        className={`topbar-brand ${activePage === 'dashboard' ? 'active' : ''}`}
+        onClick={() => onNavigate('dashboard')}
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" className="logo-star">
+          <path d="M12 2 4 6.5v11L12 22l8-4.5v-11L12 2zm0 2.3 5.8 3.26L12 10.8 6.2 7.56 12 4.3zM6 9.3l5 2.82v6.1L6 15.4V9.3zm7 8.92v-6.1l5-2.82v6.1l-5 2.82z" />
         </svg>
+        <span>Signal</span>
       </button>
       <div className="topbar-search" ref={wrapRef}>
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" className="search-icon">
@@ -87,6 +91,7 @@ export default function TopBar({ onOpenLead, onQuickAdd, onMenuClick }) {
 
       <div className="topbar-actions">
         <button className="btn btn-outline-accent" onClick={onQuickAdd}>+ Add Lead</button>
+        <button className="topbar-logout" onClick={onLogout}>Log out</button>
       </div>
     </header>
   )
