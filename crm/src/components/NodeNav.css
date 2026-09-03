@@ -1,0 +1,68 @@
+.node-nav {
+  padding: 20px 16px 8px;
+  margin-bottom: 20px;
+}
+
+.node-nav-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 440px;
+}
+
+.nn-edge {
+  stroke: var(--border);
+  stroke-width: 1.5;
+}
+
+.nn-hub circle {
+  fill: var(--accent);
+}
+
+.nn-hub-label {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  fill: #fff;
+}
+
+.nn-node {
+  cursor: pointer;
+  outline: none;
+}
+
+.nn-node circle {
+  fill: var(--bg-card);
+  stroke: var(--border-strong);
+  stroke-width: 1.5;
+  transition: fill 150ms ease, stroke 150ms ease;
+}
+
+.nn-node-icon {
+  color: var(--accent);
+  pointer-events: none;
+}
+
+.nn-node-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  fill: var(--text-secondary);
+  pointer-events: none;
+}
+
+.nn-node:hover circle,
+.nn-node:focus-visible circle {
+  fill: var(--accent-soft);
+  stroke: var(--accent);
+}
+
+.nn-node:hover .nn-node-label,
+.nn-node:focus-visible .nn-node-label {
+  fill: var(--text-primary);
+}
+
+@media (max-width: 560px) {
+  .node-nav-svg {
+    max-height: 340px;
+  }
+}

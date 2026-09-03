@@ -9,7 +9,6 @@ import TasksPage from './components/TasksPage'
 import CalendarPage, { CreateEventModal } from './components/CalendarPage'
 import CallDayPage from './components/CallDayPage'
 import DialQueuePage from './components/DialQueuePage'
-import VisualPage from './components/VisualPage'
 import StackPage from './components/StackPage'
 import OffersPage from './components/OffersPage'
 import ComingSoon from './components/ComingSoon'
@@ -72,7 +71,6 @@ export default function App() {
           {activePage === 'calendar' && <CalendarPage onOpenLead={openLead} />}
           {activePage === 'callday' && <CallDayPage />}
           {activePage === 'dialqueue' && <DialQueuePage />}
-          {activePage === 'visual' && <VisualPage />}
           {activePage === 'stack' && <StackPage />}
           {activePage === 'offers' && <OffersPage />}
           {['automations', 'inbox', 'reports', 'settings'].includes(activePage) && (
