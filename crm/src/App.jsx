@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuthStore, useLeadsStore } from './store'
 import Auth from './components/Auth'
+import Sidebar from './components/Sidebar'
 import TopBar from './components/TopBar'
 import Dashboard from './components/Dashboard'
 import LeadsPage from './components/LeadsPage'
@@ -22,6 +23,7 @@ export default function App() {
   const [activePage, setActivePage] = useState('dashboard')
   const [drawerLead, setDrawerLead] = useState(null)
   const [showQuickAdd, setShowQuickAdd] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -54,6 +56,15 @@ export default function App() {
 
   return (
     <div className="app-shell">
+      <Sidebar
+        activePage={activePage}
+        onNavigate={setActivePage}
+        user={user}
+        onLogout={logout}
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
+
       <div className="app-main">
         <TopBar
           activePage={activePage}
@@ -61,6 +72,7 @@ export default function App() {
           onOpenLead={openLead}
           onQuickAdd={() => setShowQuickAdd(true)}
           onLogout={logout}
+          onMenuClick={() => setSidebarOpen(true)}
         />
 
         <main className="app-content">

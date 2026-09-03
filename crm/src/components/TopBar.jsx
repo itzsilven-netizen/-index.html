@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useLeadsStore } from '../store'
 import './TopBar.css'
 
-export default function TopBar({ activePage, onNavigate, onOpenLead, onQuickAdd, onLogout }) {
+export default function TopBar({ activePage, onNavigate, onOpenLead, onQuickAdd, onLogout, onMenuClick }) {
   const { callLeads, emailLeads } = useLeadsStore()
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
@@ -51,6 +51,11 @@ export default function TopBar({ activePage, onNavigate, onOpenLead, onQuickAdd,
 
   return (
     <header className="topbar">
+      <button className="menu-btn" onClick={onMenuClick} aria-label="Open menu">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+          <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" />
+        </svg>
+      </button>
       <button
         className={`topbar-brand ${activePage === 'dashboard' ? 'active' : ''}`}
         onClick={() => onNavigate('dashboard')}

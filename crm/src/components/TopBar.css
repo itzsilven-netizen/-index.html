@@ -11,6 +11,17 @@
   z-index: 50;
 }
 
+.menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  padding: 6px;
+  flex-shrink: 0;
+}
+
 .topbar-brand {
   display: flex;
   align-items: center;
@@ -150,6 +161,10 @@
   .topbar {
     padding: 12px 14px;
     gap: 10px;
+  }
+
+  .menu-btn {
+    display: flex;
   }
 
   .topbar-brand span {
