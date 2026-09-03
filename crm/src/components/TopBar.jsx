@@ -58,7 +58,7 @@ export default function TopBar({ activePage, onNavigate, onOpenLead, onQuickAdd,
         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" className="logo-star">
           <path d="M12 2 4 6.5v11L12 22l8-4.5v-11L12 2zm0 2.3 5.8 3.26L12 10.8 6.2 7.56 12 4.3zM6 9.3l5 2.82v6.1L6 15.4V9.3zm7 8.92v-6.1l5-2.82v6.1l-5 2.82z" />
         </svg>
-        <span>Signal</span>
+        <span>Home</span>
       </button>
       <div className="topbar-search" ref={wrapRef}>
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" className="search-icon">

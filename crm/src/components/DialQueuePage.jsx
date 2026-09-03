@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useLeadsStore } from '../store'
 import CallResultModal from './CallResultModal'
+import AddQueueModal from './AddQueueModal'
 import './DialQueuePage.css'
 
 // Walks straight down the imported call list, one lead at a time. On a
@@ -14,6 +15,7 @@ export default function DialQueuePage() {
   const [skipped, setSkipped] = useState(() => new Set())
   const [showResult, setShowResult] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [showAddQueue, setShowAddQueue] = useState(false)
 
   const queue = useMemo(() => {
     return callLeads
@@ -45,6 +47,7 @@ export default function DialQueuePage() {
           <h1>Dial Queue</h1>
           <p className="page-subtitle">Straight down the imported list, highest priority first. On your phone, tap Call. On a computer, copy the number into TextNow. Log the result — next lead loads automatically.</p>
         </div>
+        <button className="btn btn-ghost" onClick={() => setShowAddQueue(true)}>+ Add Queue</button>
       </div>
 
       {!current ? (
@@ -97,6 +100,8 @@ export default function DialQueuePage() {
           )}
         </>
       )}
+
+      {showAddQueue && <AddQueueModal onClose={() => setShowAddQueue(false)} />}
 
       {showResult && current && (
         <CallResultModal

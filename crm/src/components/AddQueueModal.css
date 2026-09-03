@@ -1,0 +1,33 @@
+.add-queue-card {
+  max-width: 480px;
+}
+
+.add-queue-hint {
+  padding: 0 24px;
+  margin-top: -6px;
+  margin-bottom: 14px;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.add-queue-textarea {
+  display: block;
+  width: calc(100% - 48px);
+  margin: 0 24px;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  resize: vertical;
+}
+
+.add-queue-summary {
+  padding: 12px 24px 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.add-queue-actions {
+  display: flex;
+  gap: 10px;
+  padding: 18px 24px 24px;
+}

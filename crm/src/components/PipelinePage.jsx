@@ -4,6 +4,13 @@ import './PipelinePage.css'
 
 const STAGES = ['new', 'contacted', 'qualified', 'booked', 'closed']
 const STAGE_LABELS = { new: 'New Lead', contacted: 'Contacted', qualified: 'Qualified', booked: 'Booked', closed: 'Closed Won' }
+const STAGE_DESCRIPTIONS = {
+  new: 'Not touched yet.',
+  contacted: 'Reached by call or email — no confirmed interest yet.',
+  qualified: 'Confirmed real fit — they have the need and the ability to act, and showed real interest. Ready to push toward booking.',
+  booked: 'Meeting or call locked on the calendar.',
+  closed: 'Deal won.',
+}
 
 export default function PipelinePage({ onOpenLead }) {
   const { callLeads, emailLeads, updateCallLead, updateEmailLead, addNurtureLog } = useLeadsStore()
@@ -61,8 +68,16 @@ export default function PipelinePage({ onOpenLead }) {
           <div className="kpi-label">Total Leads</div>
         </div>
         <div className="card kpi-card">
+          <div className="kpi-value">{byStage.contacted.length}</div>
+          <div className="kpi-label">Contacted</div>
+        </div>
+        <div className="card kpi-card">
           <div className="kpi-value">{byStage.qualified.length}</div>
           <div className="kpi-label">Qualified</div>
+        </div>
+        <div className="card kpi-card">
+          <div className="kpi-value">{byStage.booked.length}</div>
+          <div className="kpi-label">Booked</div>
         </div>
         <div className="card kpi-card">
           <div className="kpi-value">{closed}</div>
@@ -84,9 +99,10 @@ export default function PipelinePage({ onOpenLead }) {
             onDrop={(e) => handleDrop(e, stage)}
           >
             <div className="kanban-header">
-              <span className="kanban-title">{STAGE_LABELS[stage]}</span>
+              <span className="kanban-title"><i className="kanban-dot" />{STAGE_LABELS[stage]}</span>
               <span className="kanban-count">{byStage[stage].length}</span>
             </div>
+            <p className="kanban-desc">{STAGE_DESCRIPTIONS[stage]}</p>
 
             <div className="kanban-cards">
               {byStage[stage].length === 0 && (
@@ -94,31 +110,54 @@ export default function PipelinePage({ onOpenLead }) {
                   {stage === 'new' ? 'No new leads.' : `Drag leads here as they become ${STAGE_LABELS[stage].toLowerCase()}.`}
                 </div>
               )}
-              {byStage[stage].map(lead => (
-                <div
-                  key={`${lead._type}-${lead.id}`}
-                  className="kanban-card"
-                  draggable
-                  onDragStart={(e) => e.dataTransfer.setData('application/json', JSON.stringify(lead))}
-                  onClick={() => onOpenLead(lead)}
-                >
-                  <div className="kcard-name">{lead.business_name}</div>
-                  <div className="kcard-meta">
-                    {lead.contact_name || lead.niche || '—'}
-                  </div>
-                  <div className="kcard-footer">
-                    {lead._type === 'calls'
-                      ? <span className="kcard-contact">{lead.phone}</span>
-                      : <span className="kcard-contact">{lead.email}</span>}
-                    {lead.priority_score != null && lead.priority_score >= 3 && (
-                      <span className="kcard-priority">P{lead.priority_score}</span>
-                    )}
-                  </div>
-                </div>
-              ))}
+              {stage === 'contacted' ? (
+                <>
+                  <ContactedGroup label="Calls" leads={byStage.contacted.filter(l => l._type === 'calls')} onOpenLead={onOpenLead} />
+                  <ContactedGroup label="Emails" leads={byStage.contacted.filter(l => l._type === 'emails')} onOpenLead={onOpenLead} />
+                </>
+              ) : (
+                byStage[stage].map(lead => <LeadCard key={`${lead._type}-${lead.id}`} lead={lead} onOpenLead={onOpenLead} />)
+              )}
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  )
+}
+
+function ContactedGroup({ label, leads, onOpenLead }) {
+  if (leads.length === 0) return null
+  return (
+    <div className="kanban-subgroup">
+      <div className="kanban-subgroup-label">{label} <span>{leads.length}</span></div>
+      {leads.map(lead => <LeadCard key={`${lead._type}-${lead.id}`} lead={lead} onOpenLead={onOpenLead} />)}
+    </div>
+  )
+}
+
+function LeadCard({ lead, onOpenLead }) {
+  return (
+    <div
+      className="kanban-card"
+      draggable
+      onDragStart={(e) => e.dataTransfer.setData('application/json', JSON.stringify(lead))}
+      onClick={() => onOpenLead(lead)}
+    >
+      <div className="kcard-name">{lead.business_name}</div>
+      <div className="kcard-meta">
+        {lead.contact_name || lead.niche || '—'}
+      </div>
+      <div className="kcard-footer">
+        {lead._type === 'calls'
+          ? <span className="kcard-contact">{lead.phone}</span>
+          : <span className="kcard-contact">{lead.email}</span>}
+        <span className="kcard-badges">
+          {lead.emailSentAt && <span className="kcard-tag kcard-tag-sent">✉ sent</span>}
+          {lead.priority_score != null && lead.priority_score >= 3 && (
+            <span className="kcard-priority">P{lead.priority_score}</span>
+          )}
+        </span>
       </div>
     </div>
   )

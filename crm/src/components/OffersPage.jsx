@@ -51,6 +51,17 @@ const OFFERS = [
     pricing: '$697/mo',
     fit: 'ROI-service',
   },
+  {
+    name: 'Full AI + Web Package',
+    tagline: 'The bundle — AI Agents plus a Web Design build, sold together',
+    icp: ['A business that needs both a real site and call/booking coverage'],
+    problems: [
+      'No credible site AND missed calls — fixing one alone leaves the other bleeding leads',
+      'Buyer wants one deal, one vendor, instead of stitching services together',
+    ],
+    pricing: null,
+    fit: 'bundle',
+  },
 ]
 
 export default function OffersPage() {
@@ -69,6 +80,7 @@ export default function OffersPage() {
             <div className="offer-head">
               <h3>{o.name}</h3>
               {o.fit === 'ROI-service' && <span className="offer-fit-tag">Lead with this</span>}
+              {o.fit === 'bundle' && <span className="offer-fit-tag offer-fit-bundle">Bundle</span>}
             </div>
             <p className="offer-tagline">{o.tagline}</p>
 
