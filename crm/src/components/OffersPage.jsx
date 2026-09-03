@@ -13,6 +13,7 @@ const OFFERS = [
       'Unqualified leads eating up staff time',
       'No coverage nights/weekends when bookings actually happen',
     ],
+    why: 'These businesses live or die on the phone, and a front desk can\'t cover every ring during rush, after hours, or on a day off. Every missed call is a booking that calls the next name on Google instead.',
     pricing: null,
     fit: 'ROI-service',
   },
@@ -25,6 +26,7 @@ const OFFERS = [
       'Data silos — nothing talks to anything else',
       'Operational drag from repetitive manual work',
     ],
+    why: 'Once a business runs on more than a couple of tools, someone\'s job quietly becomes re-typing the same information into each one. That\'s paid time spent on zero new revenue — the exact hours this pitch is about buying back.',
     pricing: null,
     fit: 'ROI-service',
   },
@@ -37,6 +39,7 @@ const OFFERS = [
       'Low conversion on existing site',
       'Lack of professional credibility at first click',
     ],
+    why: 'A prospect Googles the business before they ever call. An outdated or missing site loses that prospect in the first three seconds, before the phone even rings — no amount of ad spend or referrals fixes that first impression.',
     pricing: '$97/mo — hosting, SSL, domain, 5 monthly updates',
     fit: 'default push',
   },
@@ -48,6 +51,7 @@ const OFFERS = [
       'Low customer acquisition',
       'Ad spend going nowhere without testing/targeting',
     ],
+    why: 'A good offer with no consistent lead flow stalls out on referrals alone. Most owners running their own ads are guessing at targeting and never testing creative — money spent without a system behind it.',
     pricing: '$697/mo',
     fit: 'ROI-service',
   },
@@ -59,6 +63,7 @@ const OFFERS = [
       'No credible site AND missed calls — fixing one alone leaves the other bleeding leads',
       'Buyer wants one deal, one vendor, instead of stitching services together',
     ],
+    why: 'Fixing only the site or only the phones leaves the other leak wide open — a beautiful site behind a phone nobody answers, or a sharp AI agent booking calls off a page that loses trust in three seconds. This closes both leaks in one deal.',
     pricing: null,
     fit: 'bundle',
   },
@@ -96,6 +101,11 @@ export default function OffersPage() {
               <ul className="offer-problems">
                 {o.problems.map(p => <li key={p}>{p}</li>)}
               </ul>
+            </div>
+
+            <div className="offer-section">
+              <span className="offer-section-label">Why they need it</span>
+              <p className="offer-why">{o.why}</p>
             </div>
 
             {o.pricing && (

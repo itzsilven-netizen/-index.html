@@ -98,6 +98,12 @@
   border-radius: 1px;
 }
 
+.offer-why {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
 .offer-pricing {
   font-size: 12px;
   font-weight: 600;

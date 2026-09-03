@@ -4,13 +4,13 @@ import Auth from './components/Auth'
 import Sidebar from './components/Sidebar'
 import TopBar from './components/TopBar'
 import Dashboard from './components/Dashboard'
-import LeadsPage from './components/LeadsPage'
 import PipelinePage from './components/PipelinePage'
 import TasksPage from './components/TasksPage'
 import CalendarPage, { CreateEventModal } from './components/CalendarPage'
 import CallDayPage from './components/CallDayPage'
 import DialQueuePage from './components/DialQueuePage'
 import StackPage from './components/StackPage'
+import NurturePage from './components/NurturePage'
 import OffersPage from './components/OffersPage'
 import ComingSoon from './components/ComingSoon'
 import LeadDrawer from './components/LeadDrawer'
@@ -77,13 +77,13 @@ export default function App() {
 
         <main className="app-content">
           {activePage === 'dashboard' && <Dashboard onNavigate={setActivePage} onOpenLead={openLead} />}
-          {activePage === 'leads' && <LeadsPage onOpenLead={openLead} />}
-          {activePage === 'pipeline' && <PipelinePage onOpenLead={openLead} />}
+          {activePage === 'pipeline' && <PipelinePage onOpenLead={openLead} onAddLead={() => setShowQuickAdd(true)} />}
           {activePage === 'tasks' && <TasksPage onOpenLead={openLead} />}
           {activePage === 'calendar' && <CalendarPage onOpenLead={openLead} />}
           {activePage === 'callday' && <CallDayPage />}
           {activePage === 'dialqueue' && <DialQueuePage />}
           {activePage === 'stack' && <StackPage />}
+          {activePage === 'nurture' && <NurturePage onOpenLead={openLead} />}
           {activePage === 'offers' && <OffersPage />}
           {['automations', 'inbox', 'reports', 'settings'].includes(activePage) && (
             <ComingSoon pageId={activePage} />

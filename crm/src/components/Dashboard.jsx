@@ -207,7 +207,7 @@ export default function Dashboard({ onNavigate, onOpenLead }) {
       <div className="card dash-panel">
         <div className="panel-header">
           <h3>Top Priority — Call These Next</h3>
-          <button className="panel-link" onClick={() => onNavigate('leads')}>All leads →</button>
+          <button className="panel-link" onClick={() => onNavigate('pipeline')}>All leads →</button>
         </div>
         {highPriority.length === 0 ? (
           <div className="panel-empty">No high-priority new leads right now.</div>

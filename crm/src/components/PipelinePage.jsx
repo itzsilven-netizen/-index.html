@@ -12,7 +12,7 @@ const STAGE_DESCRIPTIONS = {
   closed: 'Deal won.',
 }
 
-export default function PipelinePage({ onOpenLead }) {
+export default function PipelinePage({ onOpenLead, onAddLead }) {
   const { callLeads, emailLeads, updateCallLead, updateEmailLead, addNurtureLog } = useLeadsStore()
   const [dragOverStage, setDragOverStage] = useState(null)
 
@@ -58,8 +58,9 @@ export default function PipelinePage({ onOpenLead }) {
       <div className="page-header">
         <div>
           <h1>Sales Pipeline</h1>
-          <p className="page-subtitle">Track and manage your sales opportunities.</p>
+          <p className="page-subtitle">Track and manage your sales opportunities. Click a card to call, email, or text — same lead, same drawer.</p>
         </div>
+        <button className="btn btn-outline-accent" onClick={onAddLead}>+ Add Lead</button>
       </div>
 
       <div className="kpi-grid pipeline-kpis">
