@@ -100,6 +100,11 @@
   flex-wrap: wrap;
 }
 
+.dial-call-btn {
+  text-decoration: none;
+  min-width: 160px;
+}
+
 .dial-copy-btn {
   min-width: 200px;
 }

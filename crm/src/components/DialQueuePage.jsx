@@ -3,11 +3,12 @@ import { useLeadsStore } from '../store'
 import CallResultModal from './CallResultModal'
 import './DialQueuePage.css'
 
-// Walks straight down the imported call list, one lead at a time — copy the
-// number into whatever's actually dialing (TextNow, phone, whatever), log
-// the result, auto-advance. No dialer API to hook into (TextNow doesn't
-// expose one), so this stays copy-and-paste rather than pretending to
-// auto-dial.
+// Walks straight down the imported call list, one lead at a time. On a
+// phone, tel: opens the native dialer directly — a real one-tap call. On a
+// Chromebook/desktop, tel: instead hands off to Chrome's Android-phone-link
+// prompt (a dead end without a paired Android device), so Copy stays there
+// as the working fallback for pasting into TextNow. Both actions always
+// show; which one actually works depends on where Signal is open.
 export default function DialQueuePage() {
   const { callLeads } = useLeadsStore()
   const [skipped, setSkipped] = useState(() => new Set())
@@ -42,7 +43,7 @@ export default function DialQueuePage() {
       <div className="page-header">
         <div>
           <h1>Dial Queue</h1>
-          <p className="page-subtitle">Straight down the imported list, highest priority first. Copy the number, paste into TextNow, log the result — next lead loads automatically.</p>
+          <p className="page-subtitle">Straight down the imported list, highest priority first. On your phone, tap Call. On a computer, copy the number into TextNow. Log the result — next lead loads automatically.</p>
         </div>
       </div>
 
@@ -74,7 +75,8 @@ export default function DialQueuePage() {
             </div>
 
             <div className="dial-actions">
-              <button className="btn dial-copy-btn" onClick={copyNumber}>{copied ? 'Copied — paste into TextNow' : 'Copy Number'}</button>
+              <a className="btn dial-call-btn" href={`tel:${current.phone}`}>Call {current.phone}</a>
+              <button className="btn btn-ghost" onClick={copyNumber}>{copied ? 'Copied' : 'Copy Number'}</button>
               <button className="btn btn-ghost" onClick={() => setShowResult(true)}>Log Result</button>
               <button className="btn btn-ghost" onClick={skip}>Skip</button>
             </div>
