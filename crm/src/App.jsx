@@ -9,6 +9,7 @@ import TasksPage from './components/TasksPage'
 import CalendarPage, { CreateEventModal } from './components/CalendarPage'
 import CallDayPage from './components/CallDayPage'
 import DialQueuePage from './components/DialQueuePage'
+import EmailPage from './components/EmailPage'
 import StackPage from './components/StackPage'
 import NurturePage from './components/NurturePage'
 import OffersPage from './components/OffersPage'
@@ -82,6 +83,7 @@ export default function App() {
           {activePage === 'calendar' && <CalendarPage onOpenLead={openLead} />}
           {activePage === 'callday' && <CallDayPage />}
           {activePage === 'dialqueue' && <DialQueuePage />}
+          {activePage === 'email' && <EmailPage onOpenLead={openLead} />}
           {activePage === 'stack' && <StackPage />}
           {activePage === 'nurture' && <NurturePage onOpenLead={openLead} />}
           {activePage === 'offers' && <OffersPage />}
