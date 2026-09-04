@@ -145,6 +145,10 @@
       <h4>Agents</h4>
       <div class="agent-item active" data-agent="content"><span class="dot"></span>Content Agent</div>
       <div class="agent-item" data-agent="outreach"><span class="dot"></span>Outreach Agent</div>
+      <div class="agent-item" data-agent="followup"><span class="dot"></span>Follow-up Agent</div>
+      <div class="agent-item" data-agent="objection"><span class="dot"></span>Objection Agent</div>
+      <div class="agent-item" data-agent="callscript"><span class="dot"></span>Call Script Agent</div>
+      <div class="agent-item" data-agent="research"><span class="dot"></span>Lead Research</div>
       <div class="agent-item" data-agent="oracle"><span class="dot idle"></span>Oracle (Trends)</div>
       <div class="agent-item" data-agent="pipeline"><span class="dot idle"></span>Pipeline Tracker</div>
     </div>
@@ -204,6 +208,7 @@
   const LS_KEYS = 'apex_agent_os_keys';
   const LS_PROVIDER = 'apex_agent_os_provider';
   const LS_MODELS = 'apex_agent_os_models';
+  const LS_AGENTPROV = 'apex_agent_os_agent_providers';
   const LS_CARDS = 'apex_agent_os_cards';
   const LS_CHAT = 'apex_agent_os_chat';
   const LS_MEMORY = 'apex_agent_os_memory';
@@ -211,6 +216,7 @@
   const state = {
     keys: JSON.parse(localStorage.getItem(LS_KEYS) || '{}'),
     models: JSON.parse(localStorage.getItem(LS_MODELS) || '{}'),
+    agentProviders: JSON.parse(localStorage.getItem(LS_AGENTPROV) || '{}'),
     provider: localStorage.getItem(LS_PROVIDER) || 'anthropic',
     cards: JSON.parse(localStorage.getItem(LS_CARDS) || 'null') || seedCards(),
     chat: JSON.parse(localStorage.getItem(LS_CHAT) || 'null') || [
@@ -330,11 +336,12 @@
     }
   };
 
-  async function callAI(systemPrompt, userMessage){
-    const key = activeKey();
+  async function callAI(systemPrompt, userMessage, providerOverride){
+    const prov = providerOverride || state.provider;
+    const key = (state.keys[prov] || '').trim();
     if(!key) return offlineDraft(userMessage);
-    const p = PROVIDERS[state.provider];
-    const model = (state.models[state.provider] || p.defaultModel).trim();
+    const p = PROVIDERS[prov];
+    const model = (state.models[prov] || p.defaultModel).trim();
     try{
       const res = await fetch(typeof p.url === 'function' ? p.url(key, model) : p.url, {
         method:'POST',
@@ -343,11 +350,11 @@
       });
       if(!res.ok){
         const err = await res.text();
-        return `[${PROVIDER_LABELS[state.provider]} API error ${res.status}] ${err.slice(0,300)}`;
+        return `[${PROVIDER_LABELS[prov]} API error ${res.status}] ${err.slice(0,300)}`;
       }
       return p.parse(await res.json()) || '(empty response)';
     }catch(e){
-      return `[Network error calling ${PROVIDER_LABELS[state.provider]}: ${e.message}]`;
+      return `[Network error calling ${PROVIDER_LABELS[prov]}: ${e.message}]`;
     }
   }
 
@@ -357,7 +364,47 @@
 
   const AGENT_PROMPTS = {
     content: `You are the Content Agent inside Apex Standard's Agent OS. Apex Standard sells business optimization (AI/automation as the mechanism, not the pitch) to high-ticket service businesses (HVAC, electrical, roofing, plumbing, $500-1000+ client value), reselling Casava's AI systems on 50% commission. Write tight, concrete blog posts or social posts. Never use the "5X more leads in 30 days" framing. Keep output ready to publish, no meta-commentary.`,
-    outreach: `You are the Outreach Agent inside Apex Standard's Agent OS. Write cold outreach emails/scripts for Kassava, a sales closer targeting HVAC/electrical/roofing/plumbing business owners, offering business optimization via AI/automation (not "websites", not generic lead-gen hype). Keep it short, direct, no fluff, one clear CTA (book a call).`,
+    outreach: `You are the Outreach Agent inside Apex Standard's Agent OS. Write cold outreach emails and SMS for Kassava, a sales closer targeting high-ticket local service business owners (HVAC, electrical, roofing, plumbing, pool service; $500-1000+ job value).
+
+HARD RULES — these are non-negotiable:
+- Kassava does NOT own Casava. He is with Apex Standard and sets up systems built on Casava's platform. Never write "I run Casava" or imply ownership.
+- NEVER invent a specific observation about the prospect's website, reviews, ads or operations. If you don't have a verified fact, ask a question instead of asserting one. A false specific gets the email deleted.
+- Use the prospect's first name if given.
+- Exactly ONE call to action, with ONE time commitment. Never offer "10 minutes" and a 15-minute link in the same email.
+- Lead with the owner's problem (lost jobs, lost evenings, slow response), not the product. Don't say "chatbot", "website", or "AI" as the pitch — those are mechanisms, not reasons to buy.
+- Banned: "5X more leads", "in 30 days", "game-changer", "revolutionize", "I hope this email finds you well".
+- Short. Under 120 words for email. Plain language a contractor would actually use.
+
+Output the email/SMS only, ready to send. No commentary.`,
+
+    followup: `You are the Follow-up Agent for Apex Standard. Write follow-up steps (2 through 5) in a cold outreach sequence for Kassava, targeting local service business owners.
+
+Each follow-up must add something new — a different angle, a concrete example, a shorter ask — never "just bumping this" or "circling back". Progressively shorter as the sequence goes on; the last one is a one-line breakup email. Same hard rules as cold outreach: no invented specifics about their business, one CTA, no hype language, Kassava is with Apex Standard and does not own Casava. Output the follow-ups only, numbered and labeled with suggested send delay.`,
+
+    objection: `You are the Objection Agent for Apex Standard. Kassava is a cold-calling closer selling business optimization systems to local service business owners.
+
+Given an objection ("we already have someone", "send me some info", "how much is it", "not interested", "I'm too busy", "does it really work"), give him:
+1. What the objection usually actually means underneath
+2. A short spoken response — conversational, how a person really talks on a phone, not a script he'd read
+3. The question to ask right after, to get the conversation moving again
+
+Never pushy or manipulative. The goal is an honest conversation, not a trapped prospect. Keep it tight.`,
+
+    callscript: `You are the Call Script Agent for Apex Standard. Write cold call openers and discovery questions for Kassava, calling owners of local service businesses (HVAC, roofing, plumbing, electrical, pool).
+
+Structure: a 10-second opener that earns the next 30 seconds, a permission-based transition, then 4-6 discovery questions that surface where the owner is losing jobs or losing time. Questions should be open and specific to how these businesses actually run (missed calls, after-hours inquiries, quoting speed, follow-up, scheduling).
+
+Write it how people actually speak — contractions, short sentences, no corporate phrasing. Mark where he should stop and listen. No hype, no fake urgency.`,
+
+    research: `You are the Lead Research Agent for Apex Standard. Kassava will paste in a lead (business name, trade, location, rating, review count, site, contact).
+
+Return:
+1. The likeliest operational bottleneck for that trade at that apparent size
+2. The angle to lead with, in one sentence
+3. Two specific questions worth asking on a call
+4. Any red flags suggesting a poor fit (too small, likely no budget, wrong trade)
+
+CRITICAL: Distinguish clearly between what the lead data actually tells you and what you are inferring. Never state an inference as a verified fact — Kassava may put it in an email, and a false specific kills the deal. Label guesses as guesses.`,
     oracle: `You are Oracle, a trend-spotting agent for Apex Standard. Given a topic, describe a plausible current trend angle in home-service/local-business AI automation and suggest a hook for a post about it. Be concrete and specific, not generic.`,
     pipeline: `You are the Pipeline Tracker agent for Apex Standard. Help the user log or reason about leads/deals in their sales pipeline for the HVAC/electrical/roofing/plumbing ICP. Be concise.`
   };
@@ -382,13 +429,32 @@
   // ---------- Main board ----------
   const mainView = document.getElementById('mainView');
 
+  const PLACEHOLDERS = {
+    content: "e.g. 'Blog post on what missed after-hours calls actually cost a roofing company'",
+    outreach: "e.g. 'Cold email to Christiaan at AZ Oasis Pools, Chandler AZ, pool service, 4.3 stars / 50 reviews'",
+    followup: "e.g. 'Follow-ups for the AZ Oasis pool email — no reply after 3 days'",
+    objection: "e.g. 'We already have a guy who handles our website'",
+    callscript: "e.g. 'Opener for calling HVAC owners cold, mid-morning, 5-10 trucks'",
+    research: "Paste the whole lead card here — name, trade, location, rating, site, contact",
+    oracle: "e.g. 'What's trending in local service business automation this week?'",
+    pipeline: "e.g. 'AZ Oasis Pools — emailed Sep 4, no reply yet'"
+  };
+
   function renderMain(){
     if(state.activeView==='memory'){ renderMemory(); return; }
     const agent = state.activeAgent;
-    const labels = {content:'Content Agent', outreach:'Outreach Agent', oracle:'Oracle', pipeline:'Pipeline Tracker'};
+    const labels = {
+      content:'Content Agent', outreach:'Outreach Agent', followup:'Follow-up Agent',
+      objection:'Objection Agent', callscript:'Call Script Agent', research:'Lead Research',
+      oracle:'Oracle', pipeline:'Pipeline Tracker'
+    };
     const subs = {
       content:'Blog posts & social content for the Casava AI-systems offer',
-      outreach:'Cold emails & scripts for the HVAC/electrical/roofing/plumbing ICP',
+      outreach:'Cold emails & SMS for high-ticket local service businesses',
+      followup:'Sequence steps 2-5 — the ones that actually get replies',
+      objection:'What they really mean, and what to say back',
+      callscript:'Openers & discovery questions for booked calls',
+      research:'Paste a lead → angle, questions, red flags',
       oracle:'Trend spotting → content hooks',
       pipeline:'Leads and deals in progress'
     };
@@ -397,9 +463,15 @@
         <div><h2>${labels[agent]}</h2><div class="sub">${subs[agent]}</div></div>
       </div>
       <div class="composer">
-        <textarea id="composerInput" placeholder="Describe what to draft… e.g. 'Outreach email for a roofing company that just expanded to a second crew'"></textarea>
+        <textarea id="composerInput" placeholder="${(PLACEHOLDERS[agent]||'Describe what to draft…').replace(/"/g,'&quot;')}"></textarea>
         <div class="row">
           ${agent==='content' ? `<select id="contentType"><option value="Blog">Blog post</option><option value="Social">Social post</option></select>` : ''}
+          <select id="agentProvider" title="Which AI runs this agent">
+            <option value="">Default (${PROVIDER_LABELS[state.provider]})</option>
+            <option value="anthropic"${state.agentProviders[agent]==='anthropic'?' selected':''}>Claude</option>
+            <option value="openai"${state.agentProviders[agent]==='openai'?' selected':''}>OpenAI</option>
+            <option value="gemini"${state.agentProviders[agent]==='gemini'?' selected':''}>Gemini (free)</option>
+          </select>
           <button class="btn" id="draftBtn">Draft with ${labels[agent]}</button>
           <span style="font-size:11px;color:var(--dim);" id="draftStatus"></span>
         </div>
@@ -410,6 +482,12 @@
         <div class="column" data-status="done"><h3>Approved / Sent</h3><div class="list"></div></div>
       </div>
     `;
+    const apSel = document.getElementById('agentProvider');
+    apSel.addEventListener('change', ()=>{
+      if(apSel.value) state.agentProviders[agent] = apSel.value;
+      else delete state.agentProviders[agent];
+      localStorage.setItem(LS_AGENTPROV, JSON.stringify(state.agentProviders));
+    });
     document.getElementById('draftBtn').addEventListener('click', ()=>runDraft(agent));
     renderCards();
   }
@@ -457,8 +535,9 @@
     const prompt = input.value.trim();
     if(!prompt) return;
     statusEl.textContent = 'drafting…';
-    const tag = agent==='content' ? (document.getElementById('contentType').value) : (agent==='outreach' ? 'Email' : 'Note');
-    const result = await callAI(AGENT_PROMPTS[agent], prompt);
+    const TAGS = {outreach:'Email', followup:'Sequence', objection:'Objection', callscript:'Script', research:'Research', oracle:'Trend', pipeline:'Note'};
+    const tag = agent==='content' ? document.getElementById('contentType').value : (TAGS[agent] || 'Note');
+    const result = await callAI(AGENT_PROMPTS[agent], prompt, state.agentProviders[agent]);
     const card = {
       id: cryptoId(), agent, status:'idea', tag,
       title: prompt.slice(0,70) + (prompt.length>70?'…':''),
