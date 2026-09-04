@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apex Standard — Agent OS</title>
+<style>
+  :root{
+    --bg:#0b0d12; --panel:#12151c; --panel2:#171b24; --border:#242a36;
+    --text:#e8eaf0; --dim:#8a8f9c; --accent:#5b8cff; --accent2:#7c5bff;
+    --good:#3ecf8e; --warn:#e0a53e; --danger:#e05b5b; --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:var(--bg); color:var(--text); height:100vh; overflow:hidden;
+  }
+  .app{ display:grid; grid-template-columns:240px 1fr 360px; grid-template-rows:56px 1fr; height:100vh; }
+  header{
+    grid-column:1/4; grid-row:1; display:flex; align-items:center; gap:16px;
+    padding:0 16px; border-bottom:1px solid var(--border); background:var(--panel);
+  }
+  header .logo{font-weight:700; letter-spacing:.3px; white-space:nowrap;}
+  header .logo span{color:var(--accent);}
+  .global-search{
+    flex:1; position:relative; max-width:640px;
+  }
+  .global-search input{
+    width:100%; padding:10px 14px; border-radius:20px; border:1px solid var(--border);
+    background:var(--panel2); color:var(--text); font-size:14px; outline:none;
+  }
+  .global-search input:focus{border-color:var(--accent);}
+  .global-search .hint{position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:11px; color:var(--dim);}
+  .apikey-btn{
+    margin-left:auto; font-size:12px; color:var(--dim); background:none; border:1px solid var(--border);
+    border-radius:6px; padding:6px 10px; cursor:pointer;
+  }
+  .apikey-btn:hover{color:var(--text); border-color:var(--accent);}
+  nav.sidebar{
+    grid-column:1; grid-row:2; background:var(--panel); border-right:1px solid var(--border);
+    padding:14px 10px; overflow-y:auto;
+  }
+  .nav-section{margin-bottom:18px;}
+  .nav-section h4{font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--dim); margin:0 0 8px 8px;}
+  .agent-item{
+    display:flex; align-items:center; gap:8px; padding:8px 8px; border-radius:8px; cursor:pointer; font-size:13px;
+  }
+  .agent-item:hover{background:var(--panel2);}
+  .agent-item.active{background:var(--panel2); border:1px solid var(--border);}
+  .dot{width:8px; height:8px; border-radius:50%; background:var(--good); flex:none;}
+  .dot.idle{background:var(--dim);}
+  main{
+    grid-column:2; grid-row:2; overflow-y:auto; padding:20px 24px;
+  }
+  .board-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;}
+  .board-header h2{margin:0; font-size:18px;}
+  .board-header .sub{font-size:12px; color:var(--dim); margin-top:2px;}
+  .btn{
+    background:var(--accent); color:#fff; border:none; padding:8px 14px; border-radius:8px;
+    font-size:13px; cursor:pointer; font-weight:600;
+  }
+  .btn:hover{filter:brightness(1.1);}
+  .btn.secondary{background:var(--panel2); border:1px solid var(--border); color:var(--text);}
+  .btn.danger{background:var(--danger);}
+  .btn:disabled{opacity:.5; cursor:not-allowed;}
+  .columns{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .column{ background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:12px; min-height:200px;}
+  .column h3{font-size:13px; margin:0 0 10px; color:var(--dim); text-transform:uppercase; letter-spacing:.04em;}
+  .card{
+    background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:10px 12px;
+    margin-bottom:10px; font-size:13px;
+  }
+  .card .tag{
+    display:inline-block; font-size:10px; padding:2px 6px; border-radius:4px; background:#1e2430; color:var(--accent);
+    margin-bottom:6px;
+  }
+  .card .title{font-weight:600; margin-bottom:4px;}
+  .card .body{color:var(--dim); font-size:12px; white-space:pre-wrap; max-height:120px; overflow-y:auto;}
+  .card .actions{display:flex; gap:6px; margin-top:8px;}
+  .card .actions button{font-size:11px; padding:4px 8px; border-radius:6px; border:1px solid var(--border); background:var(--panel); color:var(--text); cursor:pointer;}
+  .card .actions button:hover{border-color:var(--accent); color:var(--accent);}
+  .composer{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:20px;
+  }
+  .composer textarea{
+    width:100%; min-height:70px; background:var(--panel2); border:1px solid var(--border); border-radius:8px;
+    color:var(--text); padding:10px; font-size:13px; font-family:inherit; resize:vertical;
+  }
+  .composer .row{display:flex; gap:8px; margin-top:10px; align-items:center; flex-wrap:wrap;}
+  select{
+    background:var(--panel2); color:var(--text); border:1px solid var(--border); border-radius:6px; padding:6px 8px; font-size:12px;
+  }
+  aside.chat{
+    grid-column:3; grid-row:2; background:var(--panel); border-left:1px solid var(--border);
+    display:flex; flex-direction:column;
+  }
+  .chat-header{padding:14px 16px; border-bottom:1px solid var(--border);}
+  .chat-header h3{margin:0; font-size:14px;}
+  .chat-header .sub{font-size:11px; color:var(--dim);}
+  .chat-log{ flex:1; overflow-y:auto; padding:14px 16px; display:flex; flex-direction:column; gap:10px;}
+  .msg{max-width:92%; padding:9px 12px; border-radius:10px; font-size:13px; line-height:1.4; white-space:pre-wrap;}
+  .msg.user{align-self:flex-end; background:var(--accent); color:#fff;}
+  .msg.agent{align-self:flex-start; background:var(--panel2); border:1px solid var(--border);}
+  .msg.system{align-self:center; background:none; color:var(--dim); font-size:11px; font-style:italic;}
+  .chat-input{ padding:12px; border-top:1px solid var(--border); display:flex; gap:8px;}
+  .chat-input input{
+    flex:1; background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:10px 12px;
+    color:var(--text); font-size:13px; outline:none;
+  }
+  .chat-input input:focus{border-color:var(--accent);}
+  .empty{color:var(--dim); font-size:13px; padding:20px; text-align:center;}
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; z-index:50;
+  }
+  .modal-backdrop.open{display:flex;}
+  .modal{background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:22px; width:420px; max-width:90vw;}
+  .modal h3{margin-top:0;}
+  .modal p{font-size:12px; color:var(--dim); line-height:1.5;}
+  .modal input{width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--panel2); color:var(--text); margin:10px 0;}
+  .modal .row{display:flex; gap:8px; justify-content:flex-end;}
+  ::-webkit-scrollbar{width:8px; height:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--border); border-radius:4px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div class="logo">Apex <span>Agent OS</span></div>
+    <div class="global-search">
+      <input id="globalSearch" type="text" placeholder="Search or ask anything… (e.g. 'draft an outreach email for an HVAC lead')" />
+      <span class="hint">↵</span>
+    </div>
+    <button class="apikey-btn" id="apiKeyBtn">API key: not set</button>
+  </header>
+
+  <nav class="sidebar">
+    <div class="nav-section">
+      <h4>Agents</h4>
+      <div class="agent-item active" data-agent="content"><span class="dot"></span>Content Agent</div>
+      <div class="agent-item" data-agent="outreach"><span class="dot"></span>Outreach Agent</div>
+      <div class="agent-item" data-agent="oracle"><span class="dot idle"></span>Oracle (Trends)</div>
+      <div class="agent-item" data-agent="pipeline"><span class="dot idle"></span>Pipeline Tracker</div>
+    </div>
+    <div class="nav-section">
+      <h4>Views</h4>
+      <div class="agent-item" data-view="board"><span class="dot"></span>Board</div>
+      <div class="agent-item" data-view="memory"><span class="dot idle"></span>Memory Log</div>
+    </div>
+  </nav>
+
+  <main id="mainView"></main>
+
+  <aside class="chat">
+    <div class="chat-header">
+      <h3>Group Chat</h3>
+      <div class="sub">Talk to any agent directly — replies come from Claude</div>
+    </div>
+    <div class="chat-log" id="chatLog"></div>
+    <div class="chat-input">
+      <input id="chatInput" type="text" placeholder="Message the agents…" />
+      <button class="btn" id="chatSend">Send</button>
+    </div>
+  </aside>
+</div>
+
+<div class="modal-backdrop" id="apiModal">
+  <div class="modal">
+    <h3>Connect Claude API</h3>
+    <p>Your key is stored only in this browser's localStorage — it's never sent anywhere except directly to Anthropic's API from your machine. Get a key at console.anthropic.com. Without a key, agents run in offline-draft mode (canned templates instead of live generation).</p>
+    <input id="apiKeyInput" type="password" placeholder="sk-ant-..." />
+    <div class="row">
+      <button class="btn secondary" id="apiKeyClear">Clear</button>
+      <button class="btn" id="apiKeySave">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const LS_KEY = 'apex_agent_os_key';
+  const LS_CARDS = 'apex_agent_os_cards';
+  const LS_CHAT = 'apex_agent_os_chat';
+  const LS_MEMORY = 'apex_agent_os_memory';
+
+  const state = {
+    apiKey: localStorage.getItem(LS_KEY) || '',
+    cards: JSON.parse(localStorage.getItem(LS_CARDS) || 'null') || seedCards(),
+    chat: JSON.parse(localStorage.getItem(LS_CHAT) || 'null') || [
+      {role:'system', text:'Agent OS initialized. Content Agent, Outreach Agent and Oracle are online.'}
+    ],
+    memory: JSON.parse(localStorage.getItem(LS_MEMORY) || 'null') || [],
+    activeAgent: 'content',
+    activeView: 'board',
+  };
+
+  function save(){
+    localStorage.setItem(LS_CARDS, JSON.stringify(state.cards));
+    localStorage.setItem(LS_CHAT, JSON.stringify(state.chat));
+    localStorage.setItem(LS_MEMORY, JSON.stringify(state.memory));
+  }
+
+  function seedCards(){
+    return [
+      {id: cryptoId(), agent:'content', status:'idea', tag:'Blog', title:'Why HVAC companies lose $30k/yr to missed calls', body:'Draft idea — angle: after-hours AI call answering + booking as the hook, not "websites".'},
+      {id: cryptoId(), agent:'content', status:'idea', tag:'Social', title:'Oracle trend: "AI receptionist" searches up this week', body:'Quote a trending post about AI front-desk automation, add Apex Standard\\'s take, publish.'},
+      {id: cryptoId(), agent:'outreach', status:'idea', tag:'Email', title:'Cold outreach — roofing ICP', body:'Target: roofing companies $500-1000+ ticket value. Angle: buy back your time, not "more leads".'},
+    ];
+  }
+
+  function cryptoId(){ return 'c_' + Math.random().toString(36).slice(2,10); }
+
+  // ---------- API key modal ----------
+  const apiKeyBtn = document.getElementById('apiKeyBtn');
+  const apiModal = document.getElementById('apiModal');
+  const apiKeyInput = document.getElementById('apiKeyInput');
+  function refreshKeyBtn(){
+    apiKeyBtn.textContent = state.apiKey ? 'API key: connected ●' : 'API key: not set';
+  }
+  apiKeyBtn.addEventListener('click', ()=>{
+    apiKeyInput.value = state.apiKey;
+    apiModal.classList.add('open');
+  });
+  document.getElementById('apiKeySave').addEventListener('click', ()=>{
+    state.apiKey = apiKeyInput.value.trim();
+    localStorage.setItem(LS_KEY, state.apiKey);
+    refreshKeyBtn();
+    apiModal.classList.remove('open');
+    pushChat('system', state.apiKey ? 'Claude API connected. Agents will now generate live output.' : 'API key cleared.');
+  });
+  document.getElementById('apiKeyClear').addEventListener('click', ()=>{
+    state.apiKey=''; localStorage.removeItem(LS_KEY); apiKeyInput.value=''; refreshKeyBtn();
+  });
+  apiModal.addEventListener('click', (e)=>{ if(e.target===apiModal) apiModal.classList.remove('open'); });
+  refreshKeyBtn();
+
+  // ---------- Claude API call ----------
+  async function callClaude(systemPrompt, userMessage){
+    if(!state.apiKey){
+      return offlineDraft(userMessage);
+    }
+    try{
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{
+          'content-type':'application/json',
+          'x-api-key': state.apiKey,
+          'anthropic-version':'2023-06-01',
+          'anthropic-dangerous-direct-browser-access':'true'
+        },
+        body: JSON.stringify({
+          model:'claude-sonnet-4-5',
+          max_tokens:800,
+          system: systemPrompt,
+          messages:[{role:'user', content:userMessage}]
+        })
+      });
+      if(!res.ok){
+        const err = await res.text();
+        return `[API error ${res.status}] ${err.slice(0,300)}`;
+      }
+      const data = await res.json();
+      return (data.content && data.content[0] && data.content[0].text) || '(empty response)';
+    }catch(e){
+      return `[Network error calling Claude API: ${e.message}]`;
+    }
+  }
+
+  function offlineDraft(prompt){
+    return `(offline draft — connect an API key for live generation)\n\nRe: "${prompt}"\n\nDraft outline:\n- Hook: buying back the owner's time, not "more leads"\n- Proof point: concrete workflow fixed (missed calls, slow quoting, no follow-up)\n- CTA: 15-min audit call\n\nAdd your Claude API key (top right) to have this generated for real.`;
+  }
+
+  const AGENT_PROMPTS = {
+    content: `You are the Content Agent inside Apex Standard's Agent OS. Apex Standard sells business optimization (AI/automation as the mechanism, not the pitch) to high-ticket service businesses (HVAC, electrical, roofing, plumbing, $500-1000+ client value), reselling Casava's AI systems on 50% commission. Write tight, concrete blog posts or social posts. Never use the "5X more leads in 30 days" framing. Keep output ready to publish, no meta-commentary.`,
+    outreach: `You are the Outreach Agent inside Apex Standard's Agent OS. Write cold outreach emails/scripts for Kassava, a sales closer targeting HVAC/electrical/roofing/plumbing business owners, offering business optimization via AI/automation (not "websites", not generic lead-gen hype). Keep it short, direct, no fluff, one clear CTA (book a call).`,
+    oracle: `You are Oracle, a trend-spotting agent for Apex Standard. Given a topic, describe a plausible current trend angle in home-service/local-business AI automation and suggest a hook for a post about it. Be concrete and specific, not generic.`,
+    pipeline: `You are the Pipeline Tracker agent for Apex Standard. Help the user log or reason about leads/deals in their sales pipeline for the HVAC/electrical/roofing/plumbing ICP. Be concise.`
+  };
+
+  // ---------- Sidebar ----------
+  document.querySelectorAll('.agent-item[data-agent]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      document.querySelectorAll('.agent-item[data-agent]').forEach(x=>x.classList.remove('active'));
+      el.classList.add('active');
+      state.activeAgent = el.dataset.agent;
+      state.activeView='board';
+      renderMain();
+    });
+  });
+  document.querySelectorAll('.agent-item[data-view]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      state.activeView = el.dataset.view;
+      renderMain();
+    });
+  });
+
+  // ---------- Main board ----------
+  const mainView = document.getElementById('mainView');
+
+  function renderMain(){
+    if(state.activeView==='memory'){ renderMemory(); return; }
+    const agent = state.activeAgent;
+    const labels = {content:'Content Agent', outreach:'Outreach Agent', oracle:'Oracle', pipeline:'Pipeline Tracker'};
+    const subs = {
+      content:'Blog posts & social content for the Casava AI-systems offer',
+      outreach:'Cold emails & scripts for the HVAC/electrical/roofing/plumbing ICP',
+      oracle:'Trend spotting → content hooks',
+      pipeline:'Leads and deals in progress'
+    };
+    mainView.innerHTML = `
+      <div class="board-header">
+        <div><h2>${labels[agent]}</h2><div class="sub">${subs[agent]}</div></div>
+      </div>
+      <div class="composer">
+        <textarea id="composerInput" placeholder="Describe what to draft… e.g. 'Outreach email for a roofing company that just expanded to a second crew'"></textarea>
+        <div class="row">
+          ${agent==='content' ? `<select id="contentType"><option value="Blog">Blog post</option><option value="Social">Social post</option></select>` : ''}
+          <button class="btn" id="draftBtn">Draft with ${labels[agent]}</button>
+          <span style="font-size:11px;color:var(--dim);" id="draftStatus"></span>
+        </div>
+      </div>
+      <div class="columns">
+        <div class="column" data-status="idea"><h3>Idea / Draft</h3><div class="list"></div></div>
+        <div class="column" data-status="review"><h3>Ready for Review</h3><div class="list"></div></div>
+        <div class="column" data-status="done"><h3>Approved / Sent</h3><div class="list"></div></div>
+      </div>
+    `;
+    document.getElementById('draftBtn').addEventListener('click', ()=>runDraft(agent));
+    renderCards();
+  }
+
+  function renderCards(){
+    const agent = state.activeAgent;
+    document.querySelectorAll('.column').forEach(col=>{
+      const status = col.dataset.status;
+      const list = col.querySelector('.list');
+      const items = state.cards.filter(c=>c.agent===agent && c.status===status);
+      list.innerHTML = items.length ? '' : '<div class="empty">Nothing here</div>';
+      items.forEach(card=>{
+        const div = document.createElement('div');
+        div.className='card';
+        div.innerHTML = `
+          <span class="tag">${card.tag}</span>
+          <div class="title">${escapeHtml(card.title)}</div>
+          <div class="body">${escapeHtml(card.body)}</div>
+          <div class="actions">
+            ${status==='idea' ? '<button data-act="review">Move to Review</button>' : ''}
+            ${status==='review' ? '<button data-act="approve">Approve</button><button data-act="idea">Back to Draft</button>' : ''}
+            ${status==='done' ? '<button data-act="copy">Copy</button>' : ''}
+            <button data-act="delete">Delete</button>
+          </div>
+        `;
+        div.querySelectorAll('button').forEach(btn=>{
+          btn.addEventListener('click', ()=>{
+            const act = btn.dataset.act;
+            if(act==='review') card.status='review';
+            if(act==='approve'){ card.status='done'; logMemory(`Approved & published: "${card.title}" (${card.agent})`); }
+            if(act==='idea') card.status='idea';
+            if(act==='copy') navigator.clipboard.writeText(card.body);
+            if(act==='delete') state.cards = state.cards.filter(c=>c.id!==card.id);
+            save(); renderCards();
+          });
+        });
+        list.appendChild(div);
+      });
+    });
+  }
+
+  async function runDraft(agent){
+    const input = document.getElementById('composerInput');
+    const statusEl = document.getElementById('draftStatus');
+    const prompt = input.value.trim();
+    if(!prompt) return;
+    statusEl.textContent = 'drafting…';
+    const tag = agent==='content' ? (document.getElementById('contentType').value) : (agent==='outreach' ? 'Email' : 'Note');
+    const result = await callClaude(AGENT_PROMPTS[agent], prompt);
+    const card = {
+      id: cryptoId(), agent, status:'idea', tag,
+      title: prompt.slice(0,70) + (prompt.length>70?'…':''),
+      body: result
+    };
+    state.cards.unshift(card);
+    save();
+    input.value='';
+    statusEl.textContent='';
+    renderCards();
+    logMemory(`${agent} agent drafted: "${card.title}"`);
+  }
+
+  function renderMemory(){
+    mainView.innerHTML = `
+      <div class="board-header"><div><h2>Memory Log</h2><div class="sub">Everything the agents have done, auto-logged</div></div></div>
+      <div class="column" style="max-width:700px;"><h3>History</h3><div id="memList"></div></div>
+    `;
+    const memList = document.getElementById('memList');
+    if(!state.memory.length){ memList.innerHTML='<div class="empty">No memory entries yet — draft something or approve a card.</div>'; return; }
+    memList.innerHTML='';
+    state.memory.slice().reverse().forEach(m=>{
+      const div = document.createElement('div');
+      div.className='card';
+      div.innerHTML = `<div class="body">${escapeHtml(m.time)} — ${escapeHtml(m.text)}</div>`;
+      memList.appendChild(div);
+    });
+  }
+
+  function logMemory(text){
+    state.memory.push({time:new Date().toLocaleString(), text});
+    save();
+  }
+
+  function escapeHtml(s){
+    return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // ---------- Chat / global search ----------
+  const chatLog = document.getElementById('chatLog');
+  const chatInput = document.getElementById('chatInput');
+  const chatSend = document.getElementById('chatSend');
+  const globalSearch = document.getElementById('globalSearch');
+
+  function pushChat(role, text){
+    state.chat.push({role, text});
+    save();
+    renderChat();
+  }
+
+  function renderChat(){
+    chatLog.innerHTML='';
+    state.chat.forEach(m=>{
+      const div = document.createElement('div');
+      div.className = 'msg ' + m.role;
+      div.textContent = m.text;
+      chatLog.appendChild(div);
+    });
+    chatLog.scrollTop = chatLog.scrollHeight;
+  }
+
+  async function sendChat(text){
+    if(!text.trim()) return;
+    pushChat('user', text);
+    const thinking = {role:'agent', text:'…thinking'};
+    state.chat.push(thinking); renderChat();
+    const reply = await callClaude(
+      `You are the group-chat coordinator for Apex Standard's Agent OS, standing in for the Content Agent, Outreach Agent, Oracle and Pipeline Tracker together. Apex Standard sells business optimization/AI automation (Casava's systems, 50% commission) to HVAC/electrical/roofing/plumbing owners. Answer directly and usefully, routing to whichever "agent" role fits the question.`,
+      text
+    );
+    state.chat[state.chat.length-1] = {role:'agent', text:reply};
+    save(); renderChat();
+    logMemory(`Chat: "${text.slice(0,60)}"`);
+  }
+
+  chatSend.addEventListener('click', ()=>{ const v=chatInput.value; chatInput.value=''; sendChat(v); });
+  chatInput.addEventListener('keydown', e=>{ if(e.key==='Enter'){ const v=chatInput.value; chatInput.value=''; sendChat(v); }});
+
+  globalSearch.addEventListener('keydown', e=>{
+    if(e.key==='Enter'){
+      const v = globalSearch.value; globalSearch.value='';
+      state.activeView='board';
+      chatInput.focus();
+      sendChat(v);
+    }
+  });
+
+  renderChat();
+  renderMain();
+})();
+</script>
+
+</body>
+</html>
