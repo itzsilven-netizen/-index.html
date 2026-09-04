@@ -20,9 +20,9 @@ Built from: Micah's Noble Cyber "screenplay" structure + Alex Hormozi's cold-cal
 
 ## 1. The Opener (word-for-word, permission-based — THIS is your first 7 seconds)
 
-> "Hey [Name], it's [Your Name] over at [Agency Name]. I know I'm catching you out of the blue here — I'll keep this short. Give me thirty seconds, and you tell me if it's worth continuing."
+> "Hey [Name], it's [Your Name] over at [Agency Name]. I know I'm catching you out of the blue here, but was hoping to grab a quick half minute. I'll let you know why I called, and you can let me know if it's relevant or not."
 
-*(Then STOP TALKING. The pause after "worth continuing" is doing the work — it hands control back to them and signals you're not about to steamroll them with a pitch. This is the trust bridge. Say it flat and unhurried, like you already expect a yes — don't rush into the pitch.)*
+*(Then STOP TALKING. The pause after "relevant or not" is doing the work — it hands control back to them and signals you're not about to steamroll them with a pitch. This is the trust bridge. Say it slightly slower than feels natural, don't rush into the pitch.)*
 
 ---
 
@@ -128,7 +128,7 @@ This works because it's specific, personalized, and triggers curiosity rather th
 ## Delivery Notes (from Hormozi)
 
 - Practice out loud, not just silently reading — tone carries most of the weight.
-- Don't rush the opener; the pause after "worth continuing" is doing real work — let it sit.
+- Don't rush the opener; the pause after "is it relevant or not" is doing real work — let it sit.
 - Record your best calls ("game tape") and listen back before your next session to reset your energy.
 - Match energy to the prospect — mirror a rushed tone with brevity, a relaxed tone with more warmth.
 
