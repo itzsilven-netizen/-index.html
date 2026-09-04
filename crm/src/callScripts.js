@@ -1,9 +1,9 @@
 // Deterministic, no-API-key call script generator — the phone-script sibling
 // of emailDrafts.js. Every lead gets a script built from the same fixed
-// opener (the 7-second trust bridge, identical on every call by design) plus
-// a credibility/problem/solution section personalized from real fields on
-// the lead (business_name, niche, city, pitch_angle, rating/review_count),
-// then the same CTA, objection handling, and close used across every call.
+// opener (the 7-second trust bridge, identical on every call by design),
+// then credibility + a leading question + their problem, then whichever of
+// the 3 offers matches the lead's pitch_angle (leading question, solution,
+// a free live demo, and a CTA), objections, and the close.
 //
 // Kept deterministic (no randomization) unlike emailDrafts' spintax pools —
 // a script is read live during a call, not sent as bulk copy, so there's no
@@ -13,23 +13,39 @@
 const CALLER_NAME = 'Silven'
 const COMPANY_NAME = 'Casava'
 
+// "Still to Fill In" from the script doc — a real proof point (client
+// count, result, or credential) for the credibility line. One line to
+// update here once you have one; every call picks it up automatically.
+const PROOF_POINT = null // e.g. "12 local businesses" or "$40K in recovered bookings"
+
 const OPENER = (lead) =>
   `Hey ${lead.contact_name || 'there'}, it's ${CALLER_NAME} over at ${COMPANY_NAME}. I know I'm catching you out of the blue here, but was hoping to grab a quick half minute. I'll let you know why I called, and you can let me know if it's relevant or not.`
 
 const nicheOrGeneric = (lead) => lead.niche || 'service-based businesses'
 
 const credibilityLine = (lead) =>
-  `Quick background on us — I run ${COMPANY_NAME}, we help optimize service-based industries like ${nicheOrGeneric(lead)} with AI receptionists, chatbots, and websites, so businesses stop losing customers to missed calls and slow response times.`
+  `Quick background — I run ${COMPANY_NAME}${PROOF_POINT ? ` (${PROOF_POINT})` : ''}. We fix this exact thing for service-based businesses in ${nicheOrGeneric(lead)}: missed calls, cold website traffic, and thin review counts, all quietly costing you customers.`
+
+const LEADING_Q =
+  "Let me ask you something — when a call comes in after you're closed, or someone lands on your site with a question, or a happy customer walks out without leaving a review... what actually happens?"
+
+const problemAck = (lead) =>
+  `Yeah — that's the exact same blind spot we see across ${nicheOrGeneric(lead)}. It happens constantly, and most owners don't realize how much it's costing them until they actually see it.`
 
 // Problem/solution/impact, keyed off the same pitch_angle field emailDrafts.js
 // uses — so a lead's phone script and email pitch stay pointed at the same
-// gap instead of contradicting each other.
+// gap instead of contradicting each other. The 3 primary offers (matching
+// the current script doc) also carry leadingQ/freeDemo/offerCta for the
+// fuller call flow; the rest keep the legacy problem/solution/impact shape.
 const PITCH_ANGLE_CONTENT = {
   'AI Receptionist': {
+    leadingQ: "Right now, if a call comes in while you're on the other line, or after you've closed for the day — where does it go?",
     problem: (l) =>
       `What we're seeing with ${l.business_name} and businesses like it is that calls after hours or during busy periods either go to voicemail or just don't get picked up — and most owners never see that as a lost sale, it just shows up as silence.`,
     solution: () =>
       `So what we do is build a 24/7 AI receptionist that picks up instantly, answers the common questions, and books or routes the call — so nothing falls through the cracks.`,
+    freeDemo: 'Easiest way to show you — I can literally call your business right now, live, on this call, and let you hear exactly what the AI receptionist sounds like answering. Takes two minutes, no charge.',
+    offerCta: 'Want me to run that demo right now, or would you rather I show you on a quick call tomorrow?',
     impact: 'missed-call recovery and after-hours coverage',
   },
   Website: {
@@ -40,19 +56,26 @@ const PITCH_ANGLE_CONTENT = {
     impact: 'website lead capture',
   },
   'Website Chatbot': {
+    leadingQ: 'When someone lands on your website with a question right now — do they actually get an answer, or do they just leave?',
     problem: (l) =>
       `Took a look at ${l.business_name}'s site — there's no way for a visitor to get an answer right when they land on it, so if they don't call right away, they probably just leave.`,
     solution: () =>
-      `So what we do is add a chatbot that answers instantly the moment someone lands on the site, so that visitor doesn't just bounce to a competitor.`,
+      `So what we do is add a chatbot to your site that answers the second someone lands on it — so a visitor who wouldn't have called doesn't just bounce to a competitor.`,
+    freeDemo: "I can pull up a live version of the chatbot right now and show you exactly how it'd respond to your own visitors — no charge, right here on the call.",
+    offerCta: 'Want to see that now, or should I walk you through it on a quick call tomorrow?',
     impact: 'website lead capture',
   },
   'Review Automation': {
+    leadingQ: "Out of everyone you've done a good job for this month — how many do you think actually went and left you a review without being asked?",
     problem: (l) =>
       l.rating != null
         ? `${l.business_name} already has a solid ${l.rating}★ rating (${l.review_count || 0} reviews) — more of those would likely bring in more calls, without much extra work on your end.`
         : `${l.business_name} already has a good reputation, but without a steady flow of new reviews, that's harder for new customers to find.`,
     solution: () =>
-      `So what we do is automate review requests after every job, so that reputation keeps growing without you having to chase it manually.`,
+      `So what we do is automate review requests after every job, so that rating keeps climbing without you having to chase it manually.`,
+    freeDemo: "I can show you the exact text a customer would get right after a job — takes thirty seconds, no charge, and you'll see exactly how it reads.",
+    offerCta: 'Want me to show you that now, or should I just send over a set of reply templates for your current reviews — no charge either way?',
+    offerCtaNote: 'Easiest "yes" of the three — closes as a no-meeting deliverable, good fallback when someone\'s hesitant about booking.',
     impact: 'reputation and review growth',
   },
   'Lead Follow-Up AI': {
@@ -80,17 +103,19 @@ const PITCH_ANGLE_CONTENT = {
 
 const contentFor = (lead) => PITCH_ANGLE_CONTENT[lead.pitch_angle] || PITCH_ANGLE_CONTENT['AI Receptionist']
 
+// Generic CTA — used only when a pitch angle has no offerCta of its own
+// (the 4 legacy angles outside the 3 primary offers).
 const CTA = (lead) =>
   `The reason I called is to offer a complimentary look at where ${lead.business_name} is likely leaking leads right now — or if you'd rather keep it high-level, I can just share a few things we're seeing work well for ${nicheOrGeneric(lead)} businesses. Would you be game to hop on a call tomorrow or the next day?`
 
 const OBJECTIONS = [
   {
     q: "We're not interested / already have someone",
-    a: 'Totally fair — most people say that until they see what\'s actually slipping through. Worth a quick look, no pressure either way?',
+    a: "Fair enough — most people say that right up until they see what's actually slipping through. Let's just look — two minutes, right now.",
   },
   {
     q: 'Just send me some info',
-    a: "I can, but honestly a 2-minute look does more than a PDF ever will. Can I just grab 15 minutes instead — I'll keep it fast and to the point.",
+    a: "I can, but a two-minute look beats a PDF every time. Give me fifteen minutes instead — I'll keep it fast.",
   },
   {
     q: 'How much does this cost?',
@@ -105,20 +130,31 @@ const OBJECTIONS = [
 const CLOSE = (lead) =>
   `Perfect, I've got you down for [day/time]. I'll send a calendar invite to ${lead.phone ? 'this number' : 'your email'} — sound good?`
 
-// Returns { opener, credibility, problem, solution, impact, cta, objections, close }
-// — a plain object rather than one flattened string, so the drawer can render
-// it as labeled blocks the same way the printed script/artifact does.
+// Voicemail / pattern-interrupt drop — for voicemail, or when the standard
+// opener gets brushed off fast. Specific and personalized enough to trigger
+// curiosity instead of a sales-defense reflex.
+const voicemailLine = (lead) =>
+  `Hey ${lead.business_name}, I'm calling about ${lead.pitch_angle ? contentFor(lead).impact : 'something specific I noticed'}. Give me a call back.`
+
+// Returns { opener, credibility, leadingQ, problemAck, problem, solution,
+// freeDemo, cta, offerCtaNote, objections, close, voicemail } — a plain
+// object rather than one flattened string, so the drawer can render it as
+// labeled blocks the same way the printed script/artifact does.
 export const scriptForLead = (lead) => {
   const content = contentFor(lead)
   return {
     opener: OPENER(lead),
     credibility: credibilityLine(lead),
+    leadingQ: content.leadingQ || LEADING_Q,
+    problemAck: content.leadingQ ? null : problemAck(lead),
     problem: content.problem(lead),
     solution: content.solution(lead),
-    impact: content.impact,
-    cta: CTA(lead),
+    freeDemo: content.freeDemo || null,
+    cta: content.offerCta || CTA(lead),
+    offerCtaNote: content.offerCtaNote || null,
     objections: OBJECTIONS,
     close: CLOSE(lead),
+    voicemail: voicemailLine(lead),
   }
 }
 
@@ -134,11 +170,16 @@ export const scriptText = (lead) => {
     `CREDIBILITY`,
     s.credibility,
     ``,
+    `LEADING QUESTION`,
+    s.leadingQ,
+    ...(s.problemAck ? ['', 'PROBLEM ACK', s.problemAck] : []),
+    ``,
     `PROBLEM`,
     s.problem,
     ``,
     `SOLUTION`,
     s.solution,
+    ...(s.freeDemo ? ['', 'FREE DEMO', s.freeDemo] : []),
     ``,
     `CALL TO ACTION`,
     s.cta,
@@ -148,5 +189,8 @@ export const scriptText = (lead) => {
     ``,
     `CLOSE`,
     s.close,
+    ``,
+    `VOICEMAIL / PATTERN-INTERRUPT`,
+    s.voicemail,
   ].join('\n')
 }

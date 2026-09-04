@@ -193,9 +193,13 @@ export default function LeadDrawer({ lead, type, onClose }) {
               </p>
               <ScriptBlock label="Opener" text={script.opener} />
               <ScriptBlock label="Credibility" text={script.credibility} />
+              <ScriptBlock label="Leading Question" text={script.leadingQ} />
+              {script.problemAck && <ScriptBlock label="Problem Ack" text={script.problemAck} />}
               <ScriptBlock label="Problem" text={script.problem} />
               <ScriptBlock label="Solution" text={script.solution} />
+              {script.freeDemo && <ScriptBlock label="Free Demo" text={script.freeDemo} />}
               <ScriptBlock label="Call to Action" text={script.cta} />
+              {script.offerCtaNote && <p className="script-panel-hint">{script.offerCtaNote}</p>}
               <div className="script-block">
                 <span className="script-label">Objections</span>
                 <div className="script-objections">
@@ -208,6 +212,7 @@ export default function LeadDrawer({ lead, type, onClose }) {
                 </div>
               </div>
               <ScriptBlock label="Close" text={script.close} />
+              <ScriptBlock label="Voicemail / Pattern-Interrupt" text={script.voicemail} />
               <div className="script-panel-actions">
                 <button className="btn" onClick={handleCopyScript}>
                   {scriptCopied ? 'Copied!' : 'Copy Script'}
