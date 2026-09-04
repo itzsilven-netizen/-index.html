@@ -8,6 +8,12 @@ const TOP_ITEM = { id: 'dashboard', label: 'Home', icon: 'M3 13h8V3H3v10zm0 8h8v
 // Calendar sit outside all three groups, not under any of them.
 const GROUPS = [
   {
+    label: 'Overview',
+    items: [
+      { id: 'pipeline', label: 'Pipeline', icon: 'M4 5h4v14H4V5zm6 4h4v10h-4V9zm6-4h4v14h-4V5z' },
+    ],
+  },
+  {
     label: 'Offer',
     items: [
       { id: 'offers', label: 'Offers', icon: 'M20 12a8 8 0 1 1-16 0 8 8 0 0 1 16 0zm-8-5a1.2 1.2 0 1 0 0 2.4A1.2 1.2 0 0 0 12 7zm-1.6 4v6.4h1.8v-1.6h.5c1.77 0 3.1-1.15 3.1-2.9S14.47 10 12.7 10h-2.3zm1.8 1.5h.4c.85 0 1.4.5 1.4 1.4s-.55 1.4-1.4 1.4h-.4v-2.8z' },
@@ -16,8 +22,7 @@ const GROUPS = [
   {
     label: 'Outreach',
     items: [
-      { id: 'pipeline', label: 'Pipeline', icon: 'M4 5h4v14H4V5zm6 4h4v10h-4V9zm6-4h4v14h-4V5z' },
-      { id: 'dialqueue', label: 'Dial Queue', icon: 'M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z' },
+      { id: 'dialqueue', label: 'Dial', icon: 'M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z' },
       { id: 'callday', label: 'Call Day', icon: 'M12 2a10 10 0 100 20 10 10 0 000-20zm0 2a8 8 0 110 16 8 8 0 010-16zm-1 3v6l5 3 .99-1.73L13 11.4V7z' },
     ],
   },

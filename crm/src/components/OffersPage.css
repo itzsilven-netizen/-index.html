@@ -104,6 +104,26 @@
   line-height: 1.55;
 }
 
+.offer-variants {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.offer-variants li {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  padding: 6px 10px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+}
+
+.offer-variants li b {
+  color: var(--text-primary);
+}
+
 .offer-pricing {
   font-size: 12px;
   font-weight: 600;
