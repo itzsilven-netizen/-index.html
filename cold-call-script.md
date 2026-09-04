@@ -13,26 +13,33 @@ Built from: Micah's Noble Cyber "screenplay" structure + Alex Hormozi's cold-cal
 - **85% delivery, 15% words.** Tone, pace, and pauses carry the call more than the script itself. Say it like you believe it.
 - **Stick to the script until you've earned the right to freestyle.** Volume + repetition beats improvisation early on.
 - **Low-friction close only.** You're not selling the service on this call — you're selling 15 minutes.
+- **Own the call.** You're informing them why you called, not begging for their time. State things, don't hedge them. No "um," no upspeak, no trailing off — flat, confident, unhurried.
+- **Ask what you already know the answer to.** The leading questions below aren't for your benefit — they're so the prospect says the problem out loud themselves. People believe their own words more than yours.
 
 ---
 
 ## 1. The Opener (word-for-word, permission-based — THIS is your first 7 seconds)
 
-> "Hey [Name], it's [Your Name] over at [Agency Name]. I know I'm catching you out of the blue here, but was hoping to grab a quick half minute. I'll let you know why I called, and you can let me know if it's relevant or not."
+> "Hey [Name], it's [Your Name] over at [Agency Name]. I know I'm catching you out of the blue here — I'll keep this short. Give me thirty seconds, and you tell me if it's worth continuing."
 
-*(Then STOP TALKING. The pause after "relevant or not" is doing the work — it hands control back to them and signals you're not about to steamroll them with a pitch. This is the trust bridge. Say it slightly slower than feels natural, don't rush into the pitch.)*
+*(Then STOP TALKING. The pause after "worth continuing" is doing the work — it hands control back to them and signals you're not about to steamroll them with a pitch. This is the trust bridge. Say it flat and unhurried, like you already expect a yes — don't rush into the pitch.)*
 
 ---
 
 ## 2. The Pitch (word-for-word — credibility → problem → solution)
 
 **Credibility:**
-> "Quick background on us: we're [Agency Name], and we help optimize service-based industries — think AI receptionists, chatbots, and reviews — so businesses in [niche] stop losing customers to missed calls, slow response times, and a thin review count."
+> "Quick background — I run [Agency Name]. We fix this exact thing for service-based businesses in [niche]: missed calls, cold website traffic, and thin review counts, all quietly costing you customers."
 
-*(Swap in a real proof point once you have one — a client result, a number, an award/recognition — same slot Micah fills with "Cyber Security Excellence Award." A stranger needs a reason to believe you in the first 30 seconds.)*
+*(Swap in a real proof point once you have one — a client result, a number, an award/recognition — same slot Micah fills with "Cyber Security Excellence Award." State it as fact, not a pitch — you're not asking them to believe you, you're telling them what you do.)*
 
-**The problem (general — leads into whichever of the 3 offers below fits what they reveal):**
-> "This gives us a pretty unique view into [niche] right now — most businesses are losing leads after hours, off the website, or because their review count doesn't reflect how good they actually are. And most owners don't even know how much of that is happening, because it never shows up as a 'lost sale' — it just shows up as silence. We've seen this be a real blind spot."
+**The leading question (you already know the answer — let them say it):**
+> "Let me ask you something — when a call comes in after you're closed, or someone lands on your site with a question, or a happy customer walks out without leaving a review... what actually happens?"
+
+*(Pause. Let them answer. Whatever they say, it confirms the gap — now you know which of the 3 offers below to lead with.)*
+
+**The problem (bridges their answer into the pitch):**
+> "Yeah — that's the exact same blind spot we see across [niche]. It happens constantly, and most owners don't realize how much it's costing them until they actually see it."
 
 ---
 
@@ -42,27 +49,45 @@ Don't pitch all three back-to-back. Listen for which pain they confirm on the pr
 
 ### Offer 1 — AI Receptionist (missed/after-hours calls)
 
+**Leading question:**
+> "Right now, if a call comes in while you're on the other line, or after you've closed for the day — where does it go?"
+
 **Solution:**
 > "So what we do is build a 24/7 AI receptionist that picks up instantly, answers the common questions, and books or routes the call — so nothing falls through the cracks."
 
+**Free live demo (say this before the CTA — it removes the risk from saying yes):**
+> "Easiest way to show you — I can literally call your business right now, live, on this call, and let you hear exactly what the AI receptionist sounds like answering. Takes two minutes, no charge."
+
 **CTA:**
-> "The reason I called is to offer a complimentary look at where [business name] is likely leaking calls right now — would you be game to hop on a call tomorrow or the next day?"
+> "Want me to run that demo right now, or would you rather I show you on a quick call tomorrow?"
 
 ### Offer 2 — Website Chatbot (website visitors going cold)
+
+**Leading question:**
+> "When someone lands on your website with a question right now — do they actually get an answer, or do they just leave?"
 
 **Solution:**
 > "So what we do is add a chatbot to your site that answers the second someone lands on it — so a visitor who wouldn't have called doesn't just bounce to a competitor."
 
+**Free live demo:**
+> "I can pull up a live version of the chatbot right now and show you exactly how it'd respond to your own visitors — no charge, right here on the call."
+
 **CTA:**
-> "The reason I called is to offer a complimentary look at what's actually happening with your site traffic right now — would you be up for a quick call tomorrow or the next day?"
+> "Want to see that now, or should I walk you through it on a quick call tomorrow?"
 
 ### Offer 3 — Review Automation (fastest close, easiest yes)
+
+**Leading question:**
+> "Out of everyone you've done a good job for this month — how many do you think actually went and left you a review without being asked?"
 
 **Solution:**
 > "So what we do is automate review requests after every job, so that rating keeps climbing without you having to chase it manually."
 
+**Free live demo:**
+> "I can show you the exact text a customer would get right after a job — takes thirty seconds, no charge, and you'll see exactly how it reads."
+
 **CTA (lowest-friction of the three — good for a fast yes/cash flow):**
-> "The reason I called is to offer a complimentary set of reply templates for your reviews — no charge, just send them your way. Want me to put those together, or would a quick call be easier?"
+> "Want me to show you that now, or should I just send over a set of reply templates for your current reviews — no charge either way?"
 
 *(Offer 3 is the easiest "yes" on the call — if someone's hesitant on a meeting, this is the one to fall back to since it can close as a no-meeting-needed deliverable and still starts the relationship/cash flow.)*
 
@@ -71,10 +96,10 @@ Don't pitch all three back-to-back. Listen for which pain they confirm on the pr
 ## 4. Objection Handling (applies to all three offers)
 
 **"We're not interested / we already have someone handling this"**
-> "Totally fair — most people say that until they see what's actually slipping through. Worth a quick look, no pressure either way?"
+> "Fair enough — most people say that right up until they see what's actually slipping through. Let's just look — two minutes, right now."
 
 **"Just send me some info"**
-> "I can, but honestly a 2-minute look does more than a PDF ever will. Can I just grab 15 minutes instead — I'll keep it fast and to the point."
+> "I can, but a two-minute look beats a PDF every time. Give me fifteen minutes instead — I'll keep it fast."
 
 **"How much does this cost?"**
 > "Depends what you actually need — that's exactly what the quick call is for, so I'm not just guessing at a number blind."
@@ -103,7 +128,7 @@ This works because it's specific, personalized, and triggers curiosity rather th
 ## Delivery Notes (from Hormozi)
 
 - Practice out loud, not just silently reading — tone carries most of the weight.
-- Don't rush the opener; the pause after "is it relevant or not" is doing real work — let it sit.
+- Don't rush the opener; the pause after "worth continuing" is doing real work — let it sit.
 - Record your best calls ("game tape") and listen back before your next session to reset your energy.
 - Match energy to the prospect — mirror a rushed tone with brevity, a relaxed tone with more warmth.
 
