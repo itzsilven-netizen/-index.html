@@ -12,9 +12,12 @@ const STAGE_DESCRIPTIONS = {
   closed: 'Deal won.',
 }
 
+const FILTER_LABELS = { all: 'Total Leads', ...STAGE_LABELS }
+
 export default function PipelinePage({ onOpenLead, onAddLead }) {
   const { callLeads, emailLeads, updateCallLead, updateEmailLead, addNurtureLog } = useLeadsStore()
   const [dragOverStage, setDragOverStage] = useState(null)
+  const [listFilter, setListFilter] = useState(null)
 
   const allLeads = useMemo(() => [
     ...callLeads.map(l => ({ ...l, _type: 'calls' })),
@@ -64,65 +67,76 @@ export default function PipelinePage({ onOpenLead, onAddLead }) {
       </div>
 
       <div className="kpi-grid pipeline-kpis">
-        <div className="card kpi-card">
+        <button className="card kpi-card kpi-clickable" onClick={() => setListFilter('all')}>
           <div className="kpi-value">{total}</div>
           <div className="kpi-label">Total Leads</div>
-        </div>
-        <div className="card kpi-card">
+        </button>
+        <button className="card kpi-card kpi-clickable" onClick={() => setListFilter('contacted')}>
           <div className="kpi-value">{byStage.contacted.length}</div>
           <div className="kpi-label">Contacted</div>
-        </div>
-        <div className="card kpi-card">
+        </button>
+        <button className="card kpi-card kpi-clickable" onClick={() => setListFilter('qualified')}>
           <div className="kpi-value">{byStage.qualified.length}</div>
           <div className="kpi-label">Qualified</div>
-        </div>
-        <div className="card kpi-card">
+        </button>
+        <button className="card kpi-card kpi-clickable" onClick={() => setListFilter('booked')}>
           <div className="kpi-value">{byStage.booked.length}</div>
           <div className="kpi-label">Booked</div>
-        </div>
-        <div className="card kpi-card">
+        </button>
+        <button className="card kpi-card kpi-clickable" onClick={() => setListFilter('closed')}>
           <div className="kpi-value">{closed}</div>
           <div className="kpi-label">Closed Won</div>
-        </div>
+        </button>
         <div className="card kpi-card kpi-accent">
           <div className="kpi-value">{closeRate}%</div>
           <div className="kpi-label">Close Rate</div>
         </div>
       </div>
 
-      <div className="kanban">
-        {STAGES.map(stage => (
-          <div
-            key={stage}
-            className={`kanban-col stage-${stage} ${dragOverStage === stage ? 'drag-over' : ''}`}
-            onDragOver={(e) => { e.preventDefault(); setDragOverStage(stage) }}
-            onDragLeave={() => setDragOverStage(null)}
-            onDrop={(e) => handleDrop(e, stage)}
-          >
-            <div className="kanban-header">
-              <span className="kanban-title"><i className="kanban-dot" />{STAGE_LABELS[stage]}</span>
-              <span className="kanban-count">{byStage[stage].length}</span>
-            </div>
-            <p className="kanban-desc">{STAGE_DESCRIPTIONS[stage]}</p>
+      {listFilter && (
+        <LeadListView
+          filter={listFilter}
+          leads={listFilter === 'all' ? allLeads : byStage[listFilter]}
+          onOpenLead={onOpenLead}
+          onClose={() => setListFilter(null)}
+        />
+      )}
 
-            <div className="kanban-cards">
-              {byStage[stage].length === 0 && (
-                <div className="kanban-empty">
-                  {stage === 'new' ? 'No new leads.' : `Drag leads here as they become ${STAGE_LABELS[stage].toLowerCase()}.`}
-                </div>
-              )}
-              {stage === 'contacted' ? (
-                <>
-                  <ContactedGroup label="Calls" leads={byStage.contacted.filter(l => l._type === 'calls')} onOpenLead={onOpenLead} />
-                  <ContactedGroup label="Emails" leads={byStage.contacted.filter(l => l._type === 'emails')} onOpenLead={onOpenLead} />
-                </>
-              ) : (
-                byStage[stage].map(lead => <LeadCard key={`${lead._type}-${lead.id}`} lead={lead} onOpenLead={onOpenLead} />)
-              )}
+      {!listFilter && (
+        <div className="kanban">
+          {STAGES.map(stage => (
+            <div
+              key={stage}
+              className={`kanban-col stage-${stage} ${dragOverStage === stage ? 'drag-over' : ''}`}
+              onDragOver={(e) => { e.preventDefault(); setDragOverStage(stage) }}
+              onDragLeave={() => setDragOverStage(null)}
+              onDrop={(e) => handleDrop(e, stage)}
+            >
+              <div className="kanban-header">
+                <span className="kanban-title"><i className="kanban-dot" />{STAGE_LABELS[stage]}</span>
+                <span className="kanban-count">{byStage[stage].length}</span>
+              </div>
+              <p className="kanban-desc">{STAGE_DESCRIPTIONS[stage]}</p>
+
+              <div className="kanban-cards">
+                {byStage[stage].length === 0 && (
+                  <div className="kanban-empty">
+                    {stage === 'new' ? 'No new leads.' : `Drag leads here as they become ${STAGE_LABELS[stage].toLowerCase()}.`}
+                  </div>
+                )}
+                {stage === 'contacted' ? (
+                  <>
+                    <ContactedGroup label="Calls" leads={byStage.contacted.filter(l => l._type === 'calls')} onOpenLead={onOpenLead} />
+                    <ContactedGroup label="Emails" leads={byStage.contacted.filter(l => l._type === 'emails')} onOpenLead={onOpenLead} />
+                  </>
+                ) : (
+                  byStage[stage].map(lead => <LeadCard key={`${lead._type}-${lead.id}`} lead={lead} onOpenLead={onOpenLead} />)
+                )}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -160,6 +174,47 @@ function LeadCard({ lead, onOpenLead }) {
           )}
         </span>
       </div>
+    </div>
+  )
+}
+
+function LeadListView({ filter, leads, onOpenLead, onClose }) {
+  return (
+    <div className="card lead-list-view">
+      <div className="lead-list-head">
+        <h3>{FILTER_LABELS[filter]} <span className="lead-list-count">{leads.length}</span></h3>
+        <button className="btn btn-ghost" onClick={onClose}>&larr; Back to board</button>
+      </div>
+      {leads.length === 0 ? (
+        <div className="panel-empty">No leads here yet.</div>
+      ) : (
+        <div className="lead-list-table-wrap">
+          <table className="lead-list-table">
+            <thead>
+              <tr>
+                <th>Business</th>
+                <th>Niche</th>
+                <th>Contact</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Last Contact</th>
+              </tr>
+            </thead>
+            <tbody>
+              {leads.map(lead => (
+                <tr key={`${lead._type}-${lead.id}`} onClick={() => onOpenLead(lead)}>
+                  <td className="lead-list-name">{lead.business_name}</td>
+                  <td>{lead.niche || '—'}</td>
+                  <td>{lead._type === 'calls' ? (lead.phone || '—') : (lead.email || '—')}</td>
+                  <td>{lead.priority_score ?? '—'}</td>
+                  <td><span className={`badge badge-${lead.status || 'new'}`}>{STAGE_LABELS[lead.status] || 'New Lead'}</span></td>
+                  <td>{lead.lastContact || '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   )
 }

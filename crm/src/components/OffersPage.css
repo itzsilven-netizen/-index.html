@@ -124,6 +124,18 @@
   color: var(--text-primary);
 }
 
+.offer-variant-price {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-hover);
+  background: var(--accent-soft);
+  border-radius: 5px;
+  padding: 1px 7px;
+  white-space: nowrap;
+}
+
 .offer-pricing {
   font-size: 12px;
   font-weight: 600;

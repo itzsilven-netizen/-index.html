@@ -8,10 +8,10 @@ const OFFERS = [
     name: 'AI Agents',
     tagline: 'Autonomous agents that handle calls, bookings, lead qualification, and customer inquiries 24/7',
     variants: [
-      { name: 'AI Receptionist', desc: 'Answers every inbound call, books/reschedules, routes what it can\'t handle' },
-      { name: 'AI Chatbot', desc: 'Website/Instagram/Facebook chat — answers questions, captures the lead' },
-      { name: 'SMS Agent', desc: 'Texts back missed calls and web leads, qualifies them by text' },
-      { name: 'Outbound / Mass Agent', desc: 'Calls or texts a whole list — reminders, re-engagement, follow-up at volume' },
+      { name: 'AI Receptionist', desc: 'Answers every inbound call, books/reschedules, routes what it can\'t handle', price: '$300' },
+      { name: 'AI Chatbot', desc: 'Website/Instagram/Facebook chat — answers questions, captures the lead', price: '$500' },
+      { name: 'SMS Agent', desc: 'Texts back missed calls and web leads, qualifies them by text', price: '$1,500' },
+      { name: 'Outbound / Mass Agent', desc: 'Calls or texts a whole list — reminders, re-engagement, follow-up at volume', price: '$1,500+' },
     ],
     icp: ['HVAC', 'Electrical', 'Plumbing', 'Salons / spas', 'Medical / dental', 'Restaurants', 'Gyms', 'Law firms'],
     problems: [
@@ -20,7 +20,7 @@ const OFFERS = [
       'No coverage nights/weekends when bookings actually happen',
     ],
     why: 'These businesses live or die on the phone, and a front desk can\'t cover every ring during rush, after hours, or on a day off. HVAC especially — a no-heat call at 9pm goes to whoever picks up first. Every missed call is a booking that calls the next name on Google instead.',
-    pricing: null,
+    pricing: 'Custom — price by which agent(s), see above',
     fit: 'ROI-service',
   },
   {
@@ -38,7 +38,7 @@ const OFFERS = [
       'Calendar bookings auto-sync to the tech\'s phone and the office schedule at the same time',
     ],
     why: 'Once a business runs on more than a couple of tools, someone\'s job quietly becomes re-typing the same information into each one. That\'s paid time spent on zero new revenue — the exact hours this pitch is about buying back.',
-    pricing: null,
+    pricing: '$1,500',
     fit: 'ROI-service',
   },
   {
@@ -56,7 +56,7 @@ const OFFERS = [
       'Real photos and real reviews instead of stock art, so it reads as a real local business, not a template',
     ],
     why: 'A prospect Googles the business before they ever call. An outdated or missing site loses that prospect in the first three seconds, before the phone even rings — no amount of ad spend or referrals fixes that first impression.',
-    pricing: '$97/mo — hosting, SSL, domain, 5 monthly updates',
+    pricing: '$800',
     fit: 'default push',
   },
   {
@@ -73,7 +73,7 @@ const OFFERS = [
       'Ad leads straight into the AI Agent/chatbot for instant follow-up — not a form that sits for a day',
     ],
     why: 'A good offer with no consistent lead flow stalls out on referrals alone. Most owners running their own ads are guessing at targeting and never testing creative — money spent without a system behind it.',
-    pricing: '$697/mo',
+    pricing: '$2,000',
     fit: 'ROI-service',
   },
   {
@@ -89,7 +89,7 @@ const OFFERS = [
       'Room for custom automation on top — whatever this specific business\'s workflow actually needs, not just the standard package',
     ],
     why: 'Fixing only the site or only the phones leaves the other leak wide open — a beautiful site behind a phone nobody answers, or a sharp AI agent booking calls off a page that loses trust in three seconds. This closes both leaks in one deal.',
-    pricing: null,
+    pricing: 'Custom — $2,500+',
     fit: 'bundle',
   },
 ]
@@ -119,7 +119,10 @@ export default function OffersPage() {
                 <span className="offer-section-label">Types of agent</span>
                 <ul className="offer-variants">
                   {o.variants.map(v => (
-                    <li key={v.name}><b>{v.name}</b> — {v.desc}</li>
+                    <li key={v.name}>
+                      <b>{v.name}</b> — {v.desc}
+                      {v.price && <span className="offer-variant-price">{v.price}</span>}
+                    </li>
                   ))}
                 </ul>
               </div>
