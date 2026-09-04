@@ -5,16 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Apex Standard — Agent OS</title>
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0b0d12">
+<meta name="theme-color" content="#161e2b">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Apex OS">
 <style>
   :root{
-    --bg:#0b0d12; --panel:#12151c; --panel2:#171b24; --border:#242a36;
-    --text:#e8eaf0; --dim:#8a8f9c; --accent:#5b8cff; --accent2:#7c5bff;
-    --good:#3ecf8e; --warn:#e0a53e; --danger:#e05b5b; --radius:10px;
+    /* Palette derived from apexstandard.biz — steel blue, navy, cream */
+    --bg:#0d131c; --panel:#161e2b; --panel2:#1e2839; --border:#2c3a4e;
+    --text:#f3eee3; --dim:#93a3b8;
+    --accent:#3e6ba3;        /* brand blue — buttons, fills */
+    --accent-soft:#afc6e0;   /* light blue — accent text on dark */
+    --accent2:#1e3a5f;
+    --good:#5aa17a; --warn:#c9a24a; --danger:#c25b5b; --radius:10px;
   }
   *{box-sizing:border-box;}
   body{
@@ -27,7 +31,7 @@
     padding:0 16px; border-bottom:1px solid var(--border); background:var(--panel);
   }
   header .logo{font-weight:700; letter-spacing:.3px; white-space:nowrap;}
-  header .logo span{color:var(--accent);}
+  header .logo span{color:var(--accent-soft);}
   .global-search{
     flex:1; position:relative; max-width:640px;
   }
@@ -41,7 +45,7 @@
     margin-left:auto; font-size:12px; color:var(--dim); background:none; border:1px solid var(--border);
     border-radius:6px; padding:6px 10px; cursor:pointer;
   }
-  .apikey-btn:hover{color:var(--text); border-color:var(--accent);}
+  .apikey-btn:hover{color:var(--accent-soft); border-color:var(--accent-soft);}
   nav.sidebar{
     grid-column:1; grid-row:2; background:var(--panel); border-right:1px solid var(--border);
     padding:14px 10px; overflow-y:auto;
@@ -77,14 +81,14 @@
     margin-bottom:10px; font-size:13px;
   }
   .card .tag{
-    display:inline-block; font-size:10px; padding:2px 6px; border-radius:4px; background:#1e2430; color:var(--accent);
+    display:inline-block; font-size:10px; padding:2px 6px; border-radius:4px; background:var(--accent2); color:var(--accent-soft);
     margin-bottom:6px;
   }
   .card .title{font-weight:600; margin-bottom:4px;}
   .card .body{color:var(--dim); font-size:12px; white-space:pre-wrap; max-height:120px; overflow-y:auto;}
   .card .actions{display:flex; gap:6px; margin-top:8px;}
   .card .actions button{font-size:11px; padding:4px 8px; border-radius:6px; border:1px solid var(--border); background:var(--panel); color:var(--text); cursor:pointer;}
-  .card .actions button:hover{border-color:var(--accent); color:var(--accent);}
+  .card .actions button:hover{border-color:var(--accent-soft); color:var(--accent-soft);}
   .composer{
     background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:20px;
   }
