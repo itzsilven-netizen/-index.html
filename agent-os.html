@@ -182,6 +182,9 @@
       <option value="gemini">Google Gemini</option>
     </select>
 
+    <label>Model <span style="color:var(--dim);font-weight:400;">(for the provider above)</span></label>
+    <input id="modelInput" type="text" placeholder="model id" />
+
     <label>Anthropic key</label>
     <input id="key_anthropic" type="password" placeholder="sk-ant-..." />
     <label>OpenAI key</label>
@@ -200,12 +203,14 @@
 (function(){
   const LS_KEYS = 'apex_agent_os_keys';
   const LS_PROVIDER = 'apex_agent_os_provider';
+  const LS_MODELS = 'apex_agent_os_models';
   const LS_CARDS = 'apex_agent_os_cards';
   const LS_CHAT = 'apex_agent_os_chat';
   const LS_MEMORY = 'apex_agent_os_memory';
 
   const state = {
     keys: JSON.parse(localStorage.getItem(LS_KEYS) || '{}'),
+    models: JSON.parse(localStorage.getItem(LS_MODELS) || '{}'),
     provider: localStorage.getItem(LS_PROVIDER) || 'anthropic',
     cards: JSON.parse(localStorage.getItem(LS_CARDS) || 'null') || seedCards(),
     chat: JSON.parse(localStorage.getItem(LS_CHAT) || 'null') || [
@@ -245,8 +250,15 @@
       ? `${PROVIDER_LABELS[state.provider]}: connected ●`
       : 'API key: not set';
   }
+  const modelInput = document.getElementById('modelInput');
+  function showModelFor(p){
+    modelInput.value = state.models[p] || PROVIDERS[p].defaultModel;
+  }
+  providerSelect.addEventListener('change', ()=> showModelFor(providerSelect.value));
+
   apiKeyBtn.addEventListener('click', ()=>{
     providerSelect.value = state.provider;
+    showModelFor(state.provider);
     ['anthropic','openai','gemini'].forEach(p=>{
       document.getElementById('key_'+p).value = state.keys[p] || '';
     });
@@ -258,6 +270,10 @@
       if(v) state.keys[p] = v; else delete state.keys[p];
     });
     state.provider = providerSelect.value;
+    const m = modelInput.value.trim();
+    if(m && m !== PROVIDERS[state.provider].defaultModel) state.models[state.provider] = m;
+    else delete state.models[state.provider];
+    localStorage.setItem(LS_MODELS, JSON.stringify(state.models));
     localStorage.setItem(LS_KEYS, JSON.stringify(state.keys));
     localStorage.setItem(LS_PROVIDER, state.provider);
     refreshKeyBtn();
@@ -285,8 +301,9 @@
         'anthropic-version':'2023-06-01',
         'anthropic-dangerous-direct-browser-access':'true'
       }),
-      body: (sys, msg) => ({
-        model:'claude-sonnet-4-5', max_tokens:1000,
+      defaultModel: 'claude-sonnet-5',
+      body: (sys, msg, model) => ({
+        model, max_tokens:1000,
         system: sys, messages:[{role:'user', content:msg}]
       }),
       parse: d => d.content?.[0]?.text
@@ -294,14 +311,16 @@
     openai: {
       url: 'https://api.openai.com/v1/chat/completions',
       headers: k => ({'content-type':'application/json', 'authorization':`Bearer ${k}`}),
-      body: (sys, msg) => ({
-        model:'gpt-4o', max_tokens:1000,
+      defaultModel: 'gpt-4o',
+      body: (sys, msg, model) => ({
+        model, max_tokens:1000,
         messages:[{role:'system', content:sys},{role:'user', content:msg}]
       }),
       parse: d => d.choices?.[0]?.message?.content
     },
     gemini: {
-      url: k => `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(k)}`,
+      defaultModel: 'gemini-3.8-flash',
+      url: (k, model) => `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(k)}`,
       headers: () => ({'content-type':'application/json'}),
       body: (sys, msg) => ({
         systemInstruction:{parts:[{text:sys}]},
@@ -315,11 +334,12 @@
     const key = activeKey();
     if(!key) return offlineDraft(userMessage);
     const p = PROVIDERS[state.provider];
+    const model = (state.models[state.provider] || p.defaultModel).trim();
     try{
-      const res = await fetch(typeof p.url === 'function' ? p.url(key) : p.url, {
+      const res = await fetch(typeof p.url === 'function' ? p.url(key, model) : p.url, {
         method:'POST',
         headers: p.headers(key),
-        body: JSON.stringify(p.body(systemPrompt, userMessage))
+        body: JSON.stringify(p.body(systemPrompt, userMessage, model))
       });
       if(!res.ok){
         const err = await res.text();
