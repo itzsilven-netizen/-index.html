@@ -1,4 +1,4 @@
-# Cold Call Script — AI Agency (Receptionist / Chatbot / Website Automation)
+# Cold Call Script — AI Agency (3-Offer Version: Receptionist / Website Chatbot / Review Automation)
 
 Audience: B2B decision-makers (owners, ops managers, office managers)
 Goal: Book a meeting/demo
@@ -27,28 +27,48 @@ Built from: Micah's Noble Cyber "screenplay" structure + Alex Hormozi's cold-cal
 ## 2. The Pitch (word-for-word — credibility → problem → solution)
 
 **Credibility:**
-> "Quick background on us: we're [Agency Name], and we help optimize service-based industries — think AI receptionists, chatbots, and websites — so businesses in [niche] stop losing customers to missed calls and slow response times."
+> "Quick background on us: we're [Agency Name], and we help optimize service-based industries — think AI receptionists, chatbots, and reviews — so businesses in [niche] stop losing customers to missed calls, slow response times, and a thin review count."
 
 *(Swap in a real proof point once you have one — a client result, a number, an award/recognition — same slot Micah fills with "Cyber Security Excellence Award." A stranger needs a reason to believe you in the first 30 seconds.)*
 
-**The problem:**
-> "This gives us a pretty unique view into [niche] right now — most businesses are losing leads after hours, during busy periods, or just because nobody picks up fast enough. And most owners don't even know how much of that is happening, because it never shows up as a 'lost sale' — it just shows up as silence. We've seen this be a real blind spot."
-
-**The solution:**
-> "In response, what we do is build a 24/7 AI system — receptionist, chatbot, or both — that assumes every missed call or slow reply is a lost customer, and we reverse-engineer that gap before it costs you more revenue."
-
-**Impact areas (pick 2-3, don't list all):**
-> "A few areas we impact the most are missed-call recovery, after-hours booking, website lead capture, and taking manual front-desk work off your plate."
+**The problem (general — leads into whichever of the 3 offers below fits what they reveal):**
+> "This gives us a pretty unique view into [niche] right now — most businesses are losing leads after hours, off the website, or because their review count doesn't reflect how good they actually are. And most owners don't even know how much of that is happening, because it never shows up as a 'lost sale' — it just shows up as silence. We've seen this be a real blind spot."
 
 ---
 
-## 3. The Call to Action (word-for-word, low-friction hook)
+## 3. The Three Offers (pick the one that matches what they just told you — this is where the cash flow is)
 
-> "The reason I called is to offer a complimentary look at where you're likely leaking leads right now — or if you'd rather keep it high-level, I can just share a few things we're seeing work well in [niche]. Would you be game to hop on a call tomorrow or the next day?"
+Don't pitch all three back-to-back. Listen for which pain they confirm on the problem line above, then go straight into that one offer's solution + CTA. Each is a complete, low-friction ask on its own.
+
+### Offer 1 — AI Receptionist (missed/after-hours calls)
+
+**Solution:**
+> "So what we do is build a 24/7 AI receptionist that picks up instantly, answers the common questions, and books or routes the call — so nothing falls through the cracks."
+
+**CTA:**
+> "The reason I called is to offer a complimentary look at where [business name] is likely leaking calls right now — would you be game to hop on a call tomorrow or the next day?"
+
+### Offer 2 — Website Chatbot (website visitors going cold)
+
+**Solution:**
+> "So what we do is add a chatbot to your site that answers the second someone lands on it — so a visitor who wouldn't have called doesn't just bounce to a competitor."
+
+**CTA:**
+> "The reason I called is to offer a complimentary look at what's actually happening with your site traffic right now — would you be up for a quick call tomorrow or the next day?"
+
+### Offer 3 — Review Automation (fastest close, easiest yes)
+
+**Solution:**
+> "So what we do is automate review requests after every job, so that rating keeps climbing without you having to chase it manually."
+
+**CTA (lowest-friction of the three — good for a fast yes/cash flow):**
+> "The reason I called is to offer a complimentary set of reply templates for your reviews — no charge, just send them your way. Want me to put those together, or would a quick call be easier?"
+
+*(Offer 3 is the easiest "yes" on the call — if someone's hesitant on a meeting, this is the one to fall back to since it can close as a no-meeting-needed deliverable and still starts the relationship/cash flow.)*
 
 ---
 
-## 4. Objection Handling
+## 4. Objection Handling (applies to all three offers)
 
 **"We're not interested / we already have someone handling this"**
 > "Totally fair — most people say that until they see what's actually slipping through. Worth a quick look, no pressure either way?"
