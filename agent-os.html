@@ -61,6 +61,14 @@
   }
   .agent-item:hover{background:var(--panel2);}
   .agent-item.active{background:var(--accent-dim); color:#fff;}
+  .agent-item.manager{font-weight:700; border:1px solid var(--border); margin-bottom:4px;}
+  .agent-item.manager .dot{background:var(--accent);}
+  .agent-item.sub{margin-left:16px; padding-left:8px; font-size:12.5px; position:relative;}
+  .agent-item.sub::before{
+    content:''; position:absolute; left:-10px; top:0; bottom:50%; width:9px;
+    border-left:1px solid var(--border); border-bottom:1px solid var(--border); border-radius:0 0 0 6px;
+  }
+  .agent-item.sub .dot{width:5px; height:5px;}
   .dot{width:7px; height:7px; border-radius:50%; background:var(--good); flex:none;}
   .dot.idle{background:var(--dim);}
   .nav-count{margin-left:auto; font-size:11px; color:var(--dim); background:var(--panel2);
@@ -193,13 +201,14 @@
   <nav class="sidebar">
     <div class="nav-section">
       <h4>Agents</h4>
-      <div class="agent-item active" data-agent="outreach"><span class="dot"></span>Outreach<span class="nav-count" data-c="outreach">0</span></div>
-      <div class="agent-item" data-agent="followup"><span class="dot"></span>Follow-up<span class="nav-count" data-c="followup">0</span></div>
-      <div class="agent-item" data-agent="objection"><span class="dot"></span>Objections<span class="nav-count" data-c="objection">0</span></div>
-      <div class="agent-item" data-agent="callscript"><span class="dot"></span>Call Scripts<span class="nav-count" data-c="callscript">0</span></div>
-      <div class="agent-item" data-agent="research"><span class="dot"></span>Lead Research<span class="nav-count" data-c="research">0</span></div>
-      <div class="agent-item" data-agent="content"><span class="dot"></span>Content<span class="nav-count" data-c="content">0</span></div>
-      <div class="agent-item" data-agent="oracle"><span class="dot idle"></span>Oracle<span class="nav-count" data-c="oracle">0</span></div>
+      <div class="agent-item manager active" data-agent="manager"><span class="dot"></span>Manager Agent<span class="nav-count" data-c="manager">0</span></div>
+      <div class="agent-item sub" data-agent="outreach"><span class="dot"></span>Outreach<span class="nav-count" data-c="outreach">0</span></div>
+      <div class="agent-item sub" data-agent="followup"><span class="dot"></span>Follow-up<span class="nav-count" data-c="followup">0</span></div>
+      <div class="agent-item sub" data-agent="objection"><span class="dot"></span>Objections<span class="nav-count" data-c="objection">0</span></div>
+      <div class="agent-item sub" data-agent="callscript"><span class="dot"></span>Call Scripts<span class="nav-count" data-c="callscript">0</span></div>
+      <div class="agent-item sub" data-agent="research"><span class="dot"></span>Lead Research<span class="nav-count" data-c="research">0</span></div>
+      <div class="agent-item sub" data-agent="content"><span class="dot"></span>Content<span class="nav-count" data-c="content">0</span></div>
+      <div class="agent-item sub" data-agent="oracle"><span class="dot idle"></span>Oracle<span class="nav-count" data-c="oracle">0</span></div>
     </div>
     <div class="nav-section">
       <h4>Pipeline</h4>
@@ -382,9 +391,10 @@ PS — [one line, per the PS rule above]`;
     oracle: `You are Oracle, the trend agent in Apex Standard's Agent OS.\n\n${IDENTITY}\n\nGiven a topic, describe a plausible current angle in local-service/home-service automation and suggest a specific hook for a post. Be concrete, not generic. Note clearly that you cannot browse the live web, so these are informed angles rather than verified trending data.`
   };
 
-  const LABELS = {outreach:'Outreach Agent', followup:'Follow-up Agent', objection:'Objection Agent',
+  const LABELS = {manager:'Manager Agent', outreach:'Outreach Agent', followup:'Follow-up Agent', objection:'Objection Agent',
     callscript:'Call Script Agent', research:'Lead Research', content:'Content Agent', oracle:'Oracle'};
   const SUBS = {
+    manager:'One request in — it picks the right sub-agent and runs it',
     outreach:'Cold emails & SMS for high-ticket local service businesses',
     followup:'Sequence steps 2-5 — the ones that get replies',
     objection:'What they really mean, and what to say back',
@@ -393,9 +403,10 @@ PS — [one line, per the PS rule above]`;
     content:'Blog & social posts',
     oracle:'Angles and hooks for content'
   };
-  const TAGS = {outreach:'Email', followup:'Sequence', objection:'Objection',
+  const TAGS = {manager:'Routed', outreach:'Email', followup:'Sequence', objection:'Objection',
     callscript:'Script', research:'Research', content:'Content', oracle:'Angle'};
   const PLACEHOLDERS = {
+    manager:"Describe what you need — it'll figure out whether that's an email, an objection, a script, or research and run the right sub-agent",
     outreach:"e.g. 'Cold email to Christiaan at AZ Oasis Pools, Chandler AZ, pool service, 4.3 stars / 50 reviews'",
     followup:"e.g. 'Follow-ups for the AZ Oasis pool email — no reply after 3 days'",
     objection:"e.g. 'We already have a guy who handles our website'",
@@ -404,6 +415,19 @@ PS — [one line, per the PS rule above]`;
     content:"e.g. 'Post on what missed after-hours calls actually cost a roofing company'",
     oracle:"e.g. 'Angles on AI answering services for home service businesses'"
   };
+
+  const SUB_AGENT_KEYS = ['outreach','followup','objection','callscript','research','content','oracle'];
+  const MANAGER_ROUTE_PROMPT = `You are the routing layer for Apex Standard's Agent OS. Given a request, decide which ONE sub-agent should handle it:
+
+- outreach: drafting a cold email or SMS to a specific prospect
+- followup: writing follow-up steps for a sequence that already got no reply
+- objection: how to respond to something a prospect said or pushed back with
+- callscript: cold call openers or discovery questions
+- research: analyzing a pasted lead to find an angle
+- content: a blog or social post
+- oracle: a content trend or angle idea, not tied to one lead
+
+Reply with ONLY the single matching key from that list — one word, lowercase, nothing else. If genuinely ambiguous, pick the closest match; never explain your choice.`;
 
   // ---------------- key modal ----------------
   const apiKeyBtn = document.getElementById('apiKeyBtn');
@@ -468,7 +492,9 @@ PS — [one line, per the PS rule above]`;
       : `.agent-item[data-view="${state.activeView}"]`;
     document.querySelector(sel)?.classList.add('active');
     document.querySelectorAll('.nav-count[data-c]').forEach(el=>{
-      const n = state.cards.filter(c=>c.agent===el.dataset.c).length;
+      const n = el.dataset.c === 'manager'
+        ? state.cards.filter(c=>c.viaManager).length
+        : state.cards.filter(c=>c.agent===el.dataset.c).length;
       el.textContent = n; el.style.visibility = n ? 'visible' : 'hidden';
     });
     document.getElementById('leadCount').textContent = state.leads.length;
@@ -532,15 +558,18 @@ PS — [one line, per the PS rule above]`;
   }
 
   function renderCards(){
+    const inManager = state.activeAgent === 'manager';
     document.querySelectorAll('.column').forEach(col=>{
       const list = col.querySelector('.list');
-      const items = state.cards.filter(c=>c.agent===state.activeAgent && c.status===col.dataset.status);
+      const items = state.cards.filter(c=>
+        (inManager ? c.viaManager : c.agent===state.activeAgent) && c.status===col.dataset.status);
       list.innerHTML = items.length ? '' : '<div class="empty">Nothing here</div>';
       items.forEach(card=>{
         const div = document.createElement('div');
         div.className='card';
         div.innerHTML = `
           <span class="tag">${esc(card.tag)}</span>
+          ${inManager ? `<span class="tag" style="background:none;border:1px solid var(--border);color:var(--dim);">→ ${esc(LABELS[card.agent]||card.agent)}</span>` : ''}
           <div class="title">${esc(card.title)}</div>
           <div class="body">${esc(card.body)}</div>
           <div class="actions">
@@ -567,11 +596,23 @@ PS — [one line, per the PS rule above]`;
     const btn = document.getElementById('draftBtn');
     const prompt = input.value.trim();
     if(!prompt) return;
-    const agent = state.activeAgent;
-    btn.disabled = true; statusEl.textContent = 'drafting…';
-    const result = await callAI(AGENT_PROMPTS[agent], [{role:'user', content:prompt}], state.agentProviders[agent]);
+    const viaManager = state.activeAgent === 'manager';
+    let agent = state.activeAgent;
+    btn.disabled = true;
+
+    if(viaManager){
+      statusEl.textContent = 'routing…';
+      const routed = (await callAI(MANAGER_ROUTE_PROMPT, [{role:'user', content:prompt}], state.agentProviders['manager']))
+        .trim().toLowerCase().replace(/[^a-z]/g,'');
+      agent = SUB_AGENT_KEYS.includes(routed) ? routed : 'outreach';
+      statusEl.textContent = `routed to ${LABELS[agent]}, drafting…`;
+    } else {
+      statusEl.textContent = 'drafting…';
+    }
+
+    const result = await callAI(AGENT_PROMPTS[agent], [{role:'user', content:prompt}], state.agentProviders[viaManager ? 'manager' : agent]);
     state.cards.unshift({
-      id:uid(), agent, status:'idea', tag:TAGS[agent]||'Note',
+      id:uid(), agent, viaManager, status:'idea', tag:TAGS[agent]||'Note',
       title: prompt.slice(0,70) + (prompt.length>70?'…':''), body: result
     });
     save();
