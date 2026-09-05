@@ -5,131 +5,178 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Apex Standard — Agent OS</title>
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#161e2b">
+<meta name="theme-color" content="#1b1b1b">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Apex OS">
 <style>
   :root{
-    /* Palette derived from apexstandard.biz — steel blue, navy, cream */
-    --bg:#0d131c; --panel:#161e2b; --panel2:#1e2839; --border:#2c3a4e;
-    --text:#f3eee3; --dim:#93a3b8;
-    --accent:#3e6ba3;        /* brand blue — buttons, fills */
-    --accent-soft:#afc6e0;   /* light blue — accent text on dark */
-    --accent2:#1e3a5f;
-    --good:#5aa17a; --warn:#c9a24a; --danger:#c25b5b; --radius:10px;
+    /* Signal-style palette */
+    --bg:#121212; --panel:#1b1b1b; --panel2:#2c2c2c; --panel3:#353535;
+    --border:#3a3a3a;
+    --text:#f5f5f5; --dim:#a8a8a8;
+    --accent:#3a76f0; --accent-soft:#8fb2f7; --accent-dim:#1e3f80;
+    --good:#4caf82; --warn:#e0a53e; --danger:#e06c6c;
+    --radius:12px;
   }
   *{box-sizing:border-box;}
   body{
-    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,sans-serif;
     background:var(--bg); color:var(--text); height:100vh; overflow:hidden;
+    font-size:14px; -webkit-font-smoothing:antialiased;
   }
-  .app{ display:grid; grid-template-columns:240px 1fr 360px; grid-template-rows:56px 1fr; height:100vh; }
+  .app{ display:grid; grid-template-columns:230px 1fr 340px; grid-template-rows:56px 1fr; height:100vh; }
+
   header{
-    grid-column:1/4; grid-row:1; display:flex; align-items:center; gap:16px;
+    grid-column:1/4; grid-row:1; display:flex; align-items:center; gap:14px;
     padding:0 16px; border-bottom:1px solid var(--border); background:var(--panel);
   }
-  header .logo{font-weight:700; letter-spacing:.3px; white-space:nowrap;}
-  header .logo span{color:var(--accent-soft);}
-  .global-search{
-    flex:1; position:relative; max-width:640px;
-  }
+  .logo{font-weight:700; font-size:15px; letter-spacing:-.2px; white-space:nowrap;}
+  .logo span{color:var(--accent-soft);}
+  .global-search{flex:1; position:relative; max-width:620px;}
   .global-search input{
-    width:100%; padding:10px 14px; border-radius:20px; border:1px solid var(--border);
-    background:var(--panel2); color:var(--text); font-size:14px; outline:none;
+    width:100%; padding:9px 14px; border-radius:18px; border:1px solid var(--border);
+    background:var(--panel2); color:var(--text); font-size:13px; outline:none;
   }
   .global-search input:focus{border-color:var(--accent);}
-  .global-search .hint{position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:11px; color:var(--dim);}
   .apikey-btn{
-    margin-left:auto; font-size:12px; color:var(--dim); background:none; border:1px solid var(--border);
-    border-radius:6px; padding:6px 10px; cursor:pointer;
+    margin-left:auto; font-size:12px; color:var(--dim); background:var(--panel2);
+    border:1px solid var(--border); border-radius:16px; padding:6px 12px; cursor:pointer;
   }
-  .apikey-btn:hover{color:var(--accent-soft); border-color:var(--accent-soft);}
+  .apikey-btn:hover{color:var(--text); border-color:var(--accent);}
+
   nav.sidebar{
     grid-column:1; grid-row:2; background:var(--panel); border-right:1px solid var(--border);
-    padding:14px 10px; overflow-y:auto;
+    padding:12px 8px; overflow-y:auto;
   }
-  .nav-section{margin-bottom:18px;}
-  .nav-section h4{font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--dim); margin:0 0 8px 8px;}
+  .nav-section{margin-bottom:16px;}
+  .nav-section h4{
+    font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--dim);
+    margin:0 0 6px 10px; font-weight:600;
+  }
   .agent-item{
-    display:flex; align-items:center; gap:8px; padding:8px 8px; border-radius:8px; cursor:pointer; font-size:13px;
+    display:flex; align-items:center; gap:9px; padding:8px 10px; border-radius:8px;
+    cursor:pointer; font-size:13px; margin-bottom:1px;
   }
   .agent-item:hover{background:var(--panel2);}
-  .agent-item.active{background:var(--panel2); border:1px solid var(--border);}
-  .dot{width:8px; height:8px; border-radius:50%; background:var(--good); flex:none;}
+  .agent-item.active{background:var(--accent-dim); color:#fff;}
+  .dot{width:7px; height:7px; border-radius:50%; background:var(--good); flex:none;}
   .dot.idle{background:var(--dim);}
-  main{
-    grid-column:2; grid-row:2; overflow-y:auto; padding:20px 24px;
-  }
-  .board-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;}
-  .board-header h2{margin:0; font-size:18px;}
-  .board-header .sub{font-size:12px; color:var(--dim); margin-top:2px;}
+  .nav-count{margin-left:auto; font-size:11px; color:var(--dim); background:var(--panel2);
+    padding:1px 7px; border-radius:10px;}
+  .agent-item.active .nav-count{background:rgba(0,0,0,.3); color:#dbe6fb;}
+
+  main{grid-column:2; grid-row:2; overflow-y:auto; padding:18px 22px;}
+  .board-header{margin-bottom:14px;}
+  .board-header h2{margin:0; font-size:19px; letter-spacing:-.3px;}
+  .board-header .sub{font-size:12px; color:var(--dim); margin-top:3px;}
+
+  /* stat tiles */
+  .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; margin-bottom:16px;}
+  .stat{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px;}
+  .stat .n{font-size:22px; font-weight:650; letter-spacing:-.5px; line-height:1.1;}
+  .stat .l{font-size:11px; color:var(--dim); margin-top:3px; text-transform:uppercase; letter-spacing:.05em;}
+  .stat.hi .n{color:var(--accent-soft);}
+
   .btn{
-    background:var(--accent); color:#fff; border:none; padding:8px 14px; border-radius:8px;
+    background:var(--accent); color:#fff; border:none; padding:9px 16px; border-radius:20px;
     font-size:13px; cursor:pointer; font-weight:600;
   }
-  .btn:hover{filter:brightness(1.1);}
+  .btn:hover{filter:brightness(1.12);}
   .btn.secondary{background:var(--panel2); border:1px solid var(--border); color:var(--text);}
-  .btn.danger{background:var(--danger);}
+  .btn.sm{padding:5px 12px; font-size:12px;}
   .btn:disabled{opacity:.5; cursor:not-allowed;}
-  .columns{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
-  .column{ background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:12px; min-height:200px;}
-  .column h3{font-size:13px; margin:0 0 10px; color:var(--dim); text-transform:uppercase; letter-spacing:.04em;}
+
+  .columns{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
+  .column{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:11px; min-height:180px;}
+  .column h3{font-size:11px; margin:0 0 9px; color:var(--dim); text-transform:uppercase; letter-spacing:.06em; font-weight:600;}
   .card{
-    background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:10px 12px;
-    margin-bottom:10px; font-size:13px;
+    background:var(--panel2); border:1px solid var(--border); border-radius:10px; padding:10px 12px;
+    margin-bottom:9px; font-size:13px;
   }
   .card .tag{
-    display:inline-block; font-size:10px; padding:2px 6px; border-radius:4px; background:var(--accent2); color:var(--accent-soft);
-    margin-bottom:6px;
+    display:inline-block; font-size:10px; padding:2px 8px; border-radius:10px;
+    background:var(--accent-dim); color:var(--accent-soft); margin-bottom:6px; font-weight:600;
   }
-  .card .title{font-weight:600; margin-bottom:4px;}
-  .card .body{color:var(--dim); font-size:12px; white-space:pre-wrap; max-height:120px; overflow-y:auto;}
-  .card .actions{display:flex; gap:6px; margin-top:8px;}
-  .card .actions button{font-size:11px; padding:4px 8px; border-radius:6px; border:1px solid var(--border); background:var(--panel); color:var(--text); cursor:pointer;}
-  .card .actions button:hover{border-color:var(--accent-soft); color:var(--accent-soft);}
-  .composer{
-    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:20px;
+  .card .title{font-weight:600; margin-bottom:4px; line-height:1.3;}
+  .card .body{color:var(--dim); font-size:12px; white-space:pre-wrap; max-height:130px; overflow-y:auto; line-height:1.45;}
+  .card .actions{display:flex; gap:6px; margin-top:9px; flex-wrap:wrap;}
+  .card .actions button{
+    font-size:11px; padding:4px 10px; border-radius:12px; border:1px solid var(--border);
+    background:var(--panel); color:var(--text); cursor:pointer;
   }
+  .card .actions button:hover{border-color:var(--accent); color:var(--accent-soft);}
+
+  .composer{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:13px; margin-bottom:16px;}
   .composer textarea{
-    width:100%; min-height:70px; background:var(--panel2); border:1px solid var(--border); border-radius:8px;
-    color:var(--text); padding:10px; font-size:13px; font-family:inherit; resize:vertical;
+    width:100%; min-height:66px; background:var(--panel2); border:1px solid var(--border);
+    border-radius:10px; color:var(--text); padding:10px; font-size:13px; font-family:inherit; resize:vertical;
   }
+  .composer textarea:focus{outline:none; border-color:var(--accent);}
   .composer .row{display:flex; gap:8px; margin-top:10px; align-items:center; flex-wrap:wrap;}
-  select{
-    background:var(--panel2); color:var(--text); border:1px solid var(--border); border-radius:6px; padding:6px 8px; font-size:12px;
+  select, input[type=text]{
+    background:var(--panel2); color:var(--text); border:1px solid var(--border);
+    border-radius:8px; padding:7px 9px; font-size:12px; font-family:inherit;
   }
-  aside.chat{
-    grid-column:3; grid-row:2; background:var(--panel); border-left:1px solid var(--border);
-    display:flex; flex-direction:column;
+  select:focus, input:focus{outline:none; border-color:var(--accent);}
+
+  /* leads table */
+  .lead-form{display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; margin-bottom:10px;}
+  table.leads{width:100%; border-collapse:collapse; font-size:13px;}
+  table.leads th{
+    text-align:left; font-size:10px; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--dim); padding:8px 10px; border-bottom:1px solid var(--border); font-weight:600;
   }
-  .chat-header{padding:14px 16px; border-bottom:1px solid var(--border);}
+  table.leads td{padding:9px 10px; border-bottom:1px solid var(--border); vertical-align:middle;}
+  table.leads tr:hover td{background:var(--panel2);}
+  .pill{
+    display:inline-block; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600;
+    border:1px solid transparent;
+  }
+  .pill.new{background:var(--panel3); color:var(--dim);}
+  .pill.emailed{background:var(--accent-dim); color:var(--accent-soft);}
+  .pill.called{background:#4a3a1e; color:#e5c07b;}
+  .pill.replied{background:#1e4030; color:#7fd4a8;}
+  .pill.booked{background:#4caf82; color:#06231a;}
+  .pill.dead{background:#3a2020; color:#d99;}
+  .lead-actions button{
+    font-size:11px; padding:3px 8px; border-radius:10px; border:1px solid var(--border);
+    background:var(--panel); color:var(--dim); cursor:pointer; margin-right:3px;
+  }
+  .lead-actions button:hover{color:var(--accent-soft); border-color:var(--accent);}
+
+  aside.chat{grid-column:3; grid-row:2; background:var(--panel); border-left:1px solid var(--border); display:flex; flex-direction:column;}
+  .chat-header{padding:13px 15px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px;}
   .chat-header h3{margin:0; font-size:14px;}
-  .chat-header .sub{font-size:11px; color:var(--dim);}
-  .chat-log{ flex:1; overflow-y:auto; padding:14px 16px; display:flex; flex-direction:column; gap:10px;}
-  .msg{max-width:92%; padding:9px 12px; border-radius:10px; font-size:13px; line-height:1.4; white-space:pre-wrap;}
-  .msg.user{align-self:flex-end; background:var(--accent); color:#fff;}
-  .msg.agent{align-self:flex-start; background:var(--panel2); border:1px solid var(--border);}
-  .msg.system{align-self:center; background:none; color:var(--dim); font-size:11px; font-style:italic;}
-  .chat-input{ padding:12px; border-top:1px solid var(--border); display:flex; gap:8px;}
+  .chat-header .sub{font-size:11px; color:var(--dim); margin-top:2px;}
+  .chat-clear{margin-left:auto; font-size:11px; color:var(--dim); background:none; border:none; cursor:pointer;}
+  .chat-clear:hover{color:var(--danger);}
+  .chat-log{flex:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:9px;}
+  .msg{max-width:88%; padding:9px 13px; border-radius:16px; font-size:13px; line-height:1.45; white-space:pre-wrap;}
+  .msg.user{align-self:flex-end; background:var(--accent); color:#fff; border-bottom-right-radius:5px;}
+  .msg.agent{align-self:flex-start; background:var(--panel2); border-bottom-left-radius:5px;}
+  .msg.system{align-self:center; background:none; color:var(--dim); font-size:11px; font-style:italic; text-align:center;}
+  .chat-input{padding:11px; border-top:1px solid var(--border); display:flex; gap:8px;}
   .chat-input input{
-    flex:1; background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:10px 12px;
-    color:var(--text); font-size:13px; outline:none;
+    flex:1; background:var(--panel2); border:1px solid var(--border); border-radius:18px;
+    padding:9px 14px; color:var(--text); font-size:13px; outline:none;
   }
   .chat-input input:focus{border-color:var(--accent);}
-  .empty{color:var(--dim); font-size:13px; padding:20px; text-align:center;}
-  .modal-backdrop{
-    position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; z-index:50;
-  }
+  .empty{color:var(--dim); font-size:13px; padding:18px; text-align:center;}
+
+  .modal-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.7); display:none; align-items:center; justify-content:center; z-index:50;}
   .modal-backdrop.open{display:flex;}
-  .modal{background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:22px; width:420px; max-width:90vw;}
+  .modal{background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:22px; width:430px; max-width:92vw; max-height:88vh; overflow-y:auto;}
   .modal h3{margin-top:0;}
-  .modal p{font-size:12px; color:var(--dim); line-height:1.5;}
-  .modal input{width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--panel2); color:var(--text); margin:10px 0;}
-  .modal .row{display:flex; gap:8px; justify-content:flex-end;}
-  ::-webkit-scrollbar{width:8px; height:8px;}
-  ::-webkit-scrollbar-thumb{background:var(--border); border-radius:4px;}
+  .modal p{font-size:12px; color:var(--dim); line-height:1.55;}
+  .modal label{font-size:12px; font-weight:600; display:block; margin-top:12px;}
+  .modal input{width:100%; padding:9px 11px; border-radius:8px; border:1px solid var(--border); background:var(--panel2); color:var(--text); margin-top:5px; font-size:13px;}
+  .modal select{width:100%; margin-top:5px; padding:9px 11px;}
+  .modal .row{display:flex; gap:8px; justify-content:flex-end; margin-top:18px;}
+  ::-webkit-scrollbar{width:9px; height:9px;}
+  ::-webkit-scrollbar-thumb{background:var(--panel3); border-radius:5px;}
+  ::-webkit-scrollbar-thumb:hover{background:#454545;}
 </style>
 </head>
 <body>
@@ -138,8 +185,7 @@
   <header>
     <div class="logo">Apex <span>Agent OS</span></div>
     <div class="global-search">
-      <input id="globalSearch" type="text" placeholder="Search or ask anything… (e.g. 'draft an outreach email for an HVAC lead')" />
-      <span class="hint">↵</span>
+      <input id="globalSearch" type="text" placeholder="Ask anything… (e.g. 'draft an outreach email for an HVAC lead')" />
     </div>
     <button class="apikey-btn" id="apiKeyBtn">API key: not set</button>
   </header>
@@ -147,19 +193,19 @@
   <nav class="sidebar">
     <div class="nav-section">
       <h4>Agents</h4>
-      <div class="agent-item active" data-agent="content"><span class="dot"></span>Content Agent</div>
-      <div class="agent-item" data-agent="outreach"><span class="dot"></span>Outreach Agent</div>
-      <div class="agent-item" data-agent="followup"><span class="dot"></span>Follow-up Agent</div>
-      <div class="agent-item" data-agent="objection"><span class="dot"></span>Objection Agent</div>
-      <div class="agent-item" data-agent="callscript"><span class="dot"></span>Call Script Agent</div>
-      <div class="agent-item" data-agent="research"><span class="dot"></span>Lead Research</div>
-      <div class="agent-item" data-agent="oracle"><span class="dot idle"></span>Oracle (Trends)</div>
-      <div class="agent-item" data-agent="pipeline"><span class="dot idle"></span>Pipeline Tracker</div>
+      <div class="agent-item active" data-agent="outreach"><span class="dot"></span>Outreach<span class="nav-count" data-c="outreach">0</span></div>
+      <div class="agent-item" data-agent="followup"><span class="dot"></span>Follow-up<span class="nav-count" data-c="followup">0</span></div>
+      <div class="agent-item" data-agent="objection"><span class="dot"></span>Objections<span class="nav-count" data-c="objection">0</span></div>
+      <div class="agent-item" data-agent="callscript"><span class="dot"></span>Call Scripts<span class="nav-count" data-c="callscript">0</span></div>
+      <div class="agent-item" data-agent="research"><span class="dot"></span>Lead Research<span class="nav-count" data-c="research">0</span></div>
+      <div class="agent-item" data-agent="content"><span class="dot"></span>Content<span class="nav-count" data-c="content">0</span></div>
+      <div class="agent-item" data-agent="oracle"><span class="dot idle"></span>Oracle<span class="nav-count" data-c="oracle">0</span></div>
     </div>
     <div class="nav-section">
-      <h4>Views</h4>
-      <div class="agent-item" data-view="board"><span class="dot"></span>Board</div>
-      <div class="agent-item" data-view="memory"><span class="dot idle"></span>Memory Log</div>
+      <h4>Pipeline</h4>
+      <div class="agent-item" data-view="leads"><span class="dot"></span>Leads<span class="nav-count" id="leadCount">0</span></div>
+      <div class="agent-item" data-view="stats"><span class="dot idle"></span>Numbers</div>
+      <div class="agent-item" data-view="memory"><span class="dot idle"></span>Activity Log</div>
     </div>
   </nav>
 
@@ -167,12 +213,15 @@
 
   <aside class="chat">
     <div class="chat-header">
-      <h3>Group Chat</h3>
-      <div class="sub">Talk to any agent directly — replies come from Claude</div>
+      <div>
+        <h3>Assistant</h3>
+        <div class="sub">Remembers this conversation</div>
+      </div>
+      <button class="chat-clear" id="chatClear">Clear</button>
     </div>
     <div class="chat-log" id="chatLog"></div>
     <div class="chat-input">
-      <input id="chatInput" type="text" placeholder="Message the agents…" />
+      <input id="chatInput" type="text" placeholder="Message…" />
       <button class="btn" id="chatSend">Send</button>
     </div>
   </aside>
@@ -181,25 +230,21 @@
 <div class="modal-backdrop" id="apiModal">
   <div class="modal">
     <h3>Connect AI providers</h3>
-    <p>Keys are stored only on this device (localStorage) and are sent directly from your browser to the provider you pick — never to Apex Standard or anywhere else. Anyone with access to this device can read them, so only add keys on a machine you control.</p>
-
+    <p>Keys are stored only on this device and sent directly from your browser to the provider you pick — never to Apex Standard or anywhere else. Anyone with access to this device can read them, so only add keys on a machine you control.</p>
     <label>Active provider</label>
-    <select id="providerSelect" style="width:100%; margin:8px 0 4px;">
+    <select id="providerSelect">
       <option value="anthropic">Claude (Anthropic)</option>
       <option value="openai">OpenAI (GPT)</option>
-      <option value="gemini">Google Gemini</option>
+      <option value="gemini">Google Gemini (free tier)</option>
     </select>
-
     <label>Model <span style="color:var(--dim);font-weight:400;">(for the provider above)</span></label>
     <input id="modelInput" type="text" placeholder="model id" />
-
     <label>Anthropic key</label>
     <input id="key_anthropic" type="password" placeholder="sk-ant-..." />
     <label>OpenAI key</label>
     <input id="key_openai" type="password" placeholder="sk-..." />
     <label>Gemini key</label>
     <input id="key_gemini" type="password" placeholder="AIza..." />
-
     <div class="row">
       <button class="btn secondary" id="apiKeyClear">Clear all</button>
       <button class="btn" id="apiKeySave">Save</button>
@@ -209,152 +254,87 @@
 
 <script>
 (function(){
-  const LS_KEYS = 'apex_agent_os_keys';
-  const LS_PROVIDER = 'apex_agent_os_provider';
-  const LS_MODELS = 'apex_agent_os_models';
-  const LS_AGENTPROV = 'apex_agent_os_agent_providers';
-  const LS_CARDS = 'apex_agent_os_cards';
-  const LS_CHAT = 'apex_agent_os_chat';
-  const LS_MEMORY = 'apex_agent_os_memory';
+  const LS = {
+    keys:'apex_agent_os_keys', provider:'apex_agent_os_provider', models:'apex_agent_os_models',
+    agentProv:'apex_agent_os_agent_providers', cards:'apex_agent_os_cards',
+    chat:'apex_agent_os_chat', memory:'apex_agent_os_memory', leads:'apex_agent_os_leads'
+  };
+  const get = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch(e){ return d; } };
 
   const state = {
-    keys: JSON.parse(localStorage.getItem(LS_KEYS) || '{}'),
-    models: JSON.parse(localStorage.getItem(LS_MODELS) || '{}'),
-    agentProviders: JSON.parse(localStorage.getItem(LS_AGENTPROV) || '{}'),
-    provider: localStorage.getItem(LS_PROVIDER) || 'anthropic',
-    cards: JSON.parse(localStorage.getItem(LS_CARDS) || 'null') || seedCards(),
-    chat: JSON.parse(localStorage.getItem(LS_CHAT) || 'null') || [
-      {role:'system', text:'Agent OS initialized. Content Agent, Outreach Agent and Oracle are online.'}
-    ],
-    memory: JSON.parse(localStorage.getItem(LS_MEMORY) || 'null') || [],
-    activeAgent: 'content',
-    activeView: 'board',
+    keys: get(LS.keys, {}),
+    models: get(LS.models, {}),
+    agentProviders: get(LS.agentProv, {}),
+    provider: localStorage.getItem(LS.provider) || 'anthropic',
+    cards: get(LS.cards, []),
+    chat: get(LS.chat, [{role:'system', text:'Agent OS ready. Add a key to start drafting.'}]),
+    memory: get(LS.memory, []),
+    leads: get(LS.leads, []),
+    activeAgent: 'outreach',
+    activeView: 'board'
   };
 
   function save(){
-    localStorage.setItem(LS_CARDS, JSON.stringify(state.cards));
-    localStorage.setItem(LS_CHAT, JSON.stringify(state.chat));
-    localStorage.setItem(LS_MEMORY, JSON.stringify(state.memory));
+    localStorage.setItem(LS.cards, JSON.stringify(state.cards));
+    localStorage.setItem(LS.chat, JSON.stringify(state.chat));
+    localStorage.setItem(LS.memory, JSON.stringify(state.memory));
+    localStorage.setItem(LS.leads, JSON.stringify(state.leads));
+  }
+  const uid = () => 'x' + Math.random().toString(36).slice(2,10);
+  const esc = s => (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  function logMemory(text){
+    state.memory.push({time:new Date().toISOString(), text});
+    if(state.memory.length > 500) state.memory = state.memory.slice(-500);
+    save();
   }
 
-  function seedCards(){
-    return [
-      {id: cryptoId(), agent:'content', status:'idea', tag:'Blog', title:'Why HVAC companies lose $30k/yr to missed calls', body:'Draft idea — angle: after-hours AI call answering + booking as the hook, not "websites".'},
-      {id: cryptoId(), agent:'content', status:'idea', tag:'Social', title:'Oracle trend: "AI receptionist" searches up this week', body:'Quote a trending post about AI front-desk automation, add the Apex Standard take, publish.'},
-      {id: cryptoId(), agent:'outreach', status:'idea', tag:'Email', title:'Cold outreach — roofing ICP', body:'Target: roofing companies $500-1000+ ticket value. Angle: buy back your time, not "more leads".'},
-    ];
-  }
-
-  function cryptoId(){ return 'c_' + Math.random().toString(36).slice(2,10); }
-
-  // ---------- API key modal ----------
-  const apiKeyBtn = document.getElementById('apiKeyBtn');
-  const apiModal = document.getElementById('apiModal');
-  const providerSelect = document.getElementById('providerSelect');
+  // ---------------- providers ----------------
   const PROVIDER_LABELS = {anthropic:'Claude', openai:'OpenAI', gemini:'Gemini'};
-
-  function activeKey(){ return (state.keys[state.provider] || '').trim(); }
-
-  function refreshKeyBtn(){
-    apiKeyBtn.textContent = activeKey()
-      ? `${PROVIDER_LABELS[state.provider]}: connected ●`
-      : 'API key: not set';
-  }
-  const modelInput = document.getElementById('modelInput');
-  function showModelFor(p){
-    modelInput.value = state.models[p] || PROVIDERS[p].defaultModel;
-  }
-  providerSelect.addEventListener('change', ()=> showModelFor(providerSelect.value));
-
-  apiKeyBtn.addEventListener('click', ()=>{
-    providerSelect.value = state.provider;
-    showModelFor(state.provider);
-    ['anthropic','openai','gemini'].forEach(p=>{
-      document.getElementById('key_'+p).value = state.keys[p] || '';
-    });
-    apiModal.classList.add('open');
-  });
-  document.getElementById('apiKeySave').addEventListener('click', ()=>{
-    ['anthropic','openai','gemini'].forEach(p=>{
-      const v = document.getElementById('key_'+p).value.trim();
-      if(v) state.keys[p] = v; else delete state.keys[p];
-    });
-    state.provider = providerSelect.value;
-    const m = modelInput.value.trim();
-    if(m && m !== PROVIDERS[state.provider].defaultModel) state.models[state.provider] = m;
-    else delete state.models[state.provider];
-    localStorage.setItem(LS_MODELS, JSON.stringify(state.models));
-    localStorage.setItem(LS_KEYS, JSON.stringify(state.keys));
-    localStorage.setItem(LS_PROVIDER, state.provider);
-    refreshKeyBtn();
-    apiModal.classList.remove('open');
-    pushChat('system', activeKey()
-      ? `${PROVIDER_LABELS[state.provider]} connected. Agents will now generate live output.`
-      : `No key saved for ${PROVIDER_LABELS[state.provider]} — running in offline-draft mode.`);
-    renderMain();
-  });
-  document.getElementById('apiKeyClear').addEventListener('click', ()=>{
-    state.keys = {}; localStorage.removeItem(LS_KEYS);
-    ['anthropic','openai','gemini'].forEach(p=>{ document.getElementById('key_'+p).value=''; });
-    refreshKeyBtn();
-  });
-  apiModal.addEventListener('click', (e)=>{ if(e.target===apiModal) apiModal.classList.remove('open'); });
-  refreshKeyBtn();
-
-  // ---------- Claude API call ----------
   const PROVIDERS = {
     anthropic: {
-      url: 'https://api.anthropic.com/v1/messages',
-      headers: k => ({
-        'content-type':'application/json',
-        'x-api-key': k,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
-      }),
-      defaultModel: 'claude-sonnet-5',
-      body: (sys, msg, model) => ({
-        model, max_tokens:1000,
-        system: sys, messages:[{role:'user', content:msg}]
-      }),
+      defaultModel:'claude-sonnet-5',
+      url:'https://api.anthropic.com/v1/messages',
+      headers: k => ({'content-type':'application/json','x-api-key':k,
+        'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}),
+      body: (sys, msgs, model) => ({model, max_tokens:1200, system:sys, messages:msgs}),
       parse: d => d.content?.[0]?.text
     },
     openai: {
-      url: 'https://api.openai.com/v1/chat/completions',
-      headers: k => ({'content-type':'application/json', 'authorization':`Bearer ${k}`}),
-      defaultModel: 'gpt-4o',
-      body: (sys, msg, model) => ({
-        model, max_tokens:1000,
-        messages:[{role:'system', content:sys},{role:'user', content:msg}]
-      }),
+      defaultModel:'gpt-4o',
+      url:'https://api.openai.com/v1/chat/completions',
+      headers: k => ({'content-type':'application/json','authorization':`Bearer ${k}`}),
+      body: (sys, msgs, model) => ({model, max_tokens:1200,
+        messages:[{role:'system',content:sys}, ...msgs]}),
       parse: d => d.choices?.[0]?.message?.content
     },
     gemini: {
-      defaultModel: 'gemini-3.8-flash',
-      url: (k, model) => `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(k)}`,
+      defaultModel:'gemini-3.8-flash',
+      url:(k,model)=>`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(k)}`,
       headers: () => ({'content-type':'application/json'}),
-      body: (sys, msg) => ({
+      body: (sys, msgs) => ({
         systemInstruction:{parts:[{text:sys}]},
-        contents:[{role:'user', parts:[{text:msg}]}]
+        contents: msgs.map(m=>({role: m.role==='assistant'?'model':'user', parts:[{text:m.content}]}))
       }),
       parse: d => d.candidates?.[0]?.content?.parts?.[0]?.text
     }
   };
+  const activeKey = () => (state.keys[state.provider] || '').trim();
 
-  async function callAI(systemPrompt, userMessage, providerOverride){
+  async function callAI(systemPrompt, messages, providerOverride){
     const prov = providerOverride || state.provider;
     const key = (state.keys[prov] || '').trim();
-    if(!key) return offlineDraft(userMessage);
+    if(!key) return `(No ${PROVIDER_LABELS[prov]} key set — open the key panel, top right.)`;
     const p = PROVIDERS[prov];
     const model = (state.models[prov] || p.defaultModel).trim();
     try{
-      const res = await fetch(typeof p.url === 'function' ? p.url(key, model) : p.url, {
-        method:'POST',
-        headers: p.headers(key),
-        body: JSON.stringify(p.body(systemPrompt, userMessage, model))
+      const res = await fetch(typeof p.url==='function' ? p.url(key,model) : p.url, {
+        method:'POST', headers:p.headers(key),
+        body: JSON.stringify(p.body(systemPrompt, messages, model))
       });
       if(!res.ok){
         const err = await res.text();
-        return `[${PROVIDER_LABELS[prov]} API error ${res.status}] ${err.slice(0,300)}`;
+        return `[${PROVIDER_LABELS[prov]} error ${res.status}] ${err.slice(0,280)}`;
       }
       return p.parse(await res.json()) || '(empty response)';
     }catch(e){
@@ -362,286 +342,399 @@
     }
   }
 
-  function offlineDraft(prompt){
-    return `(offline draft — connect an API key for live generation)\n\nRe: "${prompt}"\n\nDraft outline:\n- Hook: buying back the owner's time, not "more leads"\n- Proof point: concrete workflow fixed (missed calls, slow quoting, no follow-up)\n- CTA: 15-min audit call\n\nAdd your Claude API key (top right) to have this generated for real.`;
-  }
+  // ---------------- agent prompts ----------------
+  const IDENTITY = `Kassava is a sales closer who represents Casava (casava.app) on 50% commission. He says "I'm with Casava" — he does NOT own or run it, so never write "I run Casava" or "my company Casava". He sends from itz.silven@apexstandard.biz.
 
-  const AGENT_PROMPTS = {
-    content: `You are the Content Agent inside Apex Standard's Agent OS. Apex Standard sells business optimization (AI/automation as the mechanism, not the pitch) to high-ticket service businesses (HVAC, electrical, roofing, plumbing, $500-1000+ client value), reselling Casava's AI systems on 50% commission. Write tight, concrete blog posts or social posts. Never use the "5X more leads in 30 days" framing. Keep output ready to publish, no meta-commentary.`,
-    outreach: `You are the Outreach Agent inside Apex Standard's Agent OS. Write cold outreach emails and SMS for Kassava, a sales closer targeting high-ticket local service business owners (HVAC, electrical, roofing, plumbing, pool service; $500-1000+ job value).
+He sells business optimization to high-ticket local service businesses (HVAC, electrical, roofing, plumbing, pool service; $500-1000+ per job, owner-operated, roughly 3-15 trucks). AI/automation is the MECHANISM, never the pitch — lead with the owner's problem: missed calls, lost jobs, slow quoting, no follow-up. He is deliberately moving away from selling websites and away from lead-gen hype.
 
-HARD RULES — these are non-negotiable:
-- Kassava represents Casava as a sales rep. In the body he says "I'm with Casava". Never claim he owns or runs it — no "I run Casava" or "my company Casava".
-- He sends from itz.silven@apexstandard.biz, NOT a Casava address, so every email must close with this exact signature block so the domain mismatch never confuses the reader:
+He is EARLY — no closed clients yet. Never invent case studies, testimonials, results or numbers.`;
+
+  const OUTREACH_RULES = `HARD RULES:
+- NEVER invent a specific observation about the prospect's website, reviews, ads or operations. If it isn't verified, ask a question instead of asserting. A false specific gets the email deleted.
+- Use the prospect's first name when given.
+- Exactly ONE call to action with ONE time commitment.
+- Under 120 words. Plain language a contractor actually uses.
+- BANNED: "5X more leads", "in 30 days", "game-changer", "revolutionize", "I hope this email finds you well", "just circling back".
+- Close every cold email with exactly this:
 
 — Kassava
 Apex Standard · Casava systems partner
 itz.silven@apexstandard.biz
-[calendly link]
+https://calendly.com/itz-silven-apexstandard/free-strategy-planning-call
 
 Not interested? Reply "stop" and I won't contact you again.
-Apex Standard, PO Box 1093, Willow Creek, CA 95573
-- NEVER invent a specific observation about the prospect's website, reviews, ads or operations. If you don't have a verified fact, ask a question instead of asserting one. A false specific gets the email deleted.
-- Use the prospect's first name if given.
-- Exactly ONE call to action, with ONE time commitment. Never offer "10 minutes" and a 15-minute link in the same email.
-- Lead with the owner's problem (lost jobs, lost evenings, slow response), not the product. Don't say "chatbot", "website", or "AI" as the pitch — those are mechanisms, not reasons to buy.
-- Banned: "5X more leads", "in 30 days", "game-changer", "revolutionize", "I hope this email finds you well".
-- Short. Under 120 words for email. Plain language a contractor would actually use.
+Apex Standard, PO Box 1093, Willow Creek, CA 95573`;
 
-Output the email/SMS only, ready to send. No commentary.`,
-
-    followup: `You are the Follow-up Agent for Apex Standard. Write follow-up steps (2 through 5) in a cold outreach sequence for Kassava, targeting local service business owners.
-
-Each follow-up must add something new — a different angle, a concrete example, a shorter ask — never "just bumping this" or "circling back". Progressively shorter as the sequence goes on; the last one is a one-line breakup email. Same hard rules as cold outreach: no invented specifics about their business, one CTA, no hype language. Kassava is WITH Casava (a rep, not the owner) — never imply he runs the company. Output the follow-ups only, numbered and labeled with suggested send delay.`,
-
-    objection: `You are the Objection Agent for Apex Standard. Kassava is a cold-calling closer who represents Casava, selling business optimization systems to local service business owners. He introduces himself as being with Casava; he does not own it.
-
-Given an objection ("we already have someone", "send me some info", "how much is it", "not interested", "I'm too busy", "does it really work"), give him:
-1. What the objection usually actually means underneath
-2. A short spoken response — conversational, how a person really talks on a phone, not a script he'd read
-3. The question to ask right after, to get the conversation moving again
-
-Never pushy or manipulative. The goal is an honest conversation, not a trapped prospect. Keep it tight.`,
-
-    callscript: `You are the Call Script Agent for Apex Standard. Write cold call openers and discovery questions for Kassava, who introduces himself as being with Casava (he represents them; he does not own the company), calling owners of local service businesses (HVAC, roofing, plumbing, electrical, pool).
-
-Structure: a 10-second opener that earns the next 30 seconds, a permission-based transition, then 4-6 discovery questions that surface where the owner is losing jobs or losing time. Questions should be open and specific to how these businesses actually run (missed calls, after-hours inquiries, quoting speed, follow-up, scheduling).
-
-Write it how people actually speak — contractions, short sentences, no corporate phrasing. Mark where he should stop and listen. No hype, no fake urgency.`,
-
-    research: `You are the Lead Research Agent for Apex Standard. Kassava will paste in a lead (business name, trade, location, rating, review count, site, contact).
-
-Return:
-1. The likeliest operational bottleneck for that trade at that apparent size
-2. The angle to lead with, in one sentence
-3. Two specific questions worth asking on a call
-4. Any red flags suggesting a poor fit (too small, likely no budget, wrong trade)
-
-CRITICAL: Distinguish clearly between what the lead data actually tells you and what you are inferring. Never state an inference as a verified fact — Kassava may put it in an email, and a false specific kills the deal. Label guesses as guesses.`,
-    oracle: `You are Oracle, a trend-spotting agent for Apex Standard. Given a topic, describe a plausible current trend angle in home-service/local-business AI automation and suggest a hook for a post about it. Be concrete and specific, not generic.`,
-    pipeline: `You are the Pipeline Tracker agent for Apex Standard. Help the user log or reason about leads/deals in their sales pipeline for the HVAC/electrical/roofing/plumbing ICP. Be concise.`
+  const AGENT_PROMPTS = {
+    outreach: `You are the Outreach Agent in Apex Standard's Agent OS.\n\n${IDENTITY}\n\n${OUTREACH_RULES}\n\nOutput the email or SMS only, ready to send. No commentary.`,
+    followup: `You are the Follow-up Agent in Apex Standard's Agent OS.\n\n${IDENTITY}\n\nWrite follow-up steps 2-5 of a cold sequence. Each must add something NEW — a different angle, a concrete example, a shorter ask. Never "just bumping this". Progressively shorter; the last is a one-line breakup email. Label each with a suggested send delay.\n\n${OUTREACH_RULES}`,
+    objection: `You are the Objection Agent in Apex Standard's Agent OS.\n\n${IDENTITY}\n\nGiven an objection, give him: (1) what it usually actually means underneath, (2) a short spoken response — how a person really talks on a phone, not a script to read aloud, (3) the question to ask right after to reopen the conversation. Never pushy or manipulative; the goal is an honest conversation. Keep it tight.`,
+    callscript: `You are the Call Script Agent in Apex Standard's Agent OS.\n\n${IDENTITY}\n\nWrite cold call openers and discovery questions. Structure: a 10-second opener that earns the next 30 seconds, a permission-based transition, then 4-6 open discovery questions that surface where the owner loses jobs or time (missed calls, after-hours inquiries, quoting speed, follow-up, scheduling). Write how people actually speak — contractions, short sentences. Mark where he should stop and listen.`,
+    research: `You are the Lead Research Agent in Apex Standard's Agent OS.\n\n${IDENTITY}\n\nGiven a pasted lead, return: (1) the likeliest operational bottleneck for that trade at that apparent size, (2) the angle to lead with in one sentence, (3) two specific questions worth asking on a call, (4) red flags suggesting a poor fit.\n\nCRITICAL: clearly separate what the lead data actually says from what you're inferring. Never state an inference as verified fact — Kassava may put it in an email, and a false specific kills the deal. Label guesses as guesses.`,
+    content: `You are the Content Agent in Apex Standard's Agent OS.\n\n${IDENTITY}\n\nWrite tight, concrete blog or social posts for local service business owners. No hype, no "5X leads" framing. Ready to publish, no meta-commentary.`,
+    oracle: `You are Oracle, the trend agent in Apex Standard's Agent OS.\n\n${IDENTITY}\n\nGiven a topic, describe a plausible current angle in local-service/home-service automation and suggest a specific hook for a post. Be concrete, not generic. Note clearly that you cannot browse the live web, so these are informed angles rather than verified trending data.`
   };
 
-  // ---------- Sidebar ----------
+  const LABELS = {outreach:'Outreach Agent', followup:'Follow-up Agent', objection:'Objection Agent',
+    callscript:'Call Script Agent', research:'Lead Research', content:'Content Agent', oracle:'Oracle'};
+  const SUBS = {
+    outreach:'Cold emails & SMS for high-ticket local service businesses',
+    followup:'Sequence steps 2-5 — the ones that get replies',
+    objection:'What they really mean, and what to say back',
+    callscript:'Openers & discovery questions for booked calls',
+    research:'Paste a lead → angle, questions, red flags',
+    content:'Blog & social posts',
+    oracle:'Angles and hooks for content'
+  };
+  const TAGS = {outreach:'Email', followup:'Sequence', objection:'Objection',
+    callscript:'Script', research:'Research', content:'Content', oracle:'Angle'};
+  const PLACEHOLDERS = {
+    outreach:"e.g. 'Cold email to Christiaan at AZ Oasis Pools, Chandler AZ, pool service, 4.3 stars / 50 reviews'",
+    followup:"e.g. 'Follow-ups for the AZ Oasis pool email — no reply after 3 days'",
+    objection:"e.g. 'We already have a guy who handles our website'",
+    callscript:"e.g. 'Opener for calling HVAC owners cold, mid-morning, 5-10 trucks'",
+    research:"Paste the whole lead card — name, trade, location, rating, site, contact",
+    content:"e.g. 'Post on what missed after-hours calls actually cost a roofing company'",
+    oracle:"e.g. 'Angles on AI answering services for home service businesses'"
+  };
+
+  // ---------------- key modal ----------------
+  const apiKeyBtn = document.getElementById('apiKeyBtn');
+  const apiModal = document.getElementById('apiModal');
+  const providerSelect = document.getElementById('providerSelect');
+  const modelInput = document.getElementById('modelInput');
+  const PROVS = ['anthropic','openai','gemini'];
+
+  function refreshKeyBtn(){
+    apiKeyBtn.textContent = activeKey() ? `${PROVIDER_LABELS[state.provider]}: connected ●` : 'API key: not set';
+  }
+  const showModelFor = p => { modelInput.value = state.models[p] || PROVIDERS[p].defaultModel; };
+  providerSelect.addEventListener('change', ()=>showModelFor(providerSelect.value));
+
+  apiKeyBtn.addEventListener('click', ()=>{
+    providerSelect.value = state.provider;
+    showModelFor(state.provider);
+    PROVS.forEach(p => document.getElementById('key_'+p).value = state.keys[p] || '');
+    apiModal.classList.add('open');
+  });
+  document.getElementById('apiKeySave').addEventListener('click', ()=>{
+    PROVS.forEach(p=>{
+      const v = document.getElementById('key_'+p).value.trim();
+      if(v) state.keys[p]=v; else delete state.keys[p];
+    });
+    state.provider = providerSelect.value;
+    const m = modelInput.value.trim();
+    if(m && m !== PROVIDERS[state.provider].defaultModel) state.models[state.provider]=m;
+    else delete state.models[state.provider];
+    localStorage.setItem(LS.keys, JSON.stringify(state.keys));
+    localStorage.setItem(LS.models, JSON.stringify(state.models));
+    localStorage.setItem(LS.provider, state.provider);
+    refreshKeyBtn();
+    apiModal.classList.remove('open');
+    pushChat('system', activeKey()
+      ? `${PROVIDER_LABELS[state.provider]} connected.`
+      : `No key saved for ${PROVIDER_LABELS[state.provider]}.`);
+    render();
+  });
+  document.getElementById('apiKeyClear').addEventListener('click', ()=>{
+    state.keys={}; localStorage.removeItem(LS.keys);
+    PROVS.forEach(p=>document.getElementById('key_'+p).value='');
+    refreshKeyBtn();
+  });
+  apiModal.addEventListener('click', e=>{ if(e.target===apiModal) apiModal.classList.remove('open'); });
+  refreshKeyBtn();
+
+  // ---------------- nav ----------------
   document.querySelectorAll('.agent-item[data-agent]').forEach(el=>{
     el.addEventListener('click', ()=>{
-      document.querySelectorAll('.agent-item[data-agent]').forEach(x=>x.classList.remove('active'));
-      el.classList.add('active');
-      state.activeAgent = el.dataset.agent;
-      state.activeView='board';
-      renderMain();
+      state.activeAgent = el.dataset.agent; state.activeView='board'; render();
     });
   });
   document.querySelectorAll('.agent-item[data-view]').forEach(el=>{
-    el.addEventListener('click', ()=>{
-      state.activeView = el.dataset.view;
-      renderMain();
-    });
+    el.addEventListener('click', ()=>{ state.activeView = el.dataset.view; render(); });
   });
 
-  // ---------- Main board ----------
+  function syncNav(){
+    document.querySelectorAll('.agent-item').forEach(el=>el.classList.remove('active'));
+    const sel = state.activeView==='board'
+      ? `.agent-item[data-agent="${state.activeAgent}"]`
+      : `.agent-item[data-view="${state.activeView}"]`;
+    document.querySelector(sel)?.classList.add('active');
+    document.querySelectorAll('.nav-count[data-c]').forEach(el=>{
+      const n = state.cards.filter(c=>c.agent===el.dataset.c).length;
+      el.textContent = n; el.style.visibility = n ? 'visible' : 'hidden';
+    });
+    document.getElementById('leadCount').textContent = state.leads.length;
+  }
+
+  // ---------------- render ----------------
   const mainView = document.getElementById('mainView');
+  function render(){
+    syncNav();
+    if(state.activeView==='leads') return renderLeads();
+    if(state.activeView==='stats') return renderStats();
+    if(state.activeView==='memory') return renderMemory();
+    renderBoard();
+  }
 
-  const PLACEHOLDERS = {
-    content: "e.g. 'Blog post on what missed after-hours calls actually cost a roofing company'",
-    outreach: "e.g. 'Cold email to Christiaan at AZ Oasis Pools, Chandler AZ, pool service, 4.3 stars / 50 reviews'",
-    followup: "e.g. 'Follow-ups for the AZ Oasis pool email — no reply after 3 days'",
-    objection: "e.g. 'We already have a guy who handles our website'",
-    callscript: "e.g. 'Opener for calling HVAC owners cold, mid-morning, 5-10 trucks'",
-    research: "Paste the whole lead card here — name, trade, location, rating, site, contact",
-    oracle: "e.g. 'What's trending in local service business automation this week?'",
-    pipeline: "e.g. 'AZ Oasis Pools — emailed Sep 4, no reply yet'"
-  };
+  function statTiles(){
+    const c = state.cards;
+    const booked = state.leads.filter(l=>l.status==='booked').length;
+    const replied = state.leads.filter(l=>l.status==='replied').length;
+    const touched = state.leads.filter(l=>l.status!=='new').length;
+    return `<div class="stats">
+      <div class="stat"><div class="n">${c.length}</div><div class="l">Drafts made</div></div>
+      <div class="stat"><div class="n">${c.filter(x=>x.status==='done').length}</div><div class="l">Approved</div></div>
+      <div class="stat"><div class="n">${state.leads.length}</div><div class="l">Leads</div></div>
+      <div class="stat"><div class="n">${touched}</div><div class="l">Contacted</div></div>
+      <div class="stat ${replied?'hi':''}"><div class="n">${replied}</div><div class="l">Replied</div></div>
+      <div class="stat ${booked?'hi':''}"><div class="n">${booked}</div><div class="l">Booked</div></div>
+    </div>`;
+  }
 
-  function renderMain(){
-    if(state.activeView==='memory'){ renderMemory(); return; }
+  function renderBoard(){
     const agent = state.activeAgent;
-    const labels = {
-      content:'Content Agent', outreach:'Outreach Agent', followup:'Follow-up Agent',
-      objection:'Objection Agent', callscript:'Call Script Agent', research:'Lead Research',
-      oracle:'Oracle', pipeline:'Pipeline Tracker'
-    };
-    const subs = {
-      content:'Blog posts & social content for the Casava AI-systems offer',
-      outreach:'Cold emails & SMS for high-ticket local service businesses',
-      followup:'Sequence steps 2-5 — the ones that actually get replies',
-      objection:'What they really mean, and what to say back',
-      callscript:'Openers & discovery questions for booked calls',
-      research:'Paste a lead → angle, questions, red flags',
-      oracle:'Trend spotting → content hooks',
-      pipeline:'Leads and deals in progress'
-    };
     mainView.innerHTML = `
-      <div class="board-header">
-        <div><h2>${labels[agent]}</h2><div class="sub">${subs[agent]}</div></div>
-      </div>
+      <div class="board-header"><h2>${LABELS[agent]}</h2><div class="sub">${SUBS[agent]}</div></div>
+      ${statTiles()}
       <div class="composer">
-        <textarea id="composerInput" placeholder="${(PLACEHOLDERS[agent]||'Describe what to draft…').replace(/"/g,'&quot;')}"></textarea>
+        <textarea id="composerInput" placeholder="${esc(PLACEHOLDERS[agent]||'Describe what to draft…')}"></textarea>
         <div class="row">
-          ${agent==='content' ? `<select id="contentType"><option value="Blog">Blog post</option><option value="Social">Social post</option></select>` : ''}
           <select id="agentProvider" title="Which AI runs this agent">
             <option value="">Default (${PROVIDER_LABELS[state.provider]})</option>
             <option value="anthropic"${state.agentProviders[agent]==='anthropic'?' selected':''}>Claude</option>
             <option value="openai"${state.agentProviders[agent]==='openai'?' selected':''}>OpenAI</option>
             <option value="gemini"${state.agentProviders[agent]==='gemini'?' selected':''}>Gemini (free)</option>
           </select>
-          <button class="btn" id="draftBtn">Draft with ${labels[agent]}</button>
-          <span style="font-size:11px;color:var(--dim);" id="draftStatus"></span>
+          <button class="btn" id="draftBtn">Draft with ${LABELS[agent]}</button>
+          <span style="font-size:12px;color:var(--dim);" id="draftStatus"></span>
         </div>
       </div>
       <div class="columns">
-        <div class="column" data-status="idea"><h3>Idea / Draft</h3><div class="list"></div></div>
-        <div class="column" data-status="review"><h3>Ready for Review</h3><div class="list"></div></div>
-        <div class="column" data-status="done"><h3>Approved / Sent</h3><div class="list"></div></div>
-      </div>
-    `;
-    const apSel = document.getElementById('agentProvider');
-    apSel.addEventListener('change', ()=>{
-      if(apSel.value) state.agentProviders[agent] = apSel.value;
-      else delete state.agentProviders[agent];
-      localStorage.setItem(LS_AGENTPROV, JSON.stringify(state.agentProviders));
+        <div class="column" data-status="idea"><h3>Draft</h3><div class="list"></div></div>
+        <div class="column" data-status="review"><h3>Reviewing</h3><div class="list"></div></div>
+        <div class="column" data-status="done"><h3>Approved</h3><div class="list"></div></div>
+      </div>`;
+    const sel = document.getElementById('agentProvider');
+    sel.addEventListener('change', ()=>{
+      if(sel.value) state.agentProviders[agent]=sel.value; else delete state.agentProviders[agent];
+      localStorage.setItem(LS.agentProv, JSON.stringify(state.agentProviders));
     });
-    document.getElementById('draftBtn').addEventListener('click', ()=>runDraft(agent));
+    document.getElementById('draftBtn').addEventListener('click', runDraft);
     renderCards();
   }
 
   function renderCards(){
-    const agent = state.activeAgent;
     document.querySelectorAll('.column').forEach(col=>{
-      const status = col.dataset.status;
       const list = col.querySelector('.list');
-      const items = state.cards.filter(c=>c.agent===agent && c.status===status);
+      const items = state.cards.filter(c=>c.agent===state.activeAgent && c.status===col.dataset.status);
       list.innerHTML = items.length ? '' : '<div class="empty">Nothing here</div>';
       items.forEach(card=>{
         const div = document.createElement('div');
         div.className='card';
         div.innerHTML = `
-          <span class="tag">${card.tag}</span>
-          <div class="title">${escapeHtml(card.title)}</div>
-          <div class="body">${escapeHtml(card.body)}</div>
+          <span class="tag">${esc(card.tag)}</span>
+          <div class="title">${esc(card.title)}</div>
+          <div class="body">${esc(card.body)}</div>
           <div class="actions">
-            ${status==='idea' ? '<button data-act="review">Move to Review</button>' : ''}
-            ${status==='review' ? '<button data-act="approve">Approve</button><button data-act="idea">Back to Draft</button>' : ''}
-            ${status==='done' ? '<button data-act="copy">Copy</button>' : ''}
-            <button data-act="delete">Delete</button>
-          </div>
-        `;
-        div.querySelectorAll('button').forEach(btn=>{
-          btn.addEventListener('click', ()=>{
-            const act = btn.dataset.act;
-            if(act==='review') card.status='review';
-            if(act==='approve'){ card.status='done'; logMemory(`Approved & published: "${card.title}" (${card.agent})`); }
-            if(act==='idea') card.status='idea';
-            if(act==='copy') navigator.clipboard.writeText(card.body);
-            if(act==='delete') state.cards = state.cards.filter(c=>c.id!==card.id);
-            save(); renderCards();
-          });
-        });
+            ${card.status==='idea'?'<button data-a="review">To review</button>':''}
+            ${card.status==='review'?'<button data-a="done">Approve</button><button data-a="idea">Back</button>':''}
+            <button data-a="copy">Copy</button>
+            <button data-a="del">Delete</button>
+          </div>`;
+        div.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+          const a=b.dataset.a;
+          if(a==='copy'){ navigator.clipboard.writeText(card.body); b.textContent='Copied'; setTimeout(()=>b.textContent='Copy',1200); return; }
+          if(a==='del') state.cards = state.cards.filter(x=>x.id!==card.id);
+          else { card.status=a; if(a==='done') logMemory(`Approved: ${card.title}`); }
+          save(); render();
+        }));
         list.appendChild(div);
       });
     });
   }
 
-  async function runDraft(agent){
+  async function runDraft(){
     const input = document.getElementById('composerInput');
     const statusEl = document.getElementById('draftStatus');
+    const btn = document.getElementById('draftBtn');
     const prompt = input.value.trim();
     if(!prompt) return;
-    statusEl.textContent = 'drafting…';
-    const TAGS = {outreach:'Email', followup:'Sequence', objection:'Objection', callscript:'Script', research:'Research', oracle:'Trend', pipeline:'Note'};
-    const tag = agent==='content' ? document.getElementById('contentType').value : (TAGS[agent] || 'Note');
-    const result = await callAI(AGENT_PROMPTS[agent], prompt, state.agentProviders[agent]);
-    const card = {
-      id: cryptoId(), agent, status:'idea', tag,
-      title: prompt.slice(0,70) + (prompt.length>70?'…':''),
-      body: result
-    };
-    state.cards.unshift(card);
+    const agent = state.activeAgent;
+    btn.disabled = true; statusEl.textContent = 'drafting…';
+    const result = await callAI(AGENT_PROMPTS[agent], [{role:'user', content:prompt}], state.agentProviders[agent]);
+    state.cards.unshift({
+      id:uid(), agent, status:'idea', tag:TAGS[agent]||'Note',
+      title: prompt.slice(0,70) + (prompt.length>70?'…':''), body: result
+    });
     save();
-    input.value='';
-    statusEl.textContent='';
-    renderCards();
-    logMemory(`${agent} agent drafted: "${card.title}"`);
+    input.value=''; btn.disabled=false; statusEl.textContent='';
+    render();
+    logMemory(`${LABELS[agent]} drafted: ${prompt.slice(0,50)}`);
+  }
+
+  // ---------------- leads ----------------
+  const STATUSES = ['new','emailed','called','replied','booked','dead'];
+  function renderLeads(){
+    mainView.innerHTML = `
+      <div class="board-header"><h2>Leads</h2><div class="sub">Who you've contacted, and what happened</div></div>
+      ${statTiles()}
+      <div class="composer">
+        <div class="lead-form">
+          <input type="text" id="ln" placeholder="Business name" />
+          <input type="text" id="lt" placeholder="Trade (HVAC, roofing…)" />
+          <input type="text" id="lc" placeholder="City" />
+          <input type="text" id="lp" placeholder="Contact name" />
+          <input type="text" id="le" placeholder="Email or phone" />
+        </div>
+        <div class="row"><button class="btn" id="addLead">Add lead</button>
+          <span style="font-size:12px;color:var(--dim);">Status changes are logged with the date.</span></div>
+      </div>
+      <div class="column" style="padding:0;overflow-x:auto;">
+        <table class="leads">
+          <thead><tr><th>Business</th><th>Trade</th><th>City</th><th>Contact</th><th>Status</th><th>Last touch</th><th></th></tr></thead>
+          <tbody id="leadRows"></tbody>
+        </table>
+      </div>`;
+    document.getElementById('addLead').addEventListener('click', ()=>{
+      const g = id => document.getElementById(id).value.trim();
+      if(!g('ln')) return;
+      state.leads.unshift({id:uid(), name:g('ln'), trade:g('lt'), city:g('lc'),
+        person:g('lp'), contact:g('le'), status:'new', touched:''});
+      save(); logMemory(`Lead added: ${g('ln')}`); render();
+    });
+    const rows = document.getElementById('leadRows');
+    if(!state.leads.length){
+      rows.innerHTML = '<tr><td colspan="7"><div class="empty">No leads yet — add one above, or paste one into Lead Research.</div></td></tr>';
+      return;
+    }
+    rows.innerHTML = '';
+    state.leads.forEach(l=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${esc(l.name)}</strong></td>
+        <td style="color:var(--dim)">${esc(l.trade)}</td>
+        <td style="color:var(--dim)">${esc(l.city)}</td>
+        <td style="color:var(--dim)">${esc(l.person||'')}${l.person&&l.contact?'<br>':''}<span style="font-size:11px">${esc(l.contact||'')}</span></td>
+        <td><select class="st">${STATUSES.map(s=>`<option value="${s}"${l.status===s?' selected':''}>${s}</option>`).join('')}</select></td>
+        <td style="color:var(--dim);font-size:12px">${esc(l.touched||'—')}</td>
+        <td class="lead-actions"><button data-a="research">Research</button><button data-a="del">✕</button></td>`;
+      tr.querySelector('.st').addEventListener('change', e=>{
+        l.status = e.target.value;
+        l.touched = new Date().toLocaleDateString();
+        save(); logMemory(`${l.name} → ${l.status}`); render();
+      });
+      tr.querySelectorAll('button').forEach(b=>b.addEventListener('click', ()=>{
+        if(b.dataset.a==='del'){ state.leads = state.leads.filter(x=>x.id!==l.id); save(); render(); }
+        else {
+          state.activeView='board'; state.activeAgent='research'; render();
+          document.getElementById('composerInput').value =
+            `${l.name} — ${l.trade}, ${l.city}. Contact: ${l.person} ${l.contact}`.trim();
+        }
+      }));
+      rows.appendChild(tr);
+    });
+  }
+
+  function renderStats(){
+    const byAgent = Object.keys(LABELS).map(a=>({a, n:state.cards.filter(c=>c.agent===a).length}))
+      .filter(x=>x.n).sort((x,y)=>y.n-x.n);
+    const byStatus = STATUSES.map(s=>({s, n:state.leads.filter(l=>l.status===s).length}));
+    const contacted = state.leads.filter(l=>l.status!=='new').length;
+    const replied = state.leads.filter(l=>l.status==='replied'||l.status==='booked').length;
+    const rate = contacted ? Math.round(replied/contacted*100) : null;
+    const max = Math.max(1, ...byStatus.map(x=>x.n));
+    mainView.innerHTML = `
+      <div class="board-header"><h2>Numbers</h2><div class="sub">Everything here counts your own activity — nothing is estimated</div></div>
+      ${statTiles()}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="column">
+          <h3>Pipeline</h3>
+          ${byStatus.map(x=>`
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:9px;">
+              <span style="width:66px;font-size:12px;color:var(--dim);text-transform:capitalize;">${x.s}</span>
+              <div style="flex:1;height:8px;background:var(--panel2);border-radius:4px;overflow:hidden;">
+                <div style="width:${x.n/max*100}%;height:100%;background:var(--accent);"></div>
+              </div>
+              <span style="width:26px;text-align:right;font-size:12px;">${x.n}</span>
+            </div>`).join('')}
+          <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:13px;">
+            ${rate===null
+              ? '<span style="color:var(--dim)">Reply rate shows once you\'ve contacted someone.</span>'
+              : `Reply rate: <strong style="color:var(--accent-soft)">${rate}%</strong>
+                 <span style="color:var(--dim)">(${replied} of ${contacted} contacted)</span>`}
+          </div>
+        </div>
+        <div class="column">
+          <h3>Drafts by agent</h3>
+          ${byAgent.length ? byAgent.map(x=>`
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;">
+              <span>${LABELS[x.a]}</span><strong>${x.n}</strong>
+            </div>`).join('') : '<div class="empty">No drafts yet</div>'}
+        </div>
+      </div>`;
   }
 
   function renderMemory(){
     mainView.innerHTML = `
-      <div class="board-header"><div><h2>Memory Log</h2><div class="sub">Everything the agents have done, auto-logged</div></div></div>
-      <div class="column" style="max-width:700px;"><h3>History</h3><div id="memList"></div></div>
-    `;
-    const memList = document.getElementById('memList');
-    if(!state.memory.length){ memList.innerHTML='<div class="empty">No memory entries yet — draft something or approve a card.</div>'; return; }
-    memList.innerHTML='';
-    state.memory.slice().reverse().forEach(m=>{
-      const div = document.createElement('div');
-      div.className='card';
-      div.innerHTML = `<div class="body">${escapeHtml(m.time)} — ${escapeHtml(m.text)}</div>`;
-      memList.appendChild(div);
-    });
+      <div class="board-header"><h2>Activity Log</h2><div class="sub">What's happened in here, newest first</div></div>
+      <div class="column" id="memList"></div>`;
+    const el = document.getElementById('memList');
+    if(!state.memory.length){ el.innerHTML='<div class="empty">Nothing logged yet</div>'; return; }
+    el.innerHTML = state.memory.slice().reverse().map(m=>`
+      <div style="display:flex;gap:12px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;">
+        <span style="color:var(--dim);font-size:11px;min-width:118px;">${esc(new Date(m.time).toLocaleString())}</span>
+        <span>${esc(m.text)}</span>
+      </div>`).join('');
   }
 
-  function logMemory(text){
-    state.memory.push({time:new Date().toLocaleString(), text});
-    save();
-  }
-
-  function escapeHtml(s){
-    return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
-
-  // ---------- Chat / global search ----------
+  // ---------------- chat (with memory) ----------------
   const chatLog = document.getElementById('chatLog');
   const chatInput = document.getElementById('chatInput');
-  const chatSend = document.getElementById('chatSend');
-  const globalSearch = document.getElementById('globalSearch');
 
-  function pushChat(role, text){
-    state.chat.push({role, text});
-    save();
-    renderChat();
-  }
-
+  function pushChat(role, text){ state.chat.push({role,text}); save(); renderChat(); }
   function renderChat(){
-    chatLog.innerHTML='';
-    state.chat.forEach(m=>{
-      const div = document.createElement('div');
-      div.className = 'msg ' + m.role;
-      div.textContent = m.text;
-      chatLog.appendChild(div);
-    });
+    chatLog.innerHTML = state.chat.map(m=>
+      `<div class="msg ${m.role}">${esc(m.text)}</div>`).join('');
     chatLog.scrollTop = chatLog.scrollHeight;
   }
 
   async function sendChat(text){
     if(!text.trim()) return;
     pushChat('user', text);
-    const thinking = {role:'agent', text:'…thinking'};
-    state.chat.push(thinking); renderChat();
-    const reply = await callAI(
-      `You are the group-chat coordinator for Apex Standard's Agent OS, standing in for the Content Agent, Outreach Agent, Oracle and Pipeline Tracker together. Apex Standard sells business optimization/AI automation (Casava's systems, 50% commission) to HVAC/electrical/roofing/plumbing owners. Answer directly and usefully, routing to whichever "agent" role fits the question.`,
-      text
-    );
+    state.chat.push({role:'agent', text:'…'});
+    renderChat();
+
+    // real conversation memory: replay the last 20 turns
+    const history = state.chat
+      .filter(m => m.role==='user' || (m.role==='agent' && m.text!=='…'))
+      .slice(-20)
+      .map(m => ({role: m.role==='user'?'user':'assistant', content:m.text}));
+
+    const sys = `You are the assistant inside Apex Standard's Agent OS, helping Kassava between calls.\n\n${IDENTITY}\n\n${OUTREACH_RULES}\n\nYou remember this conversation — build on what was already said instead of restarting. Be direct and useful. Tell him when copy is weak and why. Don't pad.`;
+
+    const reply = await callAI(sys, history);
     state.chat[state.chat.length-1] = {role:'agent', text:reply};
     save(); renderChat();
-    logMemory(`Chat: "${text.slice(0,60)}"`);
   }
 
-  chatSend.addEventListener('click', ()=>{ const v=chatInput.value; chatInput.value=''; sendChat(v); });
-  chatInput.addEventListener('keydown', e=>{ if(e.key==='Enter'){ const v=chatInput.value; chatInput.value=''; sendChat(v); }});
-
-  globalSearch.addEventListener('keydown', e=>{
-    if(e.key==='Enter'){
-      const v = globalSearch.value; globalSearch.value='';
-      state.activeView='board';
-      chatInput.focus();
-      sendChat(v);
-    }
+  document.getElementById('chatSend').addEventListener('click', ()=>{
+    const v=chatInput.value; chatInput.value=''; sendChat(v);
+  });
+  chatInput.addEventListener('keydown', e=>{
+    if(e.key==='Enter'){ const v=chatInput.value; chatInput.value=''; sendChat(v); }
+  });
+  document.getElementById('chatClear').addEventListener('click', ()=>{
+    state.chat = [{role:'system', text:'Conversation cleared.'}]; save(); renderChat();
+  });
+  document.getElementById('globalSearch').addEventListener('keydown', e=>{
+    if(e.key==='Enter'){ const v=e.target.value; e.target.value=''; chatInput.focus(); sendChat(v); }
   });
 
   renderChat();
-  renderMain();
+  render();
 
-  if('serviceWorker' in navigator && location.protocol === 'https:'){
+  if('serviceWorker' in navigator && location.protocol==='https:'){
     navigator.serviceWorker.register('/sw.js').catch(()=>{});
   }
 })();

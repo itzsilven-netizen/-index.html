@@ -1,4 +1,4 @@
-const CACHE = 'apex-agent-os-v7';
+const CACHE = 'apex-agent-os-v8';
 const ASSETS = ['/agent-os.html', '/manifest.json', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', e => {
