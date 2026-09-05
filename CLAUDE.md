@@ -35,6 +35,8 @@ session in this repo. Keep it short — put depth in `notes/` and link out.
 - `notes/pipeline.md` — leads, clients, deals in progress
 - `notes/decisions.md` — running log of key decisions (dated)
 - `notes/roadmap.md` — what's next
+- `notes/email-playbook.md` — cold email craft rules baked into the Outreach/
+  Follow-up agents, and which parts of borrowed frameworks don't apply here
 
 ## How To Use This
 - Tell Claude new facts as they happen ("client X signed," "changed pricing to Y") —

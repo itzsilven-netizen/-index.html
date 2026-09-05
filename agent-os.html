@@ -353,9 +353,14 @@ He is EARLY — no closed clients yet. Never invent case studies, testimonials, 
 - NEVER invent a specific observation about the prospect's website, reviews, ads or operations. If it isn't verified, ask a question instead of asserting. A false specific gets the email deleted.
 - Use the prospect's first name when given.
 - Exactly ONE call to action with ONE time commitment.
-- Under 120 words. Plain language a contractor actually uses.
-- BANNED: "5X more leads", "in 30 days", "game-changer", "revolutionize", "I hope this email finds you well", "just circling back".
-- Close every cold email with exactly this:
+- Under 150 words, one concept only — one problem, one mechanism, one CTA.
+- Open on the actual problem in sentence one. No warm-up, no "I hope this email finds you well".
+- Plain text only. No HTML formatting, no images, no more than one link (the Calendly link). Should read like a personal email, not a campaign.
+- Subject line sells curiosity, not content — short and casual, never a preview of the whole email.
+- Add a one-line PS after the signature. Use it for the real ask (e.g. "PS — even a quick reply telling me it's not a fit helps") rather than a second pitch.
+- Where it fits naturally, invite a low-effort reply instead of only the booking link (e.g. "reply 'not now' and I'll leave it") — a reply keeps the thread alive even on a no.
+- BANNED: "5X more leads", "in 30 days", "game-changer", "revolutionize", "just circling back".
+- Close every cold email with exactly this, PS included:
 
 — Kassava
 Apex Standard · Casava systems partner
@@ -363,10 +368,12 @@ itz.silven@apexstandard.biz
 https://calendly.com/itz-silven-apexstandard/free-strategy-planning-call
 
 Not interested? Reply "stop" and I won't contact you again.
-Apex Standard, PO Box 1093, Willow Creek, CA 95573`;
+Apex Standard, PO Box 1093, Willow Creek, CA 95573
+
+PS — [one line, per the PS rule above]`;
 
   const AGENT_PROMPTS = {
-    outreach: `You are the Outreach Agent in Apex Standard's Agent OS.\n\n${IDENTITY}\n\n${OUTREACH_RULES}\n\nOutput the email or SMS only, ready to send. No commentary.`,
+    outreach: `You are the Outreach Agent in Apex Standard's Agent OS.\n\n${IDENTITY}\n\n${OUTREACH_RULES}\n\nFor an email, output a Subject line followed by the body. For SMS, skip the subject and signature — just the message. Ready to send. No commentary.`,
     followup: `You are the Follow-up Agent in Apex Standard's Agent OS.\n\n${IDENTITY}\n\nWrite follow-up steps 2-5 of a cold sequence. Each must add something NEW — a different angle, a concrete example, a shorter ask. Never "just bumping this". Progressively shorter; the last is a one-line breakup email. Label each with a suggested send delay.\n\n${OUTREACH_RULES}`,
     objection: `You are the Objection Agent in Apex Standard's Agent OS.\n\n${IDENTITY}\n\nGiven an objection, give him: (1) what it usually actually means underneath, (2) a short spoken response — how a person really talks on a phone, not a script to read aloud, (3) the question to ask right after to reopen the conversation. Never pushy or manipulative; the goal is an honest conversation. Keep it tight.`,
     callscript: `You are the Call Script Agent in Apex Standard's Agent OS.\n\n${IDENTITY}\n\nWrite cold call openers and discovery questions. Structure: a 10-second opener that earns the next 30 seconds, a permission-based transition, then 4-6 open discovery questions that surface where the owner loses jobs or time (missed calls, after-hours inquiries, quoting speed, follow-up, scheduling). Write how people actually speak — contractions, short sentences. Mark where he should stop and listen.`,
