@@ -245,6 +245,7 @@
       <option value="anthropic">Claude (Anthropic)</option>
       <option value="openai">OpenAI (GPT)</option>
       <option value="gemini">Google Gemini (free tier)</option>
+      <option value="perplexity">Perplexity</option>
     </select>
     <label>Model <span style="color:var(--dim);font-weight:400;">(for the provider above)</span></label>
     <input id="modelInput" type="text" placeholder="model id" />
@@ -254,6 +255,8 @@
     <input id="key_openai" type="password" placeholder="sk-..." />
     <label>Gemini key</label>
     <input id="key_gemini" type="password" placeholder="AIza..." />
+    <label>Perplexity key</label>
+    <input id="key_perplexity" type="password" placeholder="pplx-..." />
     <div class="row">
       <button class="btn secondary" id="apiKeyClear">Clear all</button>
       <button class="btn" id="apiKeySave">Save</button>
@@ -343,7 +346,7 @@
   }
 
   // ---------------- providers ----------------
-  const PROVIDER_LABELS = {anthropic:'Claude', openai:'OpenAI', gemini:'Gemini'};
+  const PROVIDER_LABELS = {anthropic:'Claude', openai:'OpenAI', gemini:'Gemini', perplexity:'Perplexity'};
   const PROVIDERS = {
     anthropic: {
       defaultModel:'claude-sonnet-5',
@@ -370,6 +373,18 @@
         contents: msgs.map(m=>({role: m.role==='assistant'?'model':'user', parts:[{text:m.content}]}))
       }),
       parse: d => d.candidates?.[0]?.content?.parts?.[0]?.text
+    },
+    perplexity: {
+      // Perplexity's API is OpenAI-shaped, but the model is what makes it
+      // worth having here: "sonar" answers with live web search built in,
+      // which none of the other three providers can do (Oracle and Lead
+      // Research are the agents that actually benefit from that).
+      defaultModel:'sonar',
+      url:'https://api.perplexity.ai/chat/completions',
+      headers: k => ({'content-type':'application/json','authorization':`Bearer ${k}`}),
+      body: (sys, msgs, model) => ({model,
+        messages:[{role:'system',content:sys}, ...msgs]}),
+      parse: d => d.choices?.[0]?.message?.content
     }
   };
   const activeKey = () => (state.keys[state.provider] || '').trim();
@@ -478,7 +493,7 @@ Reply with ONLY the single matching key from that list — one word, lowercase, 
   const apiModal = document.getElementById('apiModal');
   const providerSelect = document.getElementById('providerSelect');
   const modelInput = document.getElementById('modelInput');
-  const PROVS = ['anthropic','openai','gemini'];
+  const PROVS = ['anthropic','openai','gemini','perplexity'];
 
   function refreshKeyBtn(){
     apiKeyBtn.textContent = activeKey() ? `${PROVIDER_LABELS[state.provider]}: connected ●` : 'API key: not set';
@@ -588,6 +603,7 @@ Reply with ONLY the single matching key from that list — one word, lowercase, 
             <option value="anthropic"${state.agentProviders[agent]==='anthropic'?' selected':''}>Claude</option>
             <option value="openai"${state.agentProviders[agent]==='openai'?' selected':''}>OpenAI</option>
             <option value="gemini"${state.agentProviders[agent]==='gemini'?' selected':''}>Gemini (free)</option>
+            <option value="perplexity"${state.agentProviders[agent]==='perplexity'?' selected':''}>Perplexity</option>
           </select>
           <button class="btn" id="draftBtn">Draft with ${LABELS[agent]}</button>
           <span style="font-size:12px;color:var(--dim);" id="draftStatus"></span>
