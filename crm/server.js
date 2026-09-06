@@ -25,6 +25,38 @@ const INSTANTLY_LEADS_URL = 'https://api.instantly.ai/api/v2/leads'
 const COMPANY_MAILING_ADDRESS =
   process.env.COMPANY_MAILING_ADDRESS || 'Apex Standard, PO Box 1093, Willow Creek, CA 95573'
 
+// MillionVerifier checks a single address per call and returns a `result` of
+// "ok", "catch_all", "unknown", "disposable", or "invalid". Only the first two
+// are worth spending a send on — "unknown"/"disposable"/"invalid" addresses
+// bounce, and every bounce costs domain reputation that every future send
+// then pays for. Set MILLIONVERIFIER_API_KEY on Render to turn this on; if
+// it's unset, verification is skipped entirely (fails open) rather than
+// blocking sends outright — same behavior as before this existed.
+const MILLIONVERIFIER_API_KEY = process.env.MILLIONVERIFIER_API_KEY
+const MILLIONVERIFIER_URL = 'https://api.millionverifier.com/api/v3/'
+const SENDABLE_VERIFY_RESULTS = new Set(['ok', 'catch_all'])
+
+// Never throws — a verifier outage should degrade to "send unverified", the
+// same as if this feature didn't exist, not silently block every send.
+const verifyEmailAddress = async (email) => {
+  if (!MILLIONVERIFIER_API_KEY) return { checked: false }
+  try {
+    const url = `${MILLIONVERIFIER_URL}?api=${encodeURIComponent(MILLIONVERIFIER_API_KEY)}&email=${encodeURIComponent(email)}&timeout=10`
+    const res = await fetch(url)
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const data = await res.json()
+    // MillionVerifier returns HTTP 200 even for its own errors (bad api key,
+    // no credits left, rate limited) — that's an unrelated result value
+    // ("error"), not evidence the email itself is bad, so it must fail open
+    // the same as a network error rather than get treated as "unsendable".
+    if (data.result === 'error') throw new Error(data.error || 'verifier returned an error result')
+    return { checked: true, result: data.result, sendable: SENDABLE_VERIFY_RESULTS.has(data.result) }
+  } catch (err) {
+    console.warn(`MillionVerifier check failed for ${email}, sending unverified:`, err.message)
+    return { checked: false }
+  }
+}
+
 // CAN-SPAM requires a physical mailing address in every commercial email —
 // mirrors the same appendMailingAddress used for the manual-send path in
 // src/store.js, so batch sends carry it too.
@@ -179,16 +211,31 @@ app.post('/api/send-to-instantly', async (req, res) => {
 
     const candidates = data
       .map(row => ({ row, lead: { id: row.id, ...row.data } }))
-      .filter(({ lead }) => lead.email && !lead.emailSentAt && !lead.optedOut)
+      // emailVerified === false means a previous run already spent a
+      // MillionVerifier check on this address and it came back unsendable —
+      // never worth re-billing a check for the same known-bad address.
+      .filter(({ lead }) => lead.email && !lead.emailSentAt && !lead.optedOut && lead.emailVerified !== false)
       .sort((a, b) => (b.lead.priority_score || 0) - (a.lead.priority_score || 0))
       .slice(0, limit)
 
     let pushed = 0
     let failed = 0
+    let skippedUnverified = 0
     const details = []
 
     for (const { row, lead } of candidates) {
       try {
+        const verification = await verifyEmailAddress(lead.email)
+        if (verification.checked && !verification.sendable) {
+          await supabase
+            .from('leads')
+            .update({ data: { ...row.data, emailVerified: false, verifyResult: verification.result } })
+            .eq('id', row.id)
+          skippedUnverified++
+          details.push({ id: lead.id, business_name: lead.business_name, status: 'skipped', reason: `failed verification (${verification.result})` })
+          continue
+        }
+
         const { draft } = generateEmailDraft(lead)
         const { subject, body } = splitDraftSubject(appendMailingAddress(draft))
 
@@ -229,7 +276,12 @@ app.post('/api/send-to-instantly', async (req, res) => {
 
         await supabase
           .from('leads')
-          .update({ data: { ...row.data, emailSentAt: new Date().toISOString(), instantlySynced: true } })
+          .update({ data: {
+            ...row.data,
+            emailSentAt: new Date().toISOString(),
+            instantlySynced: true,
+            ...(verification.checked ? { emailVerified: true, verifyResult: verification.result } : {}),
+          } })
           .eq('id', row.id)
 
         pushed++
@@ -240,7 +292,7 @@ app.post('/api/send-to-instantly', async (req, res) => {
       }
     }
 
-    res.json({ success: true, candidates: candidates.length, pushed, failed, details })
+    res.json({ success: true, candidates: candidates.length, pushed, failed, skippedUnverified, details })
   } catch (err) {
     console.error('Error sending batch to Instantly:', err.message)
     res.status(500).json({ error: 'Failed to send batch to Instantly' })
