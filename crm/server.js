@@ -204,7 +204,16 @@ app.post('/api/send-to-instantly', async (req, res) => {
     })
   }
 
-  const limit = Math.max(1, Math.min(200, Number(req.body?.limit) || 25))
+  // `Number(0) || 25` previously evaluated to 25 — 0 is falsy in JS, so a
+  // caller explicitly asking for 0 (a status/dry-run check) silently ran a
+  // full real batch instead. limit is now only defaulted when actually
+  // omitted, and 0 is preserved as a genuine "send nothing" request.
+  const rawLimit = req.body?.limit
+  const limit = Math.max(0, Math.min(200, rawLimit === undefined ? 25 : Number(rawLimit) || 0))
+  // Explicit opt-in for a real dry run: selects and reports candidates
+  // exactly as a live call would, but never contacts Instantly or writes to
+  // the database — the safe way to check what a batch *would* do.
+  const dryRun = req.body?.dryRun === true
 
   try {
     const data = await fetchAllLeadRows('calls')
@@ -217,6 +226,15 @@ app.post('/api/send-to-instantly', async (req, res) => {
       .filter(({ lead }) => lead.email && !lead.emailSentAt && !lead.optedOut && lead.emailVerified !== false)
       .sort((a, b) => (b.lead.priority_score || 0) - (a.lead.priority_score || 0))
       .slice(0, limit)
+
+    if (dryRun) {
+      return res.json({
+        success: true,
+        dryRun: true,
+        candidates: candidates.length,
+        details: candidates.map(({ lead }) => ({ id: lead.id, business_name: lead.business_name, email: lead.email })),
+      })
+    }
 
     let pushed = 0
     let failed = 0
