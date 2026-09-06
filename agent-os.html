@@ -143,10 +143,10 @@
     border:1px solid transparent;
   }
   .pill.new{background:var(--panel3); color:var(--dim);}
-  .pill.emailed{background:var(--accent-dim); color:var(--accent-soft);}
-  .pill.called{background:#4a3a1e; color:#e5c07b;}
+  .pill.emailed, .pill.contacted{background:var(--accent-dim); color:var(--accent-soft);}
+  .pill.called, .pill.qualified{background:#4a3a1e; color:#e5c07b;}
   .pill.replied{background:#1e4030; color:#7fd4a8;}
-  .pill.booked{background:#4caf82; color:#06231a;}
+  .pill.booked, .pill.closed{background:#4caf82; color:#06231a;}
   .pill.dead{background:#3a2020; color:#d99;}
   .lead-actions button{
     font-size:11px; padding:3px 8px; border-radius:10px; border:1px solid var(--border);
@@ -263,6 +263,10 @@
 
 <script>
 (function(){
+  const SIGNAL_API = 'https://lead-crm-api-1lw1.onrender.com';
+  const SIGNAL_POLL_MS = 20000;
+  let signalPollTimer = null;
+
   const LS = {
     keys:'apex_agent_os_keys', provider:'apex_agent_os_provider', models:'apex_agent_os_models',
     agentProv:'apex_agent_os_agent_providers', cards:'apex_agent_os_cards',
@@ -279,7 +283,12 @@
     chat: get(LS.chat, [{role:'system', text:'Agent OS ready. Add a key to start drafting.'}]),
     memory: get(LS.memory, []),
     leads: get(LS.leads, []),
-    activeAgent: 'outreach',
+    signalLeads: {calls:[], emails:[]},
+    signalLeadType: 'calls',
+    signalLastSync: null,
+    signalError: null,
+    signalSearch: '',
+    activeAgent: 'manager',
     activeView: 'board'
   };
 
@@ -296,6 +305,41 @@
     state.memory.push({time:new Date().toISOString(), text});
     if(state.memory.length > 500) state.memory = state.memory.slice(-500);
     save();
+  }
+
+  // ---------------- Signal CRM (live leads) ----------------
+  async function fetchSignalLeads(){
+    try{
+      const res = await fetch(`${SIGNAL_API}/api/leads`);
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data = await res.json();
+      state.signalLeads = {calls: data.calls||[], emails: data.emails||[]};
+      state.signalLastSync = new Date();
+      state.signalError = null;
+    }catch(e){
+      state.signalError = e.message;
+    }
+  }
+
+  async function pushLeadToSignal(type, lead){
+    const res = await fetch(`${SIGNAL_API}/api/import-leads`, {
+      method:'POST', headers:{'content-type':'application/json'},
+      body: JSON.stringify({type, leads:[lead]})
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    return res.json();
+  }
+
+  function startSignalPolling(){
+    stopSignalPolling();
+    fetchSignalLeads().then(()=>{ if(state.activeView==='leads') renderLeadsTable(); });
+    signalPollTimer = setInterval(async ()=>{
+      await fetchSignalLeads();
+      if(state.activeView==='leads') renderLeadsTable();
+    }, SIGNAL_POLL_MS);
+  }
+  function stopSignalPolling(){
+    if(signalPollTimer){ clearInterval(signalPollTimer); signalPollTimer=null; }
   }
 
   // ---------------- providers ----------------
@@ -504,21 +548,27 @@ Reply with ONLY the single matching key from that list — one word, lowercase, 
   const mainView = document.getElementById('mainView');
   function render(){
     syncNav();
+    if(state.activeView!=='leads') stopSignalPolling();
     if(state.activeView==='leads') return renderLeads();
     if(state.activeView==='stats') return renderStats();
     if(state.activeView==='memory') return renderMemory();
     renderBoard();
   }
 
+  function allSignalLeads(){
+    return [...state.signalLeads.calls, ...state.signalLeads.emails];
+  }
+
   function statTiles(){
     const c = state.cards;
-    const booked = state.leads.filter(l=>l.status==='booked').length;
-    const replied = state.leads.filter(l=>l.status==='replied').length;
-    const touched = state.leads.filter(l=>l.status!=='new').length;
+    const all = allSignalLeads();
+    const booked = all.filter(l=>l.status==='booked'||l.status==='closed').length;
+    const replied = all.filter(l=>l.status==='replied'||l.status==='qualified').length;
+    const touched = all.filter(l=>l.status && l.status!=='new').length;
     return `<div class="stats">
       <div class="stat"><div class="n">${c.length}</div><div class="l">Drafts made</div></div>
       <div class="stat"><div class="n">${c.filter(x=>x.status==='done').length}</div><div class="l">Approved</div></div>
-      <div class="stat"><div class="n">${state.leads.length}</div><div class="l">Leads</div></div>
+      <div class="stat"><div class="n">${all.length}</div><div class="l">Leads (Signal)</div></div>
       <div class="stat"><div class="n">${touched}</div><div class="l">Contacted</div></div>
       <div class="stat ${replied?'hi':''}"><div class="n">${replied}</div><div class="l">Replied</div></div>
       <div class="stat ${booked?'hi':''}"><div class="n">${booked}</div><div class="l">Booked</div></div>
@@ -623,10 +673,24 @@ Reply with ONLY the single matching key from that list — one word, lowercase, 
 
   // ---------------- leads ----------------
   const STATUSES = ['new','emailed','called','replied','booked','dead'];
+  const SIGNAL_ROW_CAP = 150;
+
   function renderLeads(){
+    startSignalPolling();
     mainView.innerHTML = `
-      <div class="board-header"><h2>Leads</h2><div class="sub">Who you've contacted, and what happened</div></div>
+      <div class="board-header"><h2>Leads</h2><div class="sub">Live from Signal (your CRM) — polls every 20s</div></div>
       ${statTiles()}
+      <div class="composer">
+        <div class="row" style="margin-top:0;">
+          <button class="btn secondary sm ${state.signalLeadType==='calls'?'':'secondary'}" data-tab="calls"
+            style="${state.signalLeadType==='calls'?'background:var(--accent);color:#fff;':''}">Calls (<span id="tabCountCalls">${state.signalLeads.calls.length}</span>)</button>
+          <button class="btn secondary sm" data-tab="emails"
+            style="${state.signalLeadType==='emails'?'background:var(--accent);color:#fff;':''}">Emails (<span id="tabCountEmails">${state.signalLeads.emails.length}</span>)</button>
+          <input type="text" id="leadSearch" placeholder="Search business, city, trade…" value="${esc(state.signalSearch)}" style="flex:1;min-width:160px;" />
+          <button class="btn secondary sm" id="refreshLeads">Refresh now</button>
+          <span style="font-size:11px;color:var(--dim);" id="syncStatus"></span>
+        </div>
+      </div>
       <div class="composer">
         <div class="lead-form">
           <input type="text" id="ln" placeholder="Business name" />
@@ -635,61 +699,128 @@ Reply with ONLY the single matching key from that list — one word, lowercase, 
           <input type="text" id="lp" placeholder="Contact name" />
           <input type="text" id="le" placeholder="Email or phone" />
         </div>
-        <div class="row"><button class="btn" id="addLead">Add lead</button>
-          <span style="font-size:12px;color:var(--dim);">Status changes are logged with the date.</span></div>
+        <div class="row"><button class="btn" id="addLead">Add lead to Signal</button>
+          <span style="font-size:12px;color:var(--dim);">Pushed straight into your CRM's database — everyone reading it sees it, not just this browser.</span></div>
       </div>
       <div class="column" style="padding:0;overflow-x:auto;">
         <table class="leads">
-          <thead><tr><th>Business</th><th>Trade</th><th>City</th><th>Contact</th><th>Status</th><th>Last touch</th><th></th></tr></thead>
+          <thead><tr id="leadHead"></tr></thead>
           <tbody id="leadRows"></tbody>
         </table>
       </div>`;
-    document.getElementById('addLead').addEventListener('click', ()=>{
+
+    document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click', ()=>{
+      state.signalLeadType = b.dataset.tab; render();
+    }));
+    document.getElementById('refreshLeads').addEventListener('click', async ()=>{
+      const btn = document.getElementById('refreshLeads');
+      btn.disabled = true; btn.textContent = 'Refreshing…';
+      await fetchSignalLeads();
+      btn.disabled = false; btn.textContent = 'Refresh now';
+      renderLeadsTable();
+    });
+    document.getElementById('leadSearch').addEventListener('input', e=>{
+      state.signalSearch = e.target.value; renderLeadsTable();
+    });
+    document.getElementById('addLead').addEventListener('click', async ()=>{
       const g = id => document.getElementById(id).value.trim();
       if(!g('ln')) return;
-      state.leads.unshift({id:uid(), name:g('ln'), trade:g('lt'), city:g('lc'),
-        person:g('lp'), contact:g('le'), status:'new', touched:''});
-      save(); logMemory(`Lead added: ${g('ln')}`); render();
+      const isEmail = g('le').includes('@');
+      const type = isEmail ? 'emails' : 'calls';
+      const lead = isEmail
+        ? {business_name:g('ln'), niche:g('lt'), contact_name:g('lp'), email:g('le'), notes:''}
+        : {business_name:g('ln'), niche:g('lt'), city:g('lc'), phone:g('le'), notes:''};
+      const btn = document.getElementById('addLead');
+      btn.disabled = true; btn.textContent = 'Adding…';
+      try{
+        await pushLeadToSignal(type, lead);
+        logMemory(`Pushed lead to Signal: ${g('ln')}`);
+        await fetchSignalLeads();
+        state.signalLeadType = type;
+        render();
+      }catch(e){
+        btn.disabled = false; btn.textContent = 'Add lead to Signal';
+        alert(`Couldn't reach Signal: ${e.message}. Check your connection and try again.`);
+      }
     });
+    renderLeadsTable();
+  }
+
+  function renderLeadsTable(){
+    const type = state.signalLeadType;
+    const head = document.getElementById('leadHead');
     const rows = document.getElementById('leadRows');
-    if(!state.leads.length){
-      rows.innerHTML = '<tr><td colspan="7"><div class="empty">No leads yet — add one above, or paste one into Lead Research.</div></td></tr>';
+    const syncEl = document.getElementById('syncStatus');
+    if(!head || !rows) return; // view changed mid-fetch
+
+    document.getElementById('tabCountCalls').textContent = state.signalLeads.calls.length;
+    document.getElementById('tabCountEmails').textContent = state.signalLeads.emails.length;
+
+    if(syncEl){
+      if(state.signalError) syncEl.innerHTML = `<span style="color:var(--danger)">Can't reach Signal (${esc(state.signalError)}) — it may be waking up from sleep, try Refresh in ~30s</span>`;
+      else if(state.signalLastSync) syncEl.textContent = `Synced ${state.signalLastSync.toLocaleTimeString()}`;
+      else syncEl.textContent = 'Connecting…';
+    }
+
+    let list = state.signalLeads[type] || [];
+    const q = state.signalSearch.trim().toLowerCase();
+    if(q){
+      list = list.filter(l => [l.business_name,l.city,l.niche,l.state].join(' ').toLowerCase().includes(q));
+    }
+    if(type==='calls') list = [...list].sort((a,b)=>(b.priority_score||0)-(a.priority_score||0));
+    const shown = list.slice(0, SIGNAL_ROW_CAP);
+
+    head.innerHTML = type==='calls'
+      ? '<th>Business</th><th>Trade</th><th>City</th><th>Phone</th><th>Rating</th><th>Status</th><th></th>'
+      : '<th>Business</th><th>Contact</th><th>Email</th><th>Trade</th><th>Status</th><th></th>';
+
+    if(!shown.length){
+      rows.innerHTML = `<tr><td colspan="7"><div class="empty">${state.signalError ? 'No cached leads yet — waiting on Signal to respond.' : (q ? 'No matches.' : 'No leads of this type yet.')}</div></td></tr>`;
       return;
     }
     rows.innerHTML = '';
-    state.leads.forEach(l=>{
+    shown.forEach(l=>{
       const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><strong>${esc(l.name)}</strong></td>
-        <td style="color:var(--dim)">${esc(l.trade)}</td>
-        <td style="color:var(--dim)">${esc(l.city)}</td>
-        <td style="color:var(--dim)">${esc(l.person||'')}${l.person&&l.contact?'<br>':''}<span style="font-size:11px">${esc(l.contact||'')}</span></td>
-        <td><select class="st">${STATUSES.map(s=>`<option value="${s}"${l.status===s?' selected':''}>${s}</option>`).join('')}</select></td>
-        <td style="color:var(--dim);font-size:12px">${esc(l.touched||'—')}</td>
-        <td class="lead-actions"><button data-a="research">Research</button><button data-a="del">✕</button></td>`;
-      tr.querySelector('.st').addEventListener('change', e=>{
-        l.status = e.target.value;
-        l.touched = new Date().toLocaleDateString();
-        save(); logMemory(`${l.name} → ${l.status}`); render();
+      const statusPill = `<span class="pill ${l.status||'new'}">${esc(l.status||'new')}</span>`;
+      tr.innerHTML = type==='calls' ? `
+        <td><strong>${esc(l.business_name)}</strong></td>
+        <td style="color:var(--dim)">${esc(l.niche||'')}</td>
+        <td style="color:var(--dim)">${esc(l.city||'')}${l.state?', '+esc(l.state):''}</td>
+        <td style="color:var(--dim)">${esc(l.phone||'')}</td>
+        <td style="color:var(--dim)">${l.rating ? '★ '+l.rating : ''}</td>
+        <td>${statusPill}</td>
+        <td class="lead-actions"><button data-a="research">Research</button></td>` : `
+        <td><strong>${esc(l.business_name)}</strong></td>
+        <td style="color:var(--dim)">${esc(l.contact_name||'')}</td>
+        <td style="color:var(--dim)">${esc(l.email||'')}</td>
+        <td style="color:var(--dim)">${esc(l.niche||'')}</td>
+        <td>${statusPill}</td>
+        <td class="lead-actions"><button data-a="research">Research</button></td>`;
+      tr.querySelector('[data-a="research"]').addEventListener('click', ()=>{
+        stopSignalPolling();
+        state.activeView='board'; state.activeAgent='research'; render();
+        const detail = type==='calls'
+          ? `${l.business_name} — ${l.niche||''}, ${l.city||''}${l.state?', '+l.state:''}. Phone: ${l.phone||''}. Rating: ${l.rating||'—'} (${l.review_count||0} reviews). Website: ${l.website||'none'}.`
+          : `${l.business_name} — ${l.niche||''}. Contact: ${l.contact_name||''}. Email: ${l.email||''}.`;
+        document.getElementById('composerInput').value = detail.trim();
       });
-      tr.querySelectorAll('button').forEach(b=>b.addEventListener('click', ()=>{
-        if(b.dataset.a==='del'){ state.leads = state.leads.filter(x=>x.id!==l.id); save(); render(); }
-        else {
-          state.activeView='board'; state.activeAgent='research'; render();
-          document.getElementById('composerInput').value =
-            `${l.name} — ${l.trade}, ${l.city}. Contact: ${l.person} ${l.contact}`.trim();
-        }
-      }));
       rows.appendChild(tr);
     });
+    if(list.length > SIGNAL_ROW_CAP){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td colspan="7" style="text-align:center;color:var(--dim);font-size:12px;padding:10px;">Showing top ${SIGNAL_ROW_CAP} of ${list.length} — narrow your search to see more</td>`;
+      rows.appendChild(tr);
+    }
   }
 
   function renderStats(){
     const byAgent = Object.keys(LABELS).map(a=>({a, n:state.cards.filter(c=>c.agent===a).length}))
       .filter(x=>x.n).sort((x,y)=>y.n-x.n);
-    const byStatus = STATUSES.map(s=>({s, n:state.leads.filter(l=>l.status===s).length}));
-    const contacted = state.leads.filter(l=>l.status!=='new').length;
-    const replied = state.leads.filter(l=>l.status==='replied'||l.status==='booked').length;
+    const all = allSignalLeads();
+    const SIGNAL_STAGES = ['new','contacted','qualified','booked','closed'];
+    const byStatus = SIGNAL_STAGES.map(s=>({s, n:all.filter(l=>(l.status||'new')===s).length}));
+    const contacted = all.filter(l=>l.status && l.status!=='new').length;
+    const replied = all.filter(l=>l.status==='qualified'||l.status==='booked'||l.status==='closed').length;
     const rate = contacted ? Math.round(replied/contacted*100) : null;
     const max = Math.max(1, ...byStatus.map(x=>x.n));
     mainView.innerHTML = `
@@ -781,6 +912,7 @@ Reply with ONLY the single matching key from that list — one word, lowercase, 
 
   renderChat();
   render();
+  fetchSignalLeads().then(()=>{ if(state.activeView==='board') renderBoard(); });
 
   if('serviceWorker' in navigator && location.protocol==='https:'){
     navigator.serviceWorker.register('/sw.js').catch(()=>{});
