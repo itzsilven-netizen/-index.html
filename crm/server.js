@@ -41,10 +41,33 @@ const splitDraftSubject = (draft) => {
 }
 
 // GET /api/leads - Fetch all leads, grouped by type
+// A plain .select('*') silently caps at Supabase's default 1000-row limit —
+// with no .order() either, which 1000 rows come back is not even stable
+// across calls once the table holds more, so leads could appear to vanish
+// and reappear from one fetch to the next as unrelated writes shifted scan
+// order. Paginate through the whole table in fixed 1000-row pages instead
+// (ordered by id, so page boundaries stay put between calls) until a page
+// comes back short, which is what "no more rows" looks like from Supabase.
+const PAGE_SIZE = 1000
+
+const fetchAllLeadRows = async (type) => {
+  const rows = []
+  let from = 0
+  for (;;) {
+    let query = supabase.from('leads').select('*').order('id', { ascending: true })
+    if (type) query = query.eq('type', type)
+    const { data, error } = await query.range(from, from + PAGE_SIZE - 1)
+    if (error) throw error
+    rows.push(...data)
+    if (data.length < PAGE_SIZE) break
+    from += PAGE_SIZE
+  }
+  return rows
+}
+
 app.get('/api/leads', async (req, res) => {
   try {
-    const { data, error } = await supabase.from('leads').select('*')
-    if (error) throw error
+    const data = await fetchAllLeadRows()
 
     const calls = data.filter(row => row.type === 'calls').map(row => ({ id: row.id, ...row.data }))
     const emails = data.filter(row => row.type === 'emails').map(row => ({ id: row.id, ...row.data }))
@@ -152,8 +175,7 @@ app.post('/api/send-to-instantly', async (req, res) => {
   const limit = Math.max(1, Math.min(200, Number(req.body?.limit) || 25))
 
   try {
-    const { data, error } = await supabase.from('leads').select('*').eq('type', 'calls')
-    if (error) throw error
+    const data = await fetchAllLeadRows('calls')
 
     const candidates = data
       .map(row => ({ row, lead: { id: row.id, ...row.data } }))
@@ -249,8 +271,7 @@ app.post('/api/webhooks/instantly-reply', async (req, res) => {
   }
 
   try {
-    const { data, error } = await supabase.from('leads').select('*')
-    if (error) throw error
+    const data = await fetchAllLeadRows()
 
     const row = data.find(r => (r.data.email || '').toLowerCase() === email.toLowerCase())
     if (!row) {
@@ -281,8 +302,7 @@ app.post('/api/webhooks/instantly-reply', async (req, res) => {
 // so they're untouched.
 app.post('/api/admin/reset-instantly-sent', async (req, res) => {
   try {
-    const { data, error } = await supabase.from('leads').select('*').eq('type', 'calls')
-    if (error) throw error
+    const data = await fetchAllLeadRows('calls')
 
     const toReset = data.filter(row => row.data.instantlySynced === true)
 
