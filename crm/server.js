@@ -214,6 +214,10 @@ app.post('/api/send-to-instantly', async (req, res) => {
   // exactly as a live call would, but never contacts Instantly or writes to
   // the database — the safe way to check what a batch *would* do.
   const dryRun = req.body?.dryRun === true
+  // Restrict candidates to leads already confirmed sendable by a prior
+  // /api/verify-leads run — lets a pre-verified batch go out without this
+  // call re-verifying (and re-billing) any address on the fly.
+  const verifiedOnly = req.body?.verifiedOnly === true
 
   try {
     const data = await fetchAllLeadRows('calls')
@@ -224,6 +228,7 @@ app.post('/api/send-to-instantly', async (req, res) => {
       // MillionVerifier check on this address and it came back unsendable —
       // never worth re-billing a check for the same known-bad address.
       .filter(({ lead }) => lead.email && !lead.emailSentAt && !lead.optedOut && lead.emailVerified !== false)
+      .filter(({ lead }) => !verifiedOnly || lead.emailVerified === true)
       .sort((a, b) => (b.lead.priority_score || 0) - (a.lead.priority_score || 0))
       .slice(0, limit)
 

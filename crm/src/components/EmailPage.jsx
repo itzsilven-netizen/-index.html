@@ -15,6 +15,7 @@ export default function EmailPage({ onOpenLead }) {
   const [verifyLimit, setVerifyLimit] = useState(25)
   const [verifying, setVerifying] = useState(false)
   const [verifyResult, setVerifyResult] = useState(null)
+  const [verifiedOnly, setVerifiedOnly] = useState(true)
 
   const allLeads = useMemo(() => [
     ...callLeads.map(l => ({ ...l, _type: 'calls' })),
@@ -22,7 +23,8 @@ export default function EmailPage({ onOpenLead }) {
   ], [callLeads, emailLeads])
 
   const ready = allLeads.filter(l => l.email && !l.emailSentAt && !l.optedOut)
-  const unverified = allLeads.filter(l => l.email && !l.emailSentAt && !l.optedOut && l.emailVerified === undefined)
+  const unverified = ready.filter(l => l.emailVerified === undefined)
+  const verified = ready.filter(l => l.emailVerified === true)
   const sentToday = allLeads.filter(l => {
     if (!l.emailSentAt) return false
     const sent = new Date(l.emailSentAt)
@@ -35,7 +37,7 @@ export default function EmailPage({ onOpenLead }) {
     setSending(true)
     setResult(null)
     try {
-      const res = await sendBatchToInstantly(limit)
+      const res = await sendBatchToInstantly(limit, verifiedOnly)
       setResult(res)
     } catch (err) {
       setResult({ error: err.message })
@@ -83,6 +85,10 @@ export default function EmailPage({ onOpenLead }) {
           <div className="kpi-value">{unverified.length}</div>
           <div className="kpi-label">Unverified</div>
         </div>
+        <div className="card kpi-card kpi-accent">
+          <div className="kpi-value">{verified.length}</div>
+          <div className="kpi-label">Verified</div>
+        </div>
       </div>
 
       <div className="card email-batch">
@@ -124,7 +130,11 @@ export default function EmailPage({ onOpenLead }) {
             Limit
             <input type="number" min="1" max="200" value={limit} onChange={(e) => setLimit(Number(e.target.value) || 1)} />
           </label>
-          <button className="btn" onClick={runBatch} disabled={sending || ready.length === 0}>
+          <label className="email-batch-checkbox">
+            <input type="checkbox" checked={verifiedOnly} onChange={(e) => setVerifiedOnly(e.target.checked)} />
+            Verified only ({verified.length} available)
+          </label>
+          <button className="btn" onClick={runBatch} disabled={sending || (verifiedOnly ? verified.length === 0 : ready.length === 0)}>
             {sending ? 'Sending…' : `Send to Instantly`}
           </button>
         </div>

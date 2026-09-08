@@ -220,11 +220,11 @@ export const useLeadsStore = create((set, get) => ({
   // the batch alternative to clicking "Send Email" on each lead in the
   // drawer. The server generates each draft and marks leads sent, so a
   // syncFromServer() after this picks up the new emailSentAt values.
-  sendBatchToInstantly: async (limit) => {
+  sendBatchToInstantly: async (limit, verifiedOnly) => {
     const response = await fetch(`${API_URL}/api/send-to-instantly`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ limit }),
+      body: JSON.stringify({ limit, verifiedOnly }),
     })
     const result = await response.json()
     if (!response.ok) throw new Error(result.error || `Server responded ${response.status}`)
