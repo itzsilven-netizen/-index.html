@@ -96,13 +96,25 @@
   padding: 18px 20px;
 }
 
+.email-queue-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
 .email-queue-title {
   font-size: 14px;
   font-weight: 700;
-  margin-bottom: 12px;
+  margin-bottom: 0;
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.btn.sm {
+  padding: 5px 11px;
+  font-size: 12px;
 }
 
 .email-queue-title span {

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useLeadsStore, draftForLead } from '../store'
 import './EmailPage.css'
 
@@ -17,6 +17,13 @@ export default function EmailPage({ onOpenLead }) {
   const [verifyResult, setVerifyResult] = useState(null)
   const [verifiedOnly, setVerifiedOnly] = useState(true)
   const [activeFilter, setActiveFilter] = useState('sentToday')
+  const queueRef = useRef(null)
+
+  const previewVerifiedDrafts = () => {
+    setActiveFilter('verified')
+    setExpandedId('ALL')
+    setTimeout(() => queueRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0)
+  }
 
   const allLeads = useMemo(() => [
     ...callLeads.map(l => ({ ...l, _type: 'calls' })),
@@ -101,7 +108,7 @@ export default function EmailPage({ onOpenLead }) {
       <div className="card email-batch">
         <div className="email-batch-head">
           <div>
-            <h3>Verify with AOS</h3>
+            <h3>Verify</h3>
             <p className="email-batch-hint">Runs the next N unverified leads through MillionVerifier and saves the result — no send, nothing touches Instantly. Start small.</p>
           </div>
         </div>
@@ -111,7 +118,7 @@ export default function EmailPage({ onOpenLead }) {
             <input type="number" min="1" max="500" value={verifyLimit} onChange={(e) => setVerifyLimit(Number(e.target.value) || 1)} />
           </label>
           <button className="btn" onClick={runVerify} disabled={verifying || unverified.length === 0}>
-            {verifying ? 'Verifying…' : 'Verify with AOS'}
+            {verifying ? 'Verifying…' : 'Verify'}
           </button>
         </div>
         {verifyResult && (
@@ -144,6 +151,9 @@ export default function EmailPage({ onOpenLead }) {
           <button className="btn" onClick={runBatch} disabled={sending || (verifiedOnly ? verified.length === 0 : ready.length === 0)}>
             {sending ? 'Sending…' : 'Send'}
           </button>
+          <button className="btn btn-ghost" type="button" onClick={previewVerifiedDrafts} disabled={verified.length === 0}>
+            Preview Drafts ({verified.length})
+          </button>
         </div>
         {result && (
           result.error ? (
@@ -156,30 +166,40 @@ export default function EmailPage({ onOpenLead }) {
         )}
       </div>
 
-      <EmailQueue
-        title={FILTERS[activeFilter].label}
-        leads={FILTERS[activeFilter].leads}
-        empty={FILTERS[activeFilter].empty}
-        expandedId={expandedId}
-        onToggle={setExpandedId}
-        onOpenLead={onOpenLead}
-        timeField={FILTERS[activeFilter].timeField}
-        timeLabel={FILTERS[activeFilter].timeLabel}
-      />
+      <div ref={queueRef}>
+        <EmailQueue
+          title={FILTERS[activeFilter].label}
+          leads={FILTERS[activeFilter].leads}
+          empty={FILTERS[activeFilter].empty}
+          expandedId={expandedId}
+          onToggle={setExpandedId}
+          onOpenLead={onOpenLead}
+          timeField={FILTERS[activeFilter].timeField}
+          timeLabel={FILTERS[activeFilter].timeLabel}
+        />
+      </div>
     </div>
   )
 }
 
 function EmailQueue({ title, leads, empty, expandedId, onToggle, onOpenLead, timeField, timeLabel }) {
+  const allOpen = expandedId === 'ALL'
   return (
     <div className="card email-queue">
-      <h3 className="email-queue-title">{title} <span>{leads.length}</span></h3>
+      <div className="email-queue-head">
+        <h3 className="email-queue-title">{title} <span>{leads.length}</span></h3>
+        {leads.length > 0 && (
+          <button className="btn btn-ghost sm" type="button" onClick={() => onToggle(allOpen ? null : 'ALL')}>
+            {allOpen ? 'Collapse all' : 'Preview all drafts'}
+          </button>
+        )}
+      </div>
       {leads.length === 0 ? (
         <div className="panel-empty">{empty}</div>
       ) : (
         <div className="email-queue-list">
           {leads.map(lead => {
-            const isOpen = expandedId === `${title}-${lead.id}`
+            const isOpen = allOpen || expandedId === `${title}-${lead.id}`
             const { draft } = draftForLead(lead)
             const time = timeField && lead[timeField]
               ? new Date(lead[timeField]).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
@@ -194,7 +214,10 @@ function EmailQueue({ title, leads, empty, expandedId, onToggle, onOpenLead, tim
                     <div className="email-queue-name">{lead.business_name}</div>
                     <div className="email-queue-meta">{lead.niche || '—'}{time ? ` · ${timeLabel} ${time}` : ''}</div>
                   </div>
-                  <button className="btn btn-ghost" onClick={(e) => { e.stopPropagation(); onOpenLead({ ...lead }) }}>Open</button>
+                  <button className="btn btn-ghost sm" onClick={(e) => { e.stopPropagation(); onToggle(isOpen && !allOpen ? null : `${title}-${lead.id}`) }}>
+                    {isOpen ? 'Hide' : 'Preview'}
+                  </button>
+                  <button className="btn btn-ghost sm" onClick={(e) => { e.stopPropagation(); onOpenLead({ ...lead }) }}>Open</button>
                 </div>
                 {isOpen && <pre className="email-queue-draft">{draft}</pre>}
               </div>
