@@ -138,6 +138,66 @@ operation and a different ICP than this one; one piece is adopted.
 - Optimize for positive reply rate, not raw volume — already the
   Numbers view's framing (reply rate, not counts).
 
+## Source 4 — "39 lessons from 1M+ cold emails" (YouTube, 2026-09-08)
+
+Fourth distinct source, and the most consequential change yet — a real
+structural conflict with what was already built, resolved with Kassava's
+explicit decision rather than silently overridden.
+
+### The structural change — Kassava's call, not mine
+
+- **No link of any kind (Calendly, PDF, video) anywhere in the cold
+  sequence** — opener or any follow-up, before a reply exists. The
+  source is specific: an unearned link in an unanswered cold email is a
+  spam-filter trigger. This directly conflicted with the standing
+  signature block, which put the Calendly link in every cold email.
+  **Kassava chose to change it.** The cold sequence's only CTA is now a
+  reply; the Calendly link is sent only once a prospect has actually
+  replied with real interest — Outreach Agent now has an explicit
+  exception path for exactly that case, and that reply is the one place
+  in the whole flow the link belongs.
+
+### Adopted
+
+- **Sequence capped at 4 emails total** (opener + up to 3 follow-ups)
+  inside a 7-10 day window — down from the previous "steps 2-5" (up to
+  6 total). Follow-up Agent updated.
+- **Tighter length: ~100 words**, down from 150 — this source's number,
+  and consistent with the direction every prior source pointed.
+- **Explicit permission to skip a forced personalization.** If there's
+  no genuine verified angle, a direct pain-point opener is fine —
+  don't manufacture a weak one just to have one.
+- **"Spin tax."** Vary greeting/sentence structure across different
+  leads rather than converging on one repeated template — sends that
+  look identical to each other are exactly what spam filters
+  pattern-match on.
+- **Expanded banned words:** "free trial", "guarantee"/"guaranteed",
+  specific dollar-amount claims — on top of the existing hype-phrase list.
+- **Trigger events, translated to this ICP.** The source's "recent
+  funding/awards" signal doesn't exist for local trade businesses — the
+  real equivalent is a new review, a second location, a hiring post.
+  Lead Research now surfaces this as "Timing signal:" alongside the
+  existing case-study angle, same verified-only guardrail.
+
+### Not adopted — no tooling/bandwidth, not wrong
+
+- **The 12-step multi-channel follow-up process** (email + SMS +
+  LinkedIn + Instagram) for leads showing positive intent, sent as a
+  follow-up to this same source. Real principle, no automation platform
+  for LinkedIn/IG exists here, and Kassava is at 4 hrs/day pre-first-client
+  — building a 12-step cross-platform system now is the wrong use of
+  that time. The actual actionable core of it — fast, personal follow-up
+  once someone shows real interest, still speaking to outcomes not
+  deliverables — is already what Objection Agent and the SMS-for-
+  engaged-leads rule do. Revisit the full multi-channel build once
+  reply volume is actually the bottleneck.
+- **Case studies/proof in the email itself.** Same reason as every prior
+  source — zero closed clients, nothing real to cite yet.
+- **Reusing an opened-but-no-reply list with a new angle later.** Real
+  tactic, but it's a list-management workflow feature, not a prompt
+  change — worth building into the Leads view once there's real
+  send/open volume to actually recycle.
+
 ## Still true from the existing rules (unchanged)
 
 - Never invent a specific about the prospect's business.
