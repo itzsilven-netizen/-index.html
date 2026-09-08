@@ -191,12 +191,15 @@ const SUBJECTS = {
   'Lead Follow-Up AI': 'your old leads',
 }
 
+// Kassava represents Casava on commission — he does not own or run it.
+// Every variant here must say so accurately; "I run/started/founded Casava"
+// is a false claim that was live in production before this fix.
 const CREDIBILITY_OPENERS = [
-  () => `I run Casava`,
-  () => `I run a company called Casava`,
-  () => `My company is Casava`,
-  () => `I started Casava`,
-  () => `I'm the founder of Casava`,
+  () => `I'm with Casava`,
+  () => `I work with Casava`,
+  () => `I'm with a company called Casava`,
+  () => `I represent Casava`,
+  () => `I'm on the Casava team`,
 ]
 const CREDIBILITY_CLOSERS = [
   (l) => `we help local ${l.niche} businesses fix stuff like this.`,
@@ -311,11 +314,11 @@ const sendOffer = (l) => {
 }
 
 const PAS_PROBLEM_OPENERS = [
-  () => `Hey — I run Casava.`,
-  () => `Hey — I run a company called Casava.`,
-  () => `Hey — my company is Casava.`,
-  () => `Hi — I run Casava.`,
-  () => `Hey there — I run Casava.`,
+  () => `Hey — I'm with Casava.`,
+  () => `Hey — I work with a company called Casava.`,
+  () => `Hey — I'm with a company called Casava.`,
+  () => `Hi — I'm with Casava.`,
+  () => `Hey there — I'm with Casava.`,
 ]
 const PAS_PROBLEM_CLOSERS = [
   (l) => `A lot of ${l.niche} businesses lose jobs to stuff like this without noticing.`,
@@ -467,12 +470,13 @@ export const FORMATS = [
 
 const pickFormat = (lead) => FORMATS[Math.abs(Number(lead.id) || 0) % FORMATS.length]
 
-// Real public booking link — lets a recipient self-book instead of having to
-// reply first. One constant here (rather than a link baked into each of the
-// ~25 offer-line variants above) so it stays in sync everywhere the draft is
-// used: manual sends, the batch-to-Instantly path, and the drawer preview.
-const CALENDLY_LINK = 'https://calendly.com/itz-silven-apexstandard/free-strategy-planning-call'
-const calendlyLine = () => `Or just grab a free 15 minutes that works for you here: ${CALENDLY_LINK}`
+// No link of any kind belongs in a cold send — an unearned booking link in
+// an unanswered email is a spam-filter trigger, and this generator only
+// ever produces cold sends (batch-to-Instantly path, manual first send,
+// the drawer preview). The booking link (calendly.com/itz-silven-apexstandard/
+// free-strategy-planning-call) is a later-stage asset: it only gets sent
+// once a prospect has actually replied with real interest, which is a
+// separate reply-drafting step, not part of this function.
 
 // Returns { draft, sentences, format } — draft is the plain-text email ready
 // to send, sentences is the labeled breakdown (Hook/Pain Point/CTA/etc.) for
@@ -483,7 +487,7 @@ export const generateEmailDraft = (lead) => {
   const subject = SUBJECTS[lead.pitch_angle] || SUBJECTS['AI Receptionist']
   const sentences = format.build(lead, notice)
   const optOut = spinCombo(lead, 'optOut', OPT_OUT_OPENERS, OPT_OUT_CLOSERS)
-  const body = `${sentences.map(s => s.text).join('\n\n')}\n\n${calendlyLine()}\n\n${optOut}`
+  const body = `${sentences.map(s => s.text).join('\n\n')}\n\n${optOut}`
   const draft = `Subject: ${subject}\n\n${body}`
   return { draft, sentences, format }
 }
