@@ -7,11 +7,14 @@ import './EmailPage.css'
 // anywhere — and Sent Today / Replied had no home after Leads merged into
 // Pipeline. This is that home.
 export default function EmailPage({ onOpenLead }) {
-  const { callLeads, emailLeads, sendBatchToInstantly } = useLeadsStore()
+  const { callLeads, emailLeads, sendBatchToInstantly, verifyLeadsBatch } = useLeadsStore()
   const [limit, setLimit] = useState(25)
   const [sending, setSending] = useState(false)
   const [result, setResult] = useState(null)
   const [expandedId, setExpandedId] = useState(null)
+  const [verifyLimit, setVerifyLimit] = useState(25)
+  const [verifying, setVerifying] = useState(false)
+  const [verifyResult, setVerifyResult] = useState(null)
 
   const allLeads = useMemo(() => [
     ...callLeads.map(l => ({ ...l, _type: 'calls' })),
@@ -19,6 +22,7 @@ export default function EmailPage({ onOpenLead }) {
   ], [callLeads, emailLeads])
 
   const ready = allLeads.filter(l => l.email && !l.emailSentAt && !l.optedOut)
+  const unverified = allLeads.filter(l => l.email && !l.emailSentAt && !l.optedOut && l.emailVerified === undefined)
   const sentToday = allLeads.filter(l => {
     if (!l.emailSentAt) return false
     const sent = new Date(l.emailSentAt)
@@ -37,6 +41,19 @@ export default function EmailPage({ onOpenLead }) {
       setResult({ error: err.message })
     } finally {
       setSending(false)
+    }
+  }
+
+  const runVerify = async () => {
+    setVerifying(true)
+    setVerifyResult(null)
+    try {
+      const res = await verifyLeadsBatch(verifyLimit)
+      setVerifyResult(res)
+    } catch (err) {
+      setVerifyResult({ error: err.message })
+    } finally {
+      setVerifying(false)
     }
   }
 
@@ -62,6 +79,37 @@ export default function EmailPage({ onOpenLead }) {
           <div className="kpi-value">{replied.length}</div>
           <div className="kpi-label">Replied</div>
         </div>
+        <div className="card kpi-card">
+          <div className="kpi-value">{unverified.length}</div>
+          <div className="kpi-label">Unverified</div>
+        </div>
+      </div>
+
+      <div className="card email-batch">
+        <div className="email-batch-head">
+          <div>
+            <h3>Verify Emails</h3>
+            <p className="email-batch-hint">Runs the next N unverified leads through MillionVerifier and saves the result — no send, nothing touches Instantly. Start small.</p>
+          </div>
+        </div>
+        <div className="email-batch-controls">
+          <label>
+            Limit
+            <input type="number" min="1" max="500" value={verifyLimit} onChange={(e) => setVerifyLimit(Number(e.target.value) || 1)} />
+          </label>
+          <button className="btn" onClick={runVerify} disabled={verifying || unverified.length === 0}>
+            {verifying ? 'Verifying…' : 'Verify Emails'}
+          </button>
+        </div>
+        {verifyResult && (
+          verifyResult.error ? (
+            <div className="email-batch-result email-batch-error">{verifyResult.error}</div>
+          ) : (
+            <div className="email-batch-result">
+              {verifyResult.sendable} sendable, {verifyResult.unsendable} unsendable, out of {verifyResult.checked} checked.
+            </div>
+          )
+        )}
       </div>
 
       <div className="card email-batch">

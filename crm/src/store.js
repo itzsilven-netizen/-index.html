@@ -234,6 +234,25 @@ export const useLeadsStore = create((set, get) => ({
     return result
   },
 
+  // Verify-only counterpart to sendBatchToInstantly: checks the next `limit`
+  // never-checked, has-email call leads through MillionVerifier and writes
+  // emailVerified/verifyResult back, without contacting Instantly or sending
+  // anything. Run this ahead of time so a later send batch spends zero
+  // verifier credits re-checking addresses that already have a result on file.
+  verifyLeadsBatch: async (limit) => {
+    const response = await fetch(`${API_URL}/api/verify-leads`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ limit }),
+    })
+    const result = await response.json()
+    if (!response.ok) throw new Error(result.error || `Server responded ${response.status}`)
+    if (result.checked > 0) {
+      await get().syncFromServer()
+    }
+    return result
+  },
+
   // Local state is always updated immediately and synchronously, same as before —
   // nothing about the UI's responsiveness depends on the network call below.
   // The push to the backend is fire-and-forget: it lets other apps reading

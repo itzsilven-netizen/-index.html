@@ -317,6 +317,57 @@ app.post('/api/send-to-instantly', async (req, res) => {
   }
 })
 
+// POST /api/verify-leads - MillionVerifier-check the next N unverified,
+// has-email "calls" leads and write the result back, without touching
+// Instantly at all. Lets a batch be verified ahead of time (25/50/100/etc.)
+// so a later send-to-instantly call spends zero verifier credits re-checking
+// addresses that already have a known-good/known-bad result on file.
+app.post('/api/verify-leads', async (req, res) => {
+  if (!MILLIONVERIFIER_API_KEY) {
+    return res.status(500).json({ error: 'MILLIONVERIFIER_API_KEY not set on the server (Render env vars).' })
+  }
+
+  const rawLimit = req.body?.limit
+  const limit = Math.max(0, Math.min(500, rawLimit === undefined ? 25 : Number(rawLimit) || 0))
+
+  try {
+    const data = await fetchAllLeadRows('calls')
+
+    // emailVerified === undefined means never checked; only those are worth
+    // spending a credit on. Already-checked leads (true or false) are skipped
+    // here — re-verifying is a separate, deliberate action, not part of a batch.
+    const candidates = data
+      .map(row => ({ row, lead: { id: row.id, ...row.data } }))
+      .filter(({ lead }) => lead.email && !lead.emailSentAt && !lead.optedOut && lead.emailVerified === undefined)
+      .sort((a, b) => (b.lead.priority_score || 0) - (a.lead.priority_score || 0))
+      .slice(0, limit)
+
+    let sendable = 0
+    let unsendable = 0
+    const details = []
+
+    for (const { row, lead } of candidates) {
+      const verification = await verifyEmailAddress(lead.email)
+      if (!verification.checked) {
+        details.push({ id: lead.id, business_name: lead.business_name, email: lead.email, status: 'unchecked', reason: 'verifier unavailable' })
+        continue
+      }
+      await supabase
+        .from('leads')
+        .update({ data: { ...row.data, emailVerified: verification.sendable, verifyResult: verification.result } })
+        .eq('id', row.id)
+      if (verification.sendable) sendable++
+      else unsendable++
+      details.push({ id: lead.id, business_name: lead.business_name, email: lead.email, status: verification.sendable ? 'sendable' : 'unsendable', result: verification.result })
+    }
+
+    res.json({ success: true, checked: candidates.length, sendable, unsendable, details })
+  } catch (err) {
+    console.error('Error verifying leads:', err.message)
+    res.status(500).json({ error: 'Failed to verify leads' })
+  }
+})
+
 // POST /api/webhooks/instantly-reply - Instantly calls this the moment a
 // lead replies (configured as a campaign webhook in the Instantly dashboard,
 // event "Reply Received"). Looks the lead up by email across both lead
