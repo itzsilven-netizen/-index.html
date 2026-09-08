@@ -16,6 +16,7 @@ export default function EmailPage({ onOpenLead }) {
   const [verifying, setVerifying] = useState(false)
   const [verifyResult, setVerifyResult] = useState(null)
   const [verifiedOnly, setVerifiedOnly] = useState(true)
+  const [activeFilter, setActiveFilter] = useState('sentToday')
 
   const allLeads = useMemo(() => [
     ...callLeads.map(l => ({ ...l, _type: 'calls' })),
@@ -32,6 +33,16 @@ export default function EmailPage({ onOpenLead }) {
     return sent.toDateString() === now.toDateString()
   }).sort((a, b) => new Date(b.emailSentAt) - new Date(a.emailSentAt))
   const replied = allLeads.filter(l => l.repliedAt).sort((a, b) => new Date(b.repliedAt) - new Date(a.repliedAt))
+
+  // One config object per KPI tile — the tile, the tab button, and the list
+  // panel all read from this instead of five parallel branches.
+  const FILTERS = {
+    ready: { label: 'Ready to Send', leads: ready, empty: 'Nothing ready — every lead is either sent, opted out, or missing an email.' },
+    unverified: { label: 'Unverified', leads: unverified, empty: 'Nothing unverified. Run Verify Emails above, or everything ready has already been checked.' },
+    verified: { label: 'Verified', leads: verified, empty: 'Nothing verified yet. Run Verify Emails above.' },
+    sentToday: { label: 'Sent Today', leads: sentToday, empty: 'Nothing sent today yet. Run a batch above.', timeField: 'emailSentAt', timeLabel: 'sent' },
+    replied: { label: 'Replied', leads: replied, empty: 'No replies yet.', timeField: 'repliedAt', timeLabel: 'replied' },
+  }
 
   const runBatch = async () => {
     setSending(true)
@@ -64,31 +75,22 @@ export default function EmailPage({ onOpenLead }) {
       <div className="page-header">
         <div>
           <h1>Email</h1>
-          <p className="page-subtitle">Batch send through Instantly, plus what went out today and who replied.</p>
+          <p className="page-subtitle">Verify, batch send through Instantly, and click any count below to see those leads.</p>
         </div>
       </div>
 
       <div className="kpi-grid email-kpis">
-        <div className="card kpi-card">
-          <div className="kpi-value">{ready.length}</div>
-          <div className="kpi-label">Ready to Send</div>
-        </div>
-        <div className="card kpi-card">
-          <div className="kpi-value">{sentToday.length}</div>
-          <div className="kpi-label">Sent Today</div>
-        </div>
-        <div className="card kpi-card kpi-accent">
-          <div className="kpi-value">{replied.length}</div>
-          <div className="kpi-label">Replied</div>
-        </div>
-        <div className="card kpi-card">
-          <div className="kpi-value">{unverified.length}</div>
-          <div className="kpi-label">Unverified</div>
-        </div>
-        <div className="card kpi-card kpi-accent">
-          <div className="kpi-value">{verified.length}</div>
-          <div className="kpi-label">Verified</div>
-        </div>
+        {Object.entries(FILTERS).map(([key, f]) => (
+          <button
+            key={key}
+            type="button"
+            className={`card kpi-card kpi-clickable ${activeFilter === key ? 'kpi-active' : ''} ${(key === 'replied' || key === 'verified') ? 'kpi-accent' : ''}`}
+            onClick={() => setActiveFilter(key)}
+          >
+            <div className="kpi-value">{f.leads.length}</div>
+            <div className="kpi-label">{f.label}</div>
+          </button>
+        ))}
       </div>
 
       <div className="card email-batch">
@@ -149,28 +151,16 @@ export default function EmailPage({ onOpenLead }) {
         )}
       </div>
 
-      <div className="email-grid">
-        <EmailQueue
-          title="Sent Today"
-          leads={sentToday}
-          empty="Nothing sent today yet. Run a batch above."
-          expandedId={expandedId}
-          onToggle={setExpandedId}
-          onOpenLead={onOpenLead}
-          timeField="emailSentAt"
-          timeLabel="sent"
-        />
-        <EmailQueue
-          title="Replied"
-          leads={replied}
-          empty="No replies yet."
-          expandedId={expandedId}
-          onToggle={setExpandedId}
-          onOpenLead={onOpenLead}
-          timeField="repliedAt"
-          timeLabel="replied"
-        />
-      </div>
+      <EmailQueue
+        title={FILTERS[activeFilter].label}
+        leads={FILTERS[activeFilter].leads}
+        empty={FILTERS[activeFilter].empty}
+        expandedId={expandedId}
+        onToggle={setExpandedId}
+        onOpenLead={onOpenLead}
+        timeField={FILTERS[activeFilter].timeField}
+        timeLabel={FILTERS[activeFilter].timeLabel}
+      />
     </div>
   )
 }
@@ -186,7 +176,7 @@ function EmailQueue({ title, leads, empty, expandedId, onToggle, onOpenLead, tim
           {leads.map(lead => {
             const isOpen = expandedId === `${title}-${lead.id}`
             const { draft } = draftForLead(lead)
-            const time = lead[timeField]
+            const time = timeField && lead[timeField]
               ? new Date(lead[timeField]).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
               : ''
             return (
@@ -197,7 +187,7 @@ function EmailQueue({ title, leads, empty, expandedId, onToggle, onOpenLead, tim
                 >
                   <div className="email-queue-info">
                     <div className="email-queue-name">{lead.business_name}</div>
-                    <div className="email-queue-meta">{lead.niche || '—'} &middot; {timeLabel} {time}</div>
+                    <div className="email-queue-meta">{lead.niche || '—'}{time ? ` · ${timeLabel} ${time}` : ''}</div>
                   </div>
                   <button className="btn btn-ghost" onClick={(e) => { e.stopPropagation(); onOpenLead({ ...lead }) }}>Open</button>
                 </div>
