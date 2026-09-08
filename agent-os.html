@@ -213,6 +213,7 @@
     <div class="nav-section">
       <h4>Pipeline</h4>
       <div class="agent-item" data-view="leads"><span class="dot"></span>Leads<span class="nav-count" id="leadCount">0</span></div>
+      <div class="agent-item" data-view="agentsend"><span class="dot"></span>Draft &amp; Send</div>
       <div class="agent-item" data-view="stats"><span class="dot idle"></span>Numbers</div>
       <div class="agent-item" data-view="memory"><span class="dot idle"></span>Activity Log</div>
     </div>
@@ -292,7 +293,8 @@
     signalError: null,
     signalSearch: '',
     activeAgent: 'manager',
-    activeView: 'board'
+    activeView: 'board',
+    agentSendDrafts: []
   };
 
   function save(){
@@ -566,6 +568,7 @@ Reply with ONLY the single matching key from that list — one word, lowercase, 
     syncNav();
     if(state.activeView!=='leads') stopSignalPolling();
     if(state.activeView==='leads') return renderLeads();
+    if(state.activeView==='agentsend') return renderAgentSend();
     if(state.activeView==='stats') return renderStats();
     if(state.activeView==='memory') return renderMemory();
     renderBoard();
@@ -828,6 +831,144 @@ Reply with ONLY the single matching key from that list — one word, lowercase, 
       tr.innerHTML = `<td colspan="7" style="text-align:center;color:var(--dim);font-size:12px;padding:10px;">Showing top ${SIGNAL_ROW_CAP} of ${list.length} — narrow your search to see more</td>`;
       rows.appendChild(tr);
     }
+  }
+
+  // ---------------- Draft & Send (Agent OS drafts, Signal sends) ----------------
+  // Verified-and-ready-to-send leads live in signalLeads.calls (Signal's
+  // verify-leads/send-to-instantly endpoints both key off type 'calls',
+  // even for leads with an email — mirrored here so the candidate set
+  // matches exactly what Signal itself would consider verified).
+  function agentSendCandidates(){
+    return (state.signalLeads.calls || [])
+      .filter(l => l.email && l.emailVerified===true && !l.emailSentAt && !l.optedOut);
+  }
+
+  function leadDetailForDraft(l){
+    return `${l.business_name} — ${l.niche||''}, ${l.city||''}${l.state?', '+l.state:''}. `+
+      `Contact: ${l.contact_name||'unknown'}. Rating: ${l.rating||'—'} (${l.review_count||0} reviews). `+
+      `Website: ${l.website||'none'}. Notes: ${l.notes||'none'}.`;
+  }
+
+  // Server sends "Subject: ...\n\n<body>" — same split Signal's own backend
+  // does before handing subject/body to Instantly separately.
+  function splitDraftSubject(draft){
+    const m = draft.match(/^subject:\s*(.+)\n+([\s\S]*)$/i);
+    return m ? {subject:m[1].trim(), body:m[2].trim()} : {subject:'', body:draft};
+  }
+
+  async function draftOneLead(lead){
+    const sys = AGENT_PROMPTS.outreach;
+    const raw = await callAI(sys, [{role:'user', content:`Cold email for: ${leadDetailForDraft(lead)}`}]);
+    if(raw.startsWith('[') || raw.startsWith('(No ')){
+      return {lead, subject:'', body:'', status:'error', error:raw};
+    }
+    const {subject, body} = splitDraftSubject(raw);
+    if(!subject || !body) return {lead, subject:'', body:raw, status:'error', error:'Could not parse a subject line from the response — edit manually below.'};
+    return {lead, subject, body, status:'ready', approved:true};
+  }
+
+  function renderAgentSend(){
+    const candidates = agentSendCandidates();
+    mainView.innerHTML = `
+      <div class="board-header"><h2>Draft &amp; Send</h2><div class="sub">Agent OS drafts with your Outreach Agent, Signal sends — no copy-paste.</div></div>
+      <div class="composer">
+        <div class="row" style="margin-top:0;">
+          <span style="font-size:13px;">${candidates.length} verified lead${candidates.length===1?'':'s'} ready to draft</span>
+          <button class="btn" id="draftAllBtn" ${candidates.length===0?'disabled':''}>Draft All Verified</button>
+          <button class="btn secondary" id="sendApprovedBtn" ${state.agentSendDrafts.some(d=>d.status==='ready'&&d.approved)?'':'disabled'}>Send Approved</button>
+          <span style="font-size:11px;color:var(--dim);" id="agentSendStatus"></span>
+        </div>
+      </div>
+      <div id="agentSendList"></div>`;
+
+    document.getElementById('draftAllBtn').addEventListener('click', async ()=>{
+      const btn = document.getElementById('draftAllBtn');
+      const statusEl = document.getElementById('agentSendStatus');
+      btn.disabled = true;
+      state.agentSendDrafts = candidates.map(lead => ({lead, subject:'', body:'', status:'pending', approved:true}));
+      renderAgentSendList();
+      for(let i=0;i<state.agentSendDrafts.length;i++){
+        statusEl.textContent = `Drafting ${i+1} of ${state.agentSendDrafts.length}…`;
+        const result = await draftOneLead(state.agentSendDrafts[i].lead);
+        state.agentSendDrafts[i] = result;
+        renderAgentSendList();
+      }
+      statusEl.textContent = 'Done drafting — review below.';
+      btn.disabled = false;
+    });
+
+    document.getElementById('sendApprovedBtn').addEventListener('click', sendApprovedDrafts);
+    renderAgentSendList();
+  }
+
+  function renderAgentSendList(){
+    const el = document.getElementById('agentSendList');
+    const sendBtn = document.getElementById('sendApprovedBtn');
+    if(!el) return;
+    if(sendBtn) sendBtn.disabled = !state.agentSendDrafts.some(d=>d.status==='ready'&&d.approved);
+
+    if(!state.agentSendDrafts.length){
+      el.innerHTML = '<div class="empty">No drafts yet. Click "Draft All Verified" above.</div>';
+      return;
+    }
+    el.innerHTML = state.agentSendDrafts.map((d,i)=>`
+      <div class="column" style="margin-bottom:10px;">
+        <div class="row" style="margin-top:0;align-items:center;">
+          ${d.status==='ready' ? `<input type="checkbox" id="dchk${i}" ${d.approved?'checked':''} style="width:auto;" />` : ''}
+          <strong>${esc(d.lead.business_name)}</strong>
+          <span style="font-size:11px;color:var(--dim);">${esc(d.lead.email)}</span>
+          <span style="margin-left:auto;font-size:11px;color:${d.status==='error'?'var(--danger)':d.status==='sent'?'var(--accent-soft)':'var(--dim)'};">${esc(d.status)}</span>
+        </div>
+        ${d.status==='pending' ? '<div class="empty" style="padding:8px 0;">Drafting…</div>' : ''}
+        ${d.status==='error' ? `<div style="color:var(--danger);font-size:12px;padding:6px 0;">${esc(d.error||'')}</div>` : ''}
+        ${d.status==='ready' || d.status==='sent' || d.status==='sending' ? `
+          <input type="text" id="dsubj${i}" value="${esc(d.subject)}" ${d.status!=='ready'?'disabled':''} style="margin-bottom:6px;" />
+          <textarea id="dbody${i}" rows="6" ${d.status!=='ready'?'disabled':''} style="width:100%;font-family:inherit;font-size:13px;">${esc(d.body)}</textarea>
+        ` : ''}
+        ${d.status==='ready' ? `<div class="row"><button class="btn secondary sm" data-send-one="${i}">Send this one</button></div>` : ''}
+      </div>`).join('');
+
+    state.agentSendDrafts.forEach((d,i)=>{
+      const chk = document.getElementById(`dchk${i}`);
+      if(chk) chk.addEventListener('change', e=>{ state.agentSendDrafts[i].approved = e.target.checked; });
+      const subjEl = document.getElementById(`dsubj${i}`);
+      if(subjEl) subjEl.addEventListener('input', e=>{ state.agentSendDrafts[i].subject = e.target.value; });
+      const bodyEl = document.getElementById(`dbody${i}`);
+      if(bodyEl) bodyEl.addEventListener('input', e=>{ state.agentSendDrafts[i].body = e.target.value; });
+    });
+    el.querySelectorAll('[data-send-one]').forEach(btn=>{
+      btn.addEventListener('click', ()=> sendOneDraft(Number(btn.dataset.sendOne)));
+    });
+  }
+
+  async function sendOneDraft(i){
+    const d = state.agentSendDrafts[i];
+    if(!d || d.status!=='ready') return;
+    d.status = 'sending'; renderAgentSendList();
+    try{
+      const res = await fetch(`${SIGNAL_API}/api/send-custom-draft`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({leadId:d.lead.id, subject:d.subject, body:d.body})
+      });
+      const json = await res.json();
+      if(!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
+      d.status = 'sent';
+      logMemory(`Sent agent-drafted email to ${d.lead.business_name}`);
+    }catch(e){
+      d.status = 'error'; d.error = `Send failed: ${e.message}`;
+    }
+    renderAgentSendList();
+  }
+
+  async function sendApprovedDrafts(){
+    const statusEl = document.getElementById('agentSendStatus');
+    const toSend = state.agentSendDrafts.map((d,i)=>({d,i})).filter(x=>x.d.status==='ready' && x.d.approved);
+    for(const {i} of toSend){
+      if(statusEl) statusEl.textContent = `Sending ${i+1}…`;
+      await sendOneDraft(i);
+    }
+    if(statusEl) statusEl.textContent = 'Done sending.';
+    await fetchSignalLeads();
   }
 
   function renderStats(){
