@@ -35,7 +35,9 @@
     background:var(--bg); color:var(--text); height:100vh; overflow:hidden;
     font-size:14px; -webkit-font-smoothing:antialiased;
   }
-  .app{ display:grid; grid-template-columns:230px 1fr 340px; grid-template-rows:56px 1fr; height:100vh; }
+  .app{ display:grid; grid-template-columns:230px 1fr 340px; grid-template-rows:56px 1fr; height:100vh; transition:grid-template-columns var(--transition,180ms ease); }
+  .app.chat-collapsed{ grid-template-columns:230px 1fr 0; }
+  .app.chat-collapsed aside.chat{ display:none; }
 
   header{
     grid-column:1/4; grid-row:1; display:flex; align-items:center; gap:14px;
@@ -181,6 +183,26 @@
   .chat-header .sub{font-size:11px; color:var(--dim); margin-top:2px;}
   .chat-clear{margin-left:auto; font-size:11px; color:var(--dim); background:none; border:none; cursor:pointer;}
   .chat-clear:hover{color:var(--danger);}
+  .chat-close{font-size:13px; color:var(--dim); background:none; border:none; cursor:pointer; padding:2px 4px;}
+  .chat-close:hover{color:var(--text);}
+  .chat-bubble{
+    display:none; position:fixed; bottom:22px; right:22px; width:52px; height:52px; border-radius:50%;
+    background:var(--accent); color:#fff; border:none; font-size:22px; cursor:pointer; z-index:40;
+    box-shadow:0 6px 18px rgba(37,99,235,.35); align-items:center; justify-content:center;
+  }
+  .app.chat-collapsed .chat-bubble{display:flex;}
+  .chat-bubble:hover{filter:brightness(1.08);}
+
+  /* Manager Agent's composer reads as a centered ChatGPT-style prompt bar
+     instead of the compact left-aligned form every other agent uses. */
+  .composer.manager-composer{
+    max-width:640px; margin:40px auto 24px; padding:8px 8px 8px 20px; border-radius:28px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .composer.manager-composer textarea{
+    border:none; background:none; min-height:24px; max-height:120px; padding:8px 0; resize:none;
+  }
+  .composer.manager-composer .row{margin-top:0;}
   .chat-log{flex:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:9px;}
   .msg{max-width:88%; padding:9px 13px; border-radius:16px; font-size:13px; line-height:1.45; white-space:pre-wrap;}
   .msg.user{align-self:flex-end; background:var(--accent); color:#fff; border-bottom-right-radius:5px;}
@@ -240,13 +262,14 @@
 
   <main id="mainView"></main>
 
-  <aside class="chat">
+  <aside class="chat" id="chatPanel">
     <div class="chat-header">
       <div>
         <h3>Assistant</h3>
         <div class="sub">Remembers this conversation</div>
       </div>
       <button class="chat-clear" id="chatClear">Clear</button>
+      <button class="chat-close" id="chatClose" title="Minimize">✕</button>
     </div>
     <div class="chat-log" id="chatLog"></div>
     <div class="chat-input">
@@ -254,6 +277,7 @@
       <button class="btn" id="chatSend">Send</button>
     </div>
   </aside>
+  <button class="chat-bubble" id="chatBubble" title="Open Assistant">💬</button>
 </div>
 
 <div class="modal-backdrop" id="apiModal">
@@ -616,7 +640,7 @@ Reply with ONLY the single matching key from that list — one word, lowercase, 
     mainView.innerHTML = `
       <div class="board-header"><h2>${LABELS[agent]}</h2><div class="sub">${SUBS[agent]}</div></div>
       ${statTiles()}
-      <div class="composer">
+      <div class="composer${agent==='manager'?' manager-composer':''}">
         <textarea id="composerInput" placeholder="${esc(PLACEHOLDERS[agent]||'Describe what to draft…')}"></textarea>
         <div class="row">
           <select id="agentProvider" title="Which AI runs this agent">
@@ -1081,6 +1105,15 @@ Reply with ONLY the single matching key from that list — one word, lowercase, 
   document.getElementById('chatClear').addEventListener('click', ()=>{
     state.chat = [{role:'system', text:'Conversation cleared.'}]; save(); renderChat();
   });
+
+  const appEl = document.querySelector('.app');
+  function setChatCollapsed(collapsed){
+    appEl.classList.toggle('chat-collapsed', collapsed);
+    localStorage.setItem('apex_agent_os_chat_collapsed', collapsed ? '1' : '0');
+  }
+  document.getElementById('chatClose').addEventListener('click', ()=> setChatCollapsed(true));
+  document.getElementById('chatBubble').addEventListener('click', ()=> setChatCollapsed(false));
+  setChatCollapsed(localStorage.getItem('apex_agent_os_chat_collapsed') === '1');
   document.getElementById('globalSearch').addEventListener('keydown', e=>{
     if(e.key==='Enter'){ const v=e.target.value; e.target.value=''; chatInput.focus(); sendChat(v); }
   });
