@@ -322,6 +322,101 @@ app.post('/api/send-to-instantly', async (req, res) => {
   }
 })
 
+// POST /api/send-custom-draft - push ONE lead into Instantly using a
+// caller-supplied subject/body instead of generateEmailDraft(). This is the
+// door for an external drafting agent (e.g. Agent OS's Outreach Agent LLM
+// call) to hand off a real send without the human copy-pasting the draft
+// into Instantly by hand. Still respects verification and CAN-SPAM the same
+// as the generated-draft path: a lead already known unverified/unsendable is
+// refused, and the mailing address is appended if the caller's draft doesn't
+// already carry it.
+app.post('/api/send-custom-draft', async (req, res) => {
+  if (!INSTANTLY_API_KEY || !INSTANTLY_CAMPAIGN_ID) {
+    return res.status(500).json({
+      error: 'INSTANTLY_API_KEY / INSTANTLY_CAMPAIGN_ID not set on the server (Render env vars).',
+    })
+  }
+
+  const { leadId, subject, body } = req.body || {}
+  if (!leadId || !subject || !body) {
+    return res.status(400).json({ error: 'Requires leadId, subject, and body.' })
+  }
+
+  try {
+    const { data: row, error: fetchErr } = await supabase
+      .from('leads')
+      .select('*')
+      .eq('id', leadId)
+      .eq('type', 'calls')
+      .single()
+    if (fetchErr || !row) return res.status(404).json({ error: 'Lead not found.' })
+
+    const lead = { id: row.id, ...row.data }
+    if (!lead.email) return res.status(400).json({ error: 'Lead has no email.' })
+    if (lead.emailSentAt) return res.status(400).json({ error: 'Lead already sent.' })
+    if (lead.optedOut) return res.status(400).json({ error: 'Lead opted out.' })
+
+    // A lead already known bad from a prior verify run is refused outright.
+    // One never checked gets checked now, same fail-open behavior as the
+    // generated-draft path — a verifier outage sends unverified rather than
+    // blocking a real agent-drafted send.
+    let verification = { checked: lead.emailVerified === true, sendable: lead.emailVerified === true }
+    if (lead.emailVerified === false) {
+      return res.status(400).json({ error: `Lead failed verification (${lead.verifyResult || 'unknown'}).` })
+    }
+    if (lead.emailVerified === undefined) {
+      verification = await verifyEmailAddress(lead.email)
+      if (verification.checked && !verification.sendable) {
+        await supabase
+          .from('leads')
+          .update({ data: { ...row.data, emailVerified: false, verifyResult: verification.result } })
+          .eq('id', row.id)
+        return res.status(400).json({ error: `Failed verification (${verification.result}).` })
+      }
+    }
+
+    const finalBody = appendMailingAddress(body)
+
+    const resp = await fetch(INSTANTLY_LEADS_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${INSTANTLY_API_KEY}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'User-Agent': 'Mozilla/5.0 (compatible; claude-crm/1.0)',
+      },
+      body: JSON.stringify({
+        campaign: INSTANTLY_CAMPAIGN_ID,
+        email: lead.email,
+        company_name: lead.business_name,
+        custom_variables: { company_name: lead.business_name, subject, full_body: finalBody },
+        skip_if_in_workspace: false,
+      }),
+    })
+
+    if (!resp.ok) {
+      const text = await resp.text()
+      throw new Error(`HTTP ${resp.status}: ${text.slice(0, 200)}`)
+    }
+
+    await supabase
+      .from('leads')
+      .update({ data: {
+        ...row.data,
+        emailSentAt: new Date().toISOString(),
+        instantlySynced: true,
+        draftSource: 'agent-os',
+        ...(verification.checked ? { emailVerified: true, verifyResult: verification.result } : {}),
+      } })
+      .eq('id', row.id)
+
+    res.json({ success: true, id: lead.id, business_name: lead.business_name })
+  } catch (err) {
+    console.error('Error sending custom draft to Instantly:', err.message)
+    res.status(500).json({ error: err.message || 'Failed to send custom draft to Instantly' })
+  }
+})
+
 // POST /api/verify-leads - MillionVerifier-check the next N unverified,
 // has-email "calls" leads and write the result back, without touching
 // Instantly at all. Lets a batch be verified ahead of time (25/50/100/etc.)
