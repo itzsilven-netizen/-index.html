@@ -1,29 +1,41 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --bg: #F3EEE3;
+  /* Instantly-style chrome: white/blue/gray. Pipeline stage badges below
+     deliberately break from this set — each stage gets its own hue so the
+     pipeline reads as distinct steps, not one accent color everywhere. */
+  --bg: #F6F7F9;
   --bg-sidebar: #FFFFFF;
   --bg-card: #FFFFFF;
-  --bg-elevated: #E7DFCC;
-  --bg-hover: #ECE6D8;
-  --border: rgba(60, 66, 78, 0.16);
-  --border-strong: rgba(60, 66, 78, 0.28);
-  --text-primary: #1B2230;
+  --bg-elevated: #F2F3F5;
+  --bg-hover: #ECEEF1;
+  --border: rgba(20, 26, 38, 0.10);
+  --border-strong: rgba(20, 26, 38, 0.18);
+  --text-primary: #16181D;
   --text-secondary: #5B6472;
-  --text-muted: #99A1AE;
-  --accent: #1E3A5F;
-  --accent-hover: #14283F;
-  --accent-soft: rgba(30, 58, 95, 0.12);
-  --accent-glow: rgba(30, 58, 95, 0.18);
-  --accent-2: #3E6BA3;
-  --success: #1F8A5D;
-  --success-soft: rgba(31, 138, 93, 0.14);
-  --warning: #B8790A;
-  --warning-soft: rgba(184, 121, 10, 0.14);
-  --error: #C0392B;
-  --error-soft: rgba(192, 57, 43, 0.14);
-  --ink: #1B2230;
+  --text-muted: #8B9099;
+  --accent: #2563EB;
+  --accent-hover: #1D4FD1;
+  --accent-soft: rgba(37, 99, 235, 0.12);
+  --accent-glow: rgba(37, 99, 235, 0.18);
+  --accent-2: #3B82F6;
+  --success: #16A34A;
+  --success-soft: rgba(22, 163, 74, 0.14);
+  --warning: #D97706;
+  --warning-soft: rgba(217, 119, 6, 0.14);
+  --error: #DC2626;
+  --error-soft: rgba(220, 38, 38, 0.14);
+  --ink: #16181D;
   --ink-soft: #5B6472;
+
+  /* Pipeline stage colors — one hue per stage, used by the .badge-* rules below. */
+  --stage-new: #6B7280;      --stage-new-soft: rgba(107,114,128,0.14);
+  --stage-contacted: #2563EB; --stage-contacted-soft: rgba(37,99,235,0.14);
+  --stage-qualified: #D97706; --stage-qualified-soft: rgba(217,119,6,0.14);
+  --stage-booked: #7C3AED;    --stage-booked-soft: rgba(124,58,237,0.14);
+  --stage-closed: #16A34A;
+  --stage-lost: #DC2626;      --stage-lost-soft: rgba(220,38,38,0.12);
+  --stage-replied: #0891B2;   --stage-replied-soft: rgba(8,145,178,0.14);
 
   --radius: 14px;
   --radius-sm: 10px;
@@ -199,13 +211,14 @@ select {
   white-space: nowrap;
 }
 
-/* stage colors: strictly grayscale → orange ramp → ink */
-.badge-new       { background: var(--bg-elevated); color: var(--text-secondary); }
-.badge-contacted { background: var(--warning-soft); color: var(--warning); }
-.badge-qualified { background: var(--warning-soft); color: var(--warning); }
-.badge-booked    { background: var(--accent); color: #fff; }
-.badge-closed    { background: var(--success); color: #fff; }
-.badge-lost      { background: var(--bg-elevated); color: var(--text-muted); text-decoration: line-through; }
-.badge-sent      { background: var(--success-soft); color: var(--success); }
-.badge-replied   { background: var(--accent); color: #fff; }
+/* One color per pipeline stage — each stage should read as visually
+   distinct at a glance, not share the same accent as everything else. */
+.badge-new       { background: var(--stage-new-soft); color: var(--stage-new); }
+.badge-contacted { background: var(--stage-contacted-soft); color: var(--stage-contacted); }
+.badge-qualified { background: var(--stage-qualified-soft); color: var(--stage-qualified); }
+.badge-booked    { background: var(--stage-booked); color: #fff; }
+.badge-closed    { background: var(--stage-closed); color: #fff; }
+.badge-lost      { background: var(--stage-lost-soft); color: var(--stage-lost); text-decoration: line-through; }
+.badge-sent      { background: var(--stage-contacted-soft); color: var(--stage-contacted); }
+.badge-replied   { background: var(--stage-replied-soft); color: var(--stage-replied); }
 .badge-optedout  { background: var(--bg-elevated); color: var(--text-muted); }
