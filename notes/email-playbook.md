@@ -86,6 +86,58 @@ vs. only relevant once there's a first client.
 - Slack alerts for fast-replying to interested leads. Real tactic at reply
   volume; not the bottleneck at current send volume.
 
+## Source 3 — enterprise-scale outbound operator (YouTube, 2026-09-08)
+
+Third distinct source — an enterprise/agency-scale outbound operation
+(25-50 mailbox infra, LinkedIn signal-based sourcing via Triggery/Clay,
+SDR-managed responses). Most of it is genuinely built for a bigger
+operation and a different ICP than this one; one piece is adopted.
+
+### Adopted
+
+- **Tone calibrated to a traditional-industry ICP, not startup-casual.**
+  The source's own framing — formal/longer copy works better for
+  traditional industries (insurance, legal, accounting), short/casual
+  works for SaaS/startups — maps directly onto Kassava's ICP. HVAC,
+  roofing, plumbing, electrical and pool service owners sit in the
+  traditional bucket, not the startup one. Outreach's tone rule updated:
+  professional and direct, no slang or forced casualness, no exclamation
+  points.
+
+### Converges with source 2, still a pricing decision not a copy fix
+
+- **14-day pilot** here vs. the 60-day pilot in source 2 — two
+  independent operators landing on the same underlying fix (de-risk the
+  ask instead of pitching a straight retainer) is real signal. Still
+  Kassava's call against what Casava allows him to offer, not something
+  baked into the agents.
+
+### Not adopted — built for a different scale, not wrong, just premature
+
+- **25-50 mailboxes on one domain, Google/Microsoft split, "Hyperdrive."**
+  Enterprise-tier sending infra. Revisit once actually volume-constrained
+  by 3 mailboxes, not before.
+- **Triple-verify + strip Mimecast-filtered domains.** Needs domain
+  intelligence tooling that doesn't exist here yet; MillionVerifier
+  already covers the actual bad-address risk at this scale.
+
+### Not adopted — ICP mismatch, not a scale issue
+
+- **LinkedIn engagement-based lead sourcing (Triggery/Clay) and the
+  LinkedIn→email multi-channel pivot.** This targets people who are
+  active and reachable on LinkedIn — SaaS founders, consultants. HVAC/
+  roofing/plumbing/pool service owners overwhelmingly aren't. Signal's
+  trade+location scrape is the right lead source for this ICP; this is a
+  different tool built for a different buyer, not a better version of
+  the same thing.
+
+### No change needed, already true
+
+- SDR/human review of responses over full automation — Kassava already
+  manually handles every reply himself.
+- Optimize for positive reply rate, not raw volume — already the
+  Numbers view's framing (reply rate, not counts).
+
 ## Still true from the existing rules (unchanged)
 
 - Never invent a specific about the prospect's business.
