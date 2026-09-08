@@ -8,7 +8,7 @@ import './EmailPage.css'
 // Pipeline. This is that home.
 export default function EmailPage({ onOpenLead }) {
   const { callLeads, emailLeads, sendBatchToInstantly, verifyLeadsBatch } = useLeadsStore()
-  const [limit, setLimit] = useState(25)
+  const [limit, setLimit] = useState(null)
   const [sending, setSending] = useState(false)
   const [result, setResult] = useState(null)
   const [expandedId, setExpandedId] = useState(null)
@@ -44,11 +44,16 @@ export default function EmailPage({ onOpenLead }) {
     replied: { label: 'Replied', leads: replied, empty: 'No replies yet.', timeField: 'repliedAt', timeLabel: 'replied' },
   }
 
+  // Defaults to however many are verified right now, so "Send" without
+  // touching the limit field sends exactly the verified batch — not an
+  // arbitrary leftover number from a prior run.
+  const sendLimit = limit === null ? verified.length : limit
+
   const runBatch = async () => {
     setSending(true)
     setResult(null)
     try {
-      const res = await sendBatchToInstantly(limit, verifiedOnly)
+      const res = await sendBatchToInstantly(sendLimit, verifiedOnly)
       setResult(res)
     } catch (err) {
       setResult({ error: err.message })
@@ -96,7 +101,7 @@ export default function EmailPage({ onOpenLead }) {
       <div className="card email-batch">
         <div className="email-batch-head">
           <div>
-            <h3>Verify Emails</h3>
+            <h3>Verify with AOS</h3>
             <p className="email-batch-hint">Runs the next N unverified leads through MillionVerifier and saves the result — no send, nothing touches Instantly. Start small.</p>
           </div>
         </div>
@@ -106,7 +111,7 @@ export default function EmailPage({ onOpenLead }) {
             <input type="number" min="1" max="500" value={verifyLimit} onChange={(e) => setVerifyLimit(Number(e.target.value) || 1)} />
           </label>
           <button className="btn" onClick={runVerify} disabled={verifying || unverified.length === 0}>
-            {verifying ? 'Verifying…' : 'Verify Emails'}
+            {verifying ? 'Verifying…' : 'Verify with AOS'}
           </button>
         </div>
         {verifyResult && (
@@ -123,21 +128,21 @@ export default function EmailPage({ onOpenLead }) {
       <div className="card email-batch">
         <div className="email-batch-head">
           <div>
-            <h3>Batch Send</h3>
-            <p className="email-batch-hint">Pushes the next N unsent, has-email leads into Instantly, ranked by priority score.</p>
+            <h3>Send</h3>
+            <p className="email-batch-hint">Pushes the next N unsent, has-email leads into Instantly, ranked by priority score. Defaults to your current verified count.</p>
           </div>
         </div>
         <div className="email-batch-controls">
           <label>
             Limit
-            <input type="number" min="1" max="200" value={limit} onChange={(e) => setLimit(Number(e.target.value) || 1)} />
+            <input type="number" min="1" max="200" value={sendLimit} onChange={(e) => setLimit(Number(e.target.value) || 1)} />
           </label>
           <label className="email-batch-checkbox">
             <input type="checkbox" checked={verifiedOnly} onChange={(e) => setVerifiedOnly(e.target.checked)} />
             Verified only ({verified.length} available)
           </label>
           <button className="btn" onClick={runBatch} disabled={sending || (verifiedOnly ? verified.length === 0 : ready.length === 0)}>
-            {sending ? 'Sending…' : `Send to Instantly`}
+            {sending ? 'Sending…' : 'Send'}
           </button>
         </div>
         {result && (
