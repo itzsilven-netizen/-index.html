@@ -22,8 +22,10 @@ const dedupeKey = (lead) =>
 const INSTANTLY_API_KEY = process.env.INSTANTLY_API_KEY
 const INSTANTLY_CAMPAIGN_ID = process.env.INSTANTLY_CAMPAIGN_ID
 const INSTANTLY_LEADS_URL = 'https://api.instantly.ai/api/v2/leads'
+// No business name attached — Kassava presents as a Casava partner in every
+// email, never as "Apex Standard" (that's his internal business name only).
 const COMPANY_MAILING_ADDRESS =
-  process.env.COMPANY_MAILING_ADDRESS || 'Apex Standard, PO Box 1093, Willow Creek, CA 95573'
+  process.env.COMPANY_MAILING_ADDRESS || 'PO Box 1093, Willow Creek, CA 95573'
 
 // MillionVerifier checks a single address per call and returns a `result` of
 // "ok", "catch_all", "unknown", "disposable", or "invalid". Only the first two
